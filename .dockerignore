@@ -1,4 +1,13 @@
 .env
+.env.*
+.streamlit/
+
+# ChromaDB database (not in git repo, but exclude if building locally)
+database/
+
+# Source documents — extended context gracefully degrades to "" when absent
+data/
+
 __pycache__
 **/__pycache__
 *.pyc
