@@ -23,6 +23,10 @@ class ChatRequest(BaseModel):
     query: str
     history: list = []
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
     with open(frontend_dir / "index.html", "r", encoding="utf-8") as f:
