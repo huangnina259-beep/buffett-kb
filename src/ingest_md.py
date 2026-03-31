@@ -103,6 +103,8 @@ def get_file_metadata(file_path: Path, text: str):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true", help="Reprocess all files")
+    parser.add_argument("--start", type=int, default=None, help="Start index (inclusive) for batch processing")
+    parser.add_argument("--end", type=int, default=None, help="End index (exclusive) for batch processing")
     args = parser.parse_args()
 
     print("🚀 Initialising ChromaDB...")
@@ -121,8 +123,15 @@ def main():
         print(f"❌ Clean Markdown directory not found: {MD_DIR}")
         return
 
-    all_mds = list(MD_DIR.glob("*.md"))
-    print(f"Found {len(all_mds)} Markdown files in {MD_DIR}")
+    all_mds = sorted(MD_DIR.glob("*.md"))
+    total_files = len(all_mds)
+
+    start = args.start if args.start is not None else 0
+    end = args.end if args.end is not None else total_files
+    all_mds = all_mds[start:end]
+
+    print(f"Found {total_files} Markdown files in {MD_DIR}")
+    print(f"Processing batch [{start}:{end}] → {len(all_mds)} files")
 
     total_chunks_added = 0
     file_stats = {}
