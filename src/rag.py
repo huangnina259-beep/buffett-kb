@@ -15,7 +15,7 @@ ROOT_DIR = SRC_DIR.parent
 DB_DIR   = ROOT_DIR / "database"
 
 COLLECTION_NAME = "buffett_kb"
-EMBED_MODEL     = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+EMBED_MODEL     = "sentence-transformers/all-MiniLM-L6-v2"
 CLAUDE_MODEL    = "claude-haiku-4-5-20251001"
 TOP_K           = 10
 

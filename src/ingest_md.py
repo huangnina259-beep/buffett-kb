@@ -24,7 +24,7 @@ MD_DIR   = ROOT_DIR / "data" / "clean_mds"
 
 # ── constants ─────────────────────────────────────────────────────────────────
 COLLECTION_NAME = "buffett_kb"
-EMBED_MODEL     = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+EMBED_MODEL     = "sentence-transformers/all-MiniLM-L6-v2"
 CHUNK_SIZE      = 2000   # chars ≈ 500-600 tokens
 CHUNK_OVERLAP   = 400    # chars ≈ 100 tokens
 
