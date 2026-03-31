@@ -2,11 +2,11 @@
 .env.*
 .streamlit/
 
-# ChromaDB database (not in git repo, but exclude if building locally)
+# ChromaDB database lives in Railway Volume, not in image
 database/
 
-# Source documents — extended context gracefully degrades to "" when absent
-data/
+# PDFs not needed at runtime
+data/pdfs/
 
 __pycache__
 **/__pycache__
