@@ -1,0 +1,23 @@
+# Environment variables
+.env
+.env.*
+
+# ChromaDB database (293MB, too large for GitHub)
+database/
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db

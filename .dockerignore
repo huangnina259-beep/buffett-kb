@@ -1,0 +1,16 @@
+.env
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+scripts_archive/
+app_streamlit_backup.py
+faithful_cleaner.py
+fix_double_encoding.py
+fix_encoding_and_cleanup.py
+production_cleaner.py
+rename_and_clean_mds.py
+split_oaktree.py
+unify_names_v2.py
+process_lilu_pdfs.py
+test_moat.py
