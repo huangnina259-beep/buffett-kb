@@ -386,3 +386,232 @@ document.getElementById('file-upload').addEventListener('change', (e) => {
         alert(`You selected: ${fileNames}\n(File upload backend logic to be implemented)`);
     }
 });
+
+// ─── Training Mode ─────────────────────────────────────────────────────────────
+
+const TRAINING_CASES = {
+    'coca-cola': {
+        title: 'Coca-Cola, 1988',
+        subtitle: 'How Buffett Made His Biggest Bet',
+        steps: [
+            {
+                theme: 'Business Model',
+                context: "It's 1988. Warren Buffett is reading Coca-Cola's annual report. The company earns most of its revenue by selling syrup concentrate to independent bottlers worldwide. Those bottlers handle all the capital-intensive manufacturing, canning, and distribution.",
+                question: "What makes Coca-Cola's core business model economically powerful?",
+                options: [
+                    "It owns and operates every bottling plant worldwide, giving it total supply-chain control.",
+                    "It sells high-margin syrup concentrate to bottlers, keeping the business asset-light with exceptional returns on invested capital.",
+                    "Its advantage comes from access to cheap sugar and water inputs that competitors can't match.",
+                    "It runs a diversified conglomerate spanning beverages, food, and entertainment."
+                ],
+                correct: 1,
+                insight: "Coca-Cola's genius is structural: it sells concentrate at high margins while independent bottlers absorb the capital-intensive manufacturing. This asset-light model earns extraordinary returns on invested capital. Buffett estimated Coke earned roughly $1 on every $2 of tangible assets deployed — a return profile most businesses can't approach.",
+                attribution: "Buffett has praised this model repeatedly in shareholder letters, noting the \"fountainhead of value\" created by brand plus asset-light structure."
+            },
+            {
+                theme: 'Competitive Moat',
+                context: "In blind taste tests — including the famous Pepsi Challenge — Pepsi consistently outperforms Coke in head-to-head sips. Yet Coca-Cola outsells Pepsi globally by a wide margin, across more than 200 countries.",
+                question: "What type of competitive moat does the Pepsi Challenge paradox reveal?",
+                options: [
+                    "Cost moat — Coke produces its product cheaper than any competitor.",
+                    "Network effects — more Coke drinkers make the product more valuable for each drinker.",
+                    "Intangible brand moat — emotional habit, identity, and memory that persists despite taste preference.",
+                    "Switching cost moat — consumers face significant friction when trying to switch beverages."
+                ],
+                correct: 2,
+                insight: "The Pepsi Challenge paradox is the clearest illustration of brand moat. People buy Coke for reasons entirely disconnected from the liquid — ritual, identity, global ubiquity, memory. Buffett called this \"share of mind.\" A brand embedded in the habits of billions compounds its moat with every generation. The cost to replicate it: incalculable.",
+                attribution: "Buffett, 1993 Letter: \"Coca-Cola... has the most powerful brand in the world.\""
+            },
+            {
+                theme: 'Management & Capital Allocation',
+                context: "Roberto Goizueta became Coca-Cola's CEO in 1981. He sold the film studio Columbia Pictures, refocused the company entirely on beverages, expanded into new global markets, and aggressively repurchased Coca-Cola shares throughout the decade.",
+                question: "What does Goizueta's capital allocation track record reveal?",
+                options: [
+                    "Selling assets and buying back stock signals a company that has run out of growth ideas.",
+                    "Diversifying into film showed bold, forward-thinking strategic leadership.",
+                    "He identified that Coke's highest-return use of capital was buying back its own undervalued stock rather than diversifying into unrelated businesses.",
+                    "Share repurchases primarily benefit executives holding stock options, not ordinary shareholders."
+                ],
+                correct: 2,
+                insight: "Buffett considers capital allocation the single most important skill of a CEO. Goizueta's discipline — divest unrelated businesses, reinvest in the core franchise, return capital via buybacks when the stock is cheap — is the playbook. The result: Coke's intrinsic value grew roughly 7× between 1981 and 1988. Buffett specifically cited Goizueta's management as central to his investment conviction.",
+                attribution: "Buffett, 1989 Letter: \"Roberto Goizueta... has led Coca-Cola with extraordinary skill.\""
+            },
+            {
+                theme: 'Valuation & Margin of Safety',
+                context: "Buffett paid roughly 15× earnings for Coca-Cola in 1988. The S&P 500 averaged about 11× earnings at the time. Several Wall Street analysts questioned whether this was truly a value investment given the premium to the market.",
+                question: "For a business with Coke's durability and growth profile, where is the real margin of safety?",
+                options: [
+                    "There is none — paying 15× was a violation of Graham's core principles.",
+                    "Safety comes from the hard asset value on the balance sheet — buildings, equipment, inventory.",
+                    "For a predictable, durable compounder, the safety lives in earnings power over a 10–20 year horizon, not the entry price alone.",
+                    "Safety comes from Coke's commodity hedges on sugar and aluminum prices."
+                ],
+                correct: 2,
+                insight: "This is where Buffett diverged from Graham's strict asset-based framework, heavily influenced by Munger. A business growing earnings reliably at 15% per year, bought at 15×, compounds dramatically over decades. Buffett later crystallized it: \"It's far better to buy a wonderful company at a fair price than a fair company at a wonderful price.\" Price is what you pay once. Earnings power works for you every year.",
+                attribution: "Buffett, 1992 Letter — describing the shift from cigar-butt investing to quality compounders."
+            },
+            {
+                theme: 'The Hold Decision',
+                context: "By 1998, Buffett's $1 billion Coca-Cola position had grown to over $13 billion — a 13× return in 10 years. The stock now traded at approximately 50× earnings, far above any conventional valuation threshold. By every standard metric, it appeared significantly overvalued.",
+                question: "What is the rational case for NOT selling at 50× earnings?",
+                options: [
+                    "Buffett was anchored to his cost basis — a well-known psychological bias that prevents rational selling.",
+                    "Realizing a $12B gain triggers massive capital gains tax, and redeploying that capital into a business of comparable quality is extraordinarily difficult. The friction cost of switching is high.",
+                    "Value investors hold forever regardless of price — that is the core philosophy.",
+                    "Selling was restricted by Berkshire's regulatory disclosure obligations to the SEC."
+                ],
+                correct: 1,
+                insight: "The hidden friction in selling great businesses is enormous. Capital gains tax on a 10× gain means receiving only ~75 cents per dollar sold. You must then find a business of comparable quality to redeploy into — an extremely rare thing. \"Our favorite holding period is forever\" is not sentimentality. It is the deliberate recognition that activity has tax and opportunity costs, and that inaction with a great business is itself an active strategy.",
+                attribution: "Buffett, 1988 Letter: \"When we own portions of outstanding businesses... our favorite holding period is forever.\""
+            }
+        ]
+    }
+};
+
+let trainingState = {
+    caseId: null,
+    step: 0,
+    selected: null,
+    answers: []
+};
+
+function startTraining(caseId) {
+    trainingState = { caseId, step: 0, selected: null, answers: [] };
+    switchToTrainingView();
+    renderTrainingStep();
+}
+
+function switchToTrainingView() {
+    document.getElementById('home-view').style.display = 'none';
+    document.getElementById('chat-view').style.display = 'none';
+    document.getElementById('training-view').style.display = 'flex';
+}
+
+function exitTraining() {
+    document.getElementById('training-view').style.display = 'none';
+    document.getElementById('home-view').style.display = 'flex';
+}
+
+function renderTrainingStep() {
+    const caseData = TRAINING_CASES[trainingState.caseId];
+    const steps = caseData.steps;
+    const stepData = steps[trainingState.step];
+    const total = steps.length;
+    const current = trainingState.step + 1;
+
+    document.getElementById('training-step-label').textContent = `Step ${current} of ${total}`;
+    document.getElementById('training-progress-fill').style.width = `${((current - 1) / total) * 100}%`;
+
+    const optionsHtml = stepData.options.map((opt, i) => `
+        <button class="training-option" data-idx="${i}" onclick="selectTrainingOption(${i})">
+            <span class="training-option-letter">${String.fromCharCode(65 + i)}</span>
+            <span class="training-option-text">${opt}</span>
+        </button>
+    `).join('');
+
+    document.getElementById('training-body').innerHTML = `
+        <div class="training-step-card">
+            <div class="training-theme-tag">${stepData.theme}</div>
+            <div class="training-context">${stepData.context}</div>
+            <div class="training-question">${stepData.question}</div>
+            <div class="training-options">${optionsHtml}</div>
+            <div class="training-insight" id="training-insight" style="display:none;">
+                <div class="training-insight-label">Buffett's Perspective</div>
+                <div class="training-insight-body">${stepData.insight}</div>
+                ${stepData.attribution ? `<div class="training-attribution">${stepData.attribution}</div>` : ''}
+            </div>
+            <div class="training-actions" id="training-actions" style="display:none;">
+                <button class="training-continue-btn" onclick="advanceTraining()">
+                    ${trainingState.step < total - 1 ? 'Continue →' : 'See Summary →'}
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('training-body').scrollTop = 0;
+}
+
+function selectTrainingOption(idx) {
+    if (trainingState.selected !== null) return;
+    trainingState.selected = idx;
+
+    const stepData = TRAINING_CASES[trainingState.caseId].steps[trainingState.step];
+    trainingState.answers.push({ step: trainingState.step, selected: idx, correct: stepData.correct });
+
+    document.querySelectorAll('.training-option').forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === stepData.correct) {
+            btn.classList.add('training-option--correct');
+        } else if (i === idx) {
+            btn.classList.add('training-option--other');
+        } else {
+            btn.classList.add('training-option--dim');
+        }
+    });
+
+    document.getElementById('training-insight').style.display = 'block';
+    document.getElementById('training-actions').style.display = 'flex';
+
+    setTimeout(() => {
+        document.getElementById('training-insight').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+}
+
+function advanceTraining() {
+    const steps = TRAINING_CASES[trainingState.caseId].steps;
+    if (trainingState.step < steps.length - 1) {
+        trainingState.step++;
+        trainingState.selected = null;
+        renderTrainingStep();
+    } else {
+        renderTrainingSummary();
+    }
+}
+
+function renderTrainingSummary() {
+    const caseData = TRAINING_CASES[trainingState.caseId];
+    const answers = trainingState.answers;
+    const matched = answers.filter(a => a.selected === a.correct).length;
+    const total = caseData.steps.length;
+
+    document.getElementById('training-step-label').textContent = 'Complete';
+    document.getElementById('training-progress-fill').style.width = '100%';
+
+    const rowsHtml = answers.map(a => {
+        const step = caseData.steps[a.step];
+        const isMatch = a.selected === a.correct;
+        return `
+            <div class="summary-row ${isMatch ? 'summary-row--match' : 'summary-row--diff'}">
+                <div class="summary-row-theme">${step.theme}</div>
+                <div class="summary-row-detail">
+                    <span class="summary-your-pick">You: ${step.options[a.selected]}</span>
+                    ${!isMatch ? `<span class="summary-buffett-pick">Buffett's key factor: ${step.options[a.correct]}</span>` : ''}
+                </div>
+                <span class="summary-icon">${isMatch ? '✓' : '◎'}</span>
+            </div>
+        `;
+    }).join('');
+
+    document.getElementById('training-body').innerHTML = `
+        <div class="training-summary">
+            <div class="summary-header">
+                <div class="summary-title">${caseData.title}</div>
+                <div class="summary-score">${matched} of ${total} steps aligned with Buffett's framework</div>
+                <div class="summary-subtitle">Agreement doesn't mean right or wrong — this is about understanding how the framework works.</div>
+            </div>
+            <div class="summary-rows">${rowsHtml}</div>
+            <div class="summary-actions">
+                <button class="training-continue-btn training-continue-btn--secondary" onclick="exitTraining()">← Back to Home</button>
+                <button class="training-continue-btn" onclick="exitTrainingToChat()">Ask Buffett KB a Question →</button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('training-body').scrollTop = 0;
+}
+
+function exitTrainingToChat() {
+    document.getElementById('training-view').style.display = 'none';
+    document.getElementById('home-view').style.display = 'flex';
+    setTimeout(() => document.getElementById('home-search-input').focus(), 100);
+}

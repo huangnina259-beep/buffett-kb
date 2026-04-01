@@ -42,6 +42,19 @@
                 <button class="chip" onclick="submitHomeQuery('Buffett vs Graham approach')">Buffett vs Graham approach</button>
                 <button class="chip" onclick="submitHomeQuery('How does Munger think about risk?')">How does Munger think about risk?</button>
             </div>
+
+            <!-- Training Mode CTA -->
+            <div class="training-promo">
+                <div class="training-promo-divider"><span>or try a case study</span></div>
+                <button class="training-promo-card" onclick="startTraining('coca-cola')">
+                    <span class="training-promo-icon">📋</span>
+                    <div class="training-promo-text">
+                        <strong>Coca-Cola, 1988</strong>
+                        <span>How Buffett made his biggest bet · 5 steps</span>
+                    </div>
+                    <span class="training-promo-arrow">→</span>
+                </button>
+            </div>
         </div>
 
         <!-- Chat State -->
@@ -87,8 +100,26 @@
                 </div>
             </div>
         </div>
+
+        <!-- Training View -->
+        <div id="training-view" style="display: none;">
+            <header class="chat-header">
+                <div class="logo-container" onclick="exitTraining()">
+                    <img src="/static/logo.png" alt="Logo" class="nav-logo">
+                    <span class="brand-text">Value Investing</span>
+                </div>
+                <div class="training-header-right">
+                    <span id="training-step-label" class="training-step-label"></span>
+                    <button class="training-back-btn" onclick="exitTraining()">← Home</button>
+                </div>
+            </header>
+            <div id="training-progress-wrap">
+                <div id="training-progress-fill"></div>
+            </div>
+            <div id="training-body"></div>
+        </div>
     </div>
-    
+
     <input type="file" id="file-upload" style="display: none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,image/*,.png,.jpg,.jpeg,.webp" />
 
     <!-- Marked.js for markdown parsing -->
