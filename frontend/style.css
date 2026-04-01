@@ -1107,11 +1107,8 @@ html, body {
 
 /* ── Mobile ──────────────────────────────────────── */
 @media (max-width: 768px) {
-    /* Allow hero to scroll when training promo adds height */
+    /* Allow hero to scroll if content exceeds viewport */
     .hero { overflow-y: auto; }
-
-    .training-promo { margin-top: 24px; }
-    .training-promo-card { padding: 13px 16px; border-radius: 10px; }
 
     .training-step-label { display: none; }
     #training-body { padding: 28px 16px 64px; }
@@ -1127,4 +1124,122 @@ html, body {
     .summary-row-theme { min-width: 80px; }
     .summary-actions   { flex-direction: column; align-items: stretch; }
     .training-continue-btn { text-align: center; }
+}
+
+/* ─── Revised Home View ─────────────────────────────────────── */
+
+/* Brand lockup */
+.home-brand {
+    text-align: center;
+    margin-bottom: 36px;
+}
+.home-brand-cn {
+    font-family: 'Georgia', 'Songti SC', 'STSong', serif;
+    font-size: 36px;
+    font-weight: 400;
+    color: #0d0d0d;
+    letter-spacing: 4px;
+    line-height: 1.1;
+    margin-bottom: 8px;
+}
+.home-brand-en {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c0c5ca;
+}
+
+/* Headline */
+.home-headline {
+    font-family: 'Inter', sans-serif;
+    font-size: 21px;
+    font-weight: 500;
+    color: #0d0d0d;
+    text-align: center;
+    letter-spacing: -0.3px;
+    line-height: 1.35;
+    margin-bottom: 12px;
+}
+
+/* Subheadline */
+.home-subheadline {
+    font-size: 15px;
+    font-weight: 400;
+    color: #9aa0a6;
+    text-align: center;
+    line-height: 1.65;
+    max-width: 400px;
+    margin-bottom: 44px;
+}
+
+/* Mode-selection cards */
+.home-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
+    width: 100%;
+    max-width: 680px;
+    margin-bottom: 44px;
+}
+.home-card {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #e8eaed;
+    border-radius: 12px;
+    padding: 28px 26px 22px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    user-select: none;
+}
+.home-card:hover {
+    border-color: #c0c5ca;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+.home-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0d0d0d;
+    letter-spacing: -0.1px;
+    line-height: 1.3;
+    margin-bottom: 10px;
+}
+.home-card-desc {
+    font-size: 13px;
+    color: #9aa0a6;
+    line-height: 1.65;
+    flex: 1;
+    margin-bottom: 20px;
+}
+.home-card-cta {
+    font-size: 13px;
+    font-weight: 500;
+    color: #0d0d0d;
+    letter-spacing: 0.1px;
+}
+
+/* Footer tag line */
+.home-footer-line {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #d0d5da;
+    text-align: center;
+}
+
+/* Home mobile — stack cards below 580px */
+@media (max-width: 580px) {
+    .home-cards {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .home-brand-cn  { font-size: 30px; letter-spacing: 3px; }
+    .home-headline  { font-size: 18px; }
+    .home-subheadline { font-size: 14px; margin-bottom: 32px; }
+    .home-card      { padding: 22px 20px 18px; }
 }

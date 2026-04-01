@@ -492,6 +492,11 @@ function exitTraining() {
     document.getElementById('home-view').style.display = 'flex';
 }
 
+function openChat() {
+    switchToChatView();
+    setTimeout(() => document.getElementById('chat-search-input').focus(), 100);
+}
+
 function renderTrainingStep() {
     const caseData = TRAINING_CASES[trainingState.caseId];
     const steps = caseData.steps;
