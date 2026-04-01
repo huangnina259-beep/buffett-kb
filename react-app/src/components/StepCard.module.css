@@ -1,0 +1,342 @@
+/* ── Card shell ─────────────────────────────────────────────── */
+.card {
+  background: #ffffff;
+  border: 1px solid #e8eaed;
+  border-radius: 12px;
+  padding: 36px 36px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* controlled per-section below */
+}
+
+/* ── Step label ─────────────────────────────────────────────── */
+.stepLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #c0c5ca;
+  margin-bottom: 16px;
+}
+
+/* ── Question ───────────────────────────────────────────────── */
+.question {
+  font-size: 22px;
+  font-weight: 600;
+  color: #0d0d0d;
+  line-height: 1.35;
+  letter-spacing: -0.3px;
+  margin-bottom: 20px;
+}
+
+/* ── Why this matters ───────────────────────────────────────── */
+.why {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 14px;
+  border-left: 2px solid #e8eaed;
+  margin-bottom: 28px;
+}
+
+.whyLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: #c8cdd2;
+}
+
+.whyText {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #80868b;
+  margin: 0;
+}
+
+/* ── Radio group ────────────────────────────────────────────── */
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid #e8eaed;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  background: #ffffff;
+  user-select: none;
+}
+
+.radioLabel:hover:not(.radioLabel--correct):not(.radioLabel--wrong) {
+  border-color: #c0c5ca;
+  background: #fafafa;
+}
+
+/* Selected (pre-submit) */
+.radioLabel--selected {
+  border-color: #0d0d0d;
+  background: #fafafa;
+}
+
+/* Post-submit states */
+.radioLabel--correct {
+  border-color: #0d0d0d;
+  background: #f4f4f4;
+  cursor: default;
+}
+
+.radioLabel--wrong {
+  border-color: #c8cdd2;
+  background: #fafafa;
+  opacity: 0.6;
+  cursor: default;
+}
+
+.radioLabel--default {
+  cursor: default;
+}
+
+/* Hide native radio */
+.radioInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Custom radio mark */
+.radioMark {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #c0c5ca;
+  margin-top: 2px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.radioLabel--selected .radioMark,
+.radioLabel--correct .radioMark {
+  border-color: #0d0d0d;
+  background: #0d0d0d;
+  box-shadow: inset 0 0 0 3px #ffffff;
+}
+
+.radioLabel--wrong .radioMark {
+  border-color: #c8cdd2;
+}
+
+.radioText {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #202124;
+}
+
+.radioLabel--wrong .radioText {
+  color: #9aa0a6;
+}
+
+/* ── Textarea ───────────────────────────────────────────────── */
+.textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #202124;
+  background: #fafafa;
+  border: 1px solid #e8eaed;
+  border-radius: 8px;
+  padding: 14px 16px;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  margin-bottom: 16px;
+}
+
+.textarea:focus {
+  border-color: #b0b5bb;
+  background: #ffffff;
+}
+
+.textarea:disabled {
+  opacity: 0.5;
+  cursor: default;
+  resize: none;
+}
+
+/* ── Submit row ─────────────────────────────────────────────── */
+.submitRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 28px;
+}
+
+.submitBtn {
+  background: #0d0d0d;
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 26px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.submitBtn:hover:not(:disabled) { background: #2a2a2a; }
+
+.submitBtn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+/* ── Feedback block ─────────────────────────────────────────── */
+.feedback {
+  padding: 20px 20px 18px;
+  border-left: 3px solid #0d0d0d;
+  background: #f9f9f9;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 28px;
+}
+
+.feedbackVerdict {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.verdictCorrect { color: #0d0d0d; }
+.verdictWrong   { color: #9aa0a6; }
+
+.feedbackExplanation {
+  font-size: 14px;
+  line-height: 1.75;
+  color: #3c4043;
+  margin: 0;
+}
+
+/* ── Guidance section ───────────────────────────────────────── */
+.guidanceWrap {
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 4px;
+}
+
+.guidanceToggle {
+  font-size: 13px;
+  font-weight: 500;
+  color: #9aa0a6;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.guidanceToggle:hover { color: #0d0d0d; }
+
+.hintLink {
+  font-size: 12px;
+  color: #b0b5bb;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
+}
+
+.hintLink:hover { color: #5f6368; }
+
+/* dl layout for guidance rows */
+.guidanceBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+.guidanceRow {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding-left: 0;
+}
+
+.guidanceTerm {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #c0c5ca;
+  padding-top: 1px;
+}
+
+.guidanceDef {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #5f6368;
+  margin: 0;
+}
+
+/* Strong answer: slight indent with left border */
+.guidanceRowExample .guidanceDef {
+  padding-left: 12px;
+  border-left: 2px solid #e0e0e0;
+  font-style: italic;
+  color: #3c4043;
+}
+
+/* Common mistake: muted label */
+.guidanceRowWarning .guidanceTerm {
+  color: #c8cdd2;
+}
+
+/* ── Continue row ───────────────────────────────────────────── */
+.continueRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.continueBtn {
+  background: #0d0d0d;
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 26px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.continueBtn:hover { background: #2a2a2a; }
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 580px) {
+  .card { padding: 24px 20px 20px; }
+  .question { font-size: 18px; }
+  .guidanceRow { grid-template-columns: 1fr; gap: 4px; }
+  .guidanceTerm { font-size: 10px; }
+}

@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import type { HelpLevel } from './types'
 import { STEPS } from './data/steps'
+import { STEP_1 } from './data/stepCardData'
 import Header from './components/Header'
 import ProgressBar from './components/ProgressBar'
 import HelpLevelSelector from './components/HelpLevelSelector'
-import MainCard from './components/MainCard'
+import StepCard from './components/StepCard'
 import Sidebar from './components/Sidebar'
 import styles from './App.module.css'
 
@@ -13,7 +14,6 @@ export default function App() {
   const [currentStep, setCurrentStep] = useState(0)
 
   const totalSteps = STEPS.length
-  const step = STEPS[currentStep]
   const progressPercent = Math.round((currentStep / totalSteps) * 100)
 
   function handleContinue() {
@@ -33,12 +33,13 @@ export default function App() {
 
       <div className={styles.body}>
         <main className={styles.main}>
-          <MainCard
+          {/* StepCard: hardcoded Step 1 while single-step scope is active */}
+          <StepCard
             key={currentStep}
-            step={step}
-            helpLevel={helpLevel}
+            step={STEP_1}
             stepIndex={currentStep}
             totalSteps={totalSteps}
+            helpLevel={helpLevel}
             onContinue={handleContinue}
           />
         </main>
