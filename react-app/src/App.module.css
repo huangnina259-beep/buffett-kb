@@ -1,0 +1,42 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.controls {
+  background: #ffffff;
+  border-bottom: 1px solid #e8eaed;
+  flex-shrink: 0;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  gap: 24px;
+  max-width: 1080px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+.aside {
+  width: 268px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .body {
+    flex-direction: column;
+    padding: 20px 16px 48px;
+    gap: 20px;
+  }
+  .aside {
+    width: 100%;
+  }
+}

@@ -1,0 +1,39 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 60px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8eaed;
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.brandCn {
+  font-family: Georgia, 'Songti SC', 'STSong', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: #0d0d0d;
+  letter-spacing: 2px;
+}
+
+.brandEn {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #d0d5da;
+}
+
+.caseTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: #9aa0a6;
+  letter-spacing: 0.1px;
+}

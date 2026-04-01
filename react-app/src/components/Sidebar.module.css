@@ -1,0 +1,63 @@
+.sidebar {
+  background: #ffffff;
+  border: 1px solid #e8eaed;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.section {
+  padding: 20px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.section:last-child {
+  border-bottom: none;
+}
+
+.sectionTitle {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: #c0c5ca;
+  margin-bottom: 14px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.row:last-child { margin-bottom: 0; }
+
+.rowLabel {
+  font-size: 13px;
+  color: #9aa0a6;
+}
+.rowValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: #202124;
+}
+
+.conceptList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.concept {
+  font-size: 13px;
+  color: #5f6368;
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.4;
+}
+.concept::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: #c8cdd2;
+  font-weight: 700;
+}

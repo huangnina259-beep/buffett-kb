@@ -1,0 +1,191 @@
+.card {
+  background: #ffffff;
+  border: 1px solid #e8eaed;
+  border-radius: 12px;
+  padding: 36px 36px 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 1. Step label */
+.stepLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #c0c5ca;
+  margin-bottom: 18px;
+}
+
+/* 2. Question */
+.question {
+  font-size: 22px;
+  font-weight: 600;
+  color: #0d0d0d;
+  line-height: 1.35;
+  letter-spacing: -0.3px;
+  margin-bottom: 22px;
+}
+
+/* 3. Why this matters */
+.why {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-left: 16px;
+  border-left: 2px solid #e8eaed;
+  margin-bottom: 28px;
+}
+
+.whyLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: #c8cdd2;
+}
+
+.whyText {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #80868b;
+}
+
+/* 4. Textarea */
+.textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #202124;
+  background: #fafafa;
+  border: 1px solid #e8eaed;
+  border-radius: 8px;
+  padding: 14px 16px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  margin-bottom: 16px;
+}
+.textarea:focus {
+  border-color: #b0b5bb;
+  background: #ffffff;
+}
+.textarea:disabled {
+  opacity: 0.55;
+  cursor: default;
+  resize: none;
+}
+
+/* 5. Submit row */
+.submitRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+}
+
+.submitBtn {
+  background: #0d0d0d;
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.submitBtn:hover:not(:disabled) { background: #2a2a2a; }
+.submitBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* 6. Feedback block */
+.feedback {
+  background: #f9f9f9;
+  border: 1px solid #e8eaed;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.feedbackPlaceholder {
+  font-size: 14px;
+  color: #b0b5bb;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* 7. Guidance area */
+.guidanceWrap,
+.hintWrap {
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 8px;
+}
+
+.guidanceToggle {
+  font-size: 13px;
+  font-weight: 500;
+  color: #9aa0a6;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+.guidanceToggle:hover { color: #0d0d0d; }
+
+.guidanceText {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: #5f6368;
+  padding-left: 16px;
+  border-left: 2px solid #e8eaed;
+}
+
+.hintLink {
+  font-size: 12px;
+  color: #c0c5ca;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
+}
+.hintLink:hover { color: #80868b; }
+
+/* 8. Continue row */
+.continueRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.continueBtn {
+  background: #0d0d0d;
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.continueBtn:hover { background: #2a2a2a; }
+
+@media (max-width: 580px) {
+  .card { padding: 24px 20px 20px; }
+  .question { font-size: 18px; }
+}

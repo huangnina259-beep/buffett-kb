@@ -1,0 +1,31 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 24px;
+}
+
+.track {
+  flex: 1;
+  height: 2px;
+  background: #ebebeb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: #0d0d0d;
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #c0c5ca;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  min-width: 40px;
+  text-align: right;
+}
