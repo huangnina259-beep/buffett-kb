@@ -500,7 +500,7 @@ function renderTrainingStep() {
     const current = trainingState.step + 1;
 
     document.getElementById('training-step-label').textContent = `Step ${current} of ${total}`;
-    document.getElementById('training-progress-fill').style.width = `${((current - 1) / total) * 100}%`;
+    document.getElementById('training-progress-fill').style.width = `${(current / total) * 100}%`;
 
     const optionsHtml = stepData.options.map((opt, i) => `
         <button class="training-option" data-idx="${i}" onclick="selectTrainingOption(${i})">
@@ -584,10 +584,10 @@ function renderTrainingSummary() {
             <div class="summary-row ${isMatch ? 'summary-row--match' : 'summary-row--diff'}">
                 <div class="summary-row-theme">${step.theme}</div>
                 <div class="summary-row-detail">
-                    <span class="summary-your-pick">You: ${step.options[a.selected]}</span>
-                    ${!isMatch ? `<span class="summary-buffett-pick">Buffett's key factor: ${step.options[a.correct]}</span>` : ''}
+                    <span class="summary-your-pick">Your answer: ${step.options[a.selected]}</span>
+                    ${!isMatch ? `<span class="summary-buffett-pick">Buffett's framework: ${step.options[a.correct]}</span>` : ''}
                 </div>
-                <span class="summary-icon">${isMatch ? '✓' : '◎'}</span>
+                <span class="summary-icon">${isMatch ? '✓' : '—'}</span>
             </div>
         `;
     }).join('');
@@ -595,14 +595,15 @@ function renderTrainingSummary() {
     document.getElementById('training-body').innerHTML = `
         <div class="training-summary">
             <div class="summary-header">
+                <div class="summary-case-label">Case Study</div>
                 <div class="summary-title">${caseData.title}</div>
-                <div class="summary-score">${matched} of ${total} steps aligned with Buffett's framework</div>
-                <div class="summary-subtitle">Agreement doesn't mean right or wrong — this is about understanding how the framework works.</div>
+                <div class="summary-score">You aligned with Buffett's framework on ${matched} of ${total} steps.</div>
+                <div class="summary-subtitle">Divergence isn't failure — it's where the real thinking starts.</div>
             </div>
             <div class="summary-rows">${rowsHtml}</div>
             <div class="summary-actions">
                 <button class="training-continue-btn training-continue-btn--secondary" onclick="exitTraining()">← Back to Home</button>
-                <button class="training-continue-btn" onclick="exitTrainingToChat()">Ask Buffett KB a Question →</button>
+                <button class="training-continue-btn" onclick="exitTrainingToChat()">Ask the Knowledge Base →</button>
             </div>
         </div>
     `;
