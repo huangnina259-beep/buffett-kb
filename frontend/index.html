@@ -69,7 +69,10 @@
                 <div id="chat-main">
                     <!-- 首屏引导区 -->
                     <div id="pre-chat">
-                        <h1 class="pre-chat-title">Learn from the masters.</h1>
+                        <div class="pre-chat-header">
+                            <h1 class="pre-chat-title">Learn from the masters.</h1>
+                            <p class="pre-chat-subtitle">每个答案来自巴菲特、芒格、李录的原始文字，附带出处。</p>
+                        </div>
                         <div class="search-wrap pre-chat-search-wrap">
                             <input id="pre-chat-input" class="search-input" type="text"
                                    placeholder="Ask anything about value investing..." autocomplete="off" />
@@ -86,6 +89,7 @@
                             <button class="suggestion-chip" onclick="sendSuggestion('芒格的投资检查清单包含哪些核心要素？')">芒格的投资检查清单包含哪些核心要素？</button>
                             <button class="suggestion-chip" onclick="sendSuggestion('价值投资者如何看待市场波动和短期下跌？')">价值投资者如何看待市场波动和短期下跌？</button>
                         </div>
+                        <p class="pre-chat-source-note">知识库来源：巴菲特股东信（1965–2023）· 芒格演讲 · 李录著作</p>
                     </div>
 
                     <div id="chat-history"></div>
