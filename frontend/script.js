@@ -1,6 +1,33 @@
 let chatHistory = [];
 let lastSources = [];
 let isGenerating = false;
+let hasStartedChat = false;
+
+function enterChatMode() {
+    if (hasStartedChat) return;
+    hasStartedChat = true;
+    const preChatEl = document.getElementById('pre-chat');
+    preChatEl.style.opacity = '0';
+    preChatEl.style.pointerEvents = 'none';
+    setTimeout(() => {
+        document.getElementById('chat-main').classList.add('chat-started');
+    }, 300);
+}
+
+function sendSuggestion(text) {
+    if (isGenerating) return;
+    sendQuery(text);
+}
+
+function isNearBottom(el) {
+    return el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+}
+
+function scrollToBottom(el) {
+    if (isNearBottom(el)) {
+        el.scrollTop = el.scrollHeight;
+    }
+}
 
 function switchToChatView() {
     document.getElementById('home-view').style.display = 'none';
@@ -161,7 +188,7 @@ function renderMessage(role, content, sources = null, searchParams = null) {
     
     row.appendChild(bubble);
     historyDiv.appendChild(row);
-    historyDiv.scrollTop = historyDiv.scrollHeight;
+    scrollToBottom(historyDiv);
     return bubble;
 }
 
@@ -177,7 +204,7 @@ function showLoading() {
     
     row.appendChild(bubble);
     historyDiv.appendChild(row);
-    historyDiv.scrollTop = historyDiv.scrollHeight;
+    scrollToBottom(historyDiv);
 }
 
 function removeLoading() {
@@ -238,9 +265,10 @@ function updateButtonsState() {
 
 async function sendQuery(queryText) {
     if (!queryText.trim() || isGenerating) return;
+    enterChatMode();
     isGenerating = true;
     updateButtonsState();
-    
+
     switchToChatView();
     
     document.getElementById('home-search-input').value = '';
@@ -279,23 +307,23 @@ async function sendQuery(queryText) {
         let answer = data.answer;
         let i = 0;
         
+        const historyDiv = document.getElementById('chat-history');
         currentTypingInterval = setInterval(() => {
             let currentText = answer.substring(0, i);
             answerContainer.innerHTML = formatCitations(marked.parse(currentText), data.sources) + '<span style="display:inline-block;width:4px;height:14px;background:#0d0d0d;margin-left:2px;animation:blink 1s step-end infinite;"></span>';
             i += 2;
-            
-            const historyDiv = document.getElementById('chat-history');
-            historyDiv.scrollTop = historyDiv.scrollHeight;
-            
+            scrollToBottom(historyDiv);
+
             if (i >= answer.length) {
                 clearInterval(currentTypingInterval);
                 currentTypingInterval = null;
                 answerContainer.innerHTML = formatCitations(marked.parse(answer), data.sources);
                 chatHistory.push({"role": "user", "content": queryText});
                 chatHistory.push({"role": "assistant", "content": answer, "sources": data.sources});
-                
+
                 if (data.follow_ups && data.follow_ups.length > 0) {
                     setTimeout(() => {
+                        const historyDiv = document.getElementById('chat-history');
                         const fuRow = document.createElement('div');
                         fuRow.className = 'message-row assistant';
                         let html = '<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; align-items: flex-start; max-width: 100%;">';
@@ -305,7 +333,6 @@ async function sendQuery(queryText) {
                         html += '</div>';
                         fuRow.innerHTML = html;
                         historyDiv.appendChild(fuRow);
-                        historyDiv.scrollTop = historyDiv.scrollHeight;
                         isGenerating = false;
                         updateButtonsState();
                     }, 500);
@@ -371,6 +398,14 @@ document.getElementById('chat-search-input').addEventListener('keypress', (e) =>
     }
 });
 document.getElementById('chat-submit-btn').addEventListener('click', () => handleBtnClick('chat-search-input'));
+
+document.getElementById('pre-chat-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && e.target.value.trim()) sendQuery(e.target.value);
+});
+document.getElementById('pre-chat-submit-btn').addEventListener('click', () => {
+    const val = document.getElementById('pre-chat-input').value;
+    if (val.trim()) sendQuery(val);
+});
 
 // File upload logic
 document.querySelectorAll('.plus-btn').forEach(btn => {
@@ -621,3 +656,4 @@ function exitTrainingToChat() {
     document.getElementById('home-view').style.display = 'flex';
     setTimeout(() => document.getElementById('home-search-input').focus(), 100);
 }
+

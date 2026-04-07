@@ -296,16 +296,26 @@ Return ONLY JSON:
             chat_history.append({"role": role, "content": msg["content"]})
 
     # 4. Final user message with context
+    has_chinese = any('\u4e00' <= c <= '\u9fff' for c in question)
+    if has_chinese:
+        language_instruction = (
+            "【语言强制要求】用户用中文提问，你必须全程用中文回答，包括所有标题、正文和 <follow_ups> 内容。\n"
+            "严禁出现英文句子或英文段落（人名、公司名等专有名词除外）。\n"
+            "排版规范：执行摘要 → 分主题标题 → 要点列表 → <follow_ups>。"
+        )
+    else:
+        language_instruction = (
+            "LANGUAGE REQUIREMENT: The user asked in English. Your ENTIRE response must be in English only.\n"
+            "Translate ALL retrieved Chinese content into English. NO Chinese characters allowed.\n"
+            "Layout: Executive Summary → Thematic headings → Bullet points → <follow_ups>."
+        )
+
     user_msg = (
         "【当前检索到的知识库内容】\n"
         f"{context}\n\n"
         "---\n\n"
-        f"【当前用户提问 / Current User Question】：{question}\n\n"
-        "CRITICAL INSTRUCTION:\n"
-        "1. Identify the language of the user's question.\n"
-        "2. You MUST formulate your ENTIRE response (including the <follow_ups> section) in THAT EXACT LANGUAGE.\n"
-        "3. If the question is in English, you must TRANSLATE all facts from the retrieved Chinese context into English. DO NOT output any Chinese characters.\n"
-        "4. Strict layout: Executive Summary -> Thematic Grouping -> Bullet Points -> <follow_ups>."
+        f"【当前用户提问】：{question}\n\n"
+        f"{language_instruction}"
     )
 
     try:
