@@ -131,11 +131,11 @@ const TRAINING_CASES = {
                 theme: { en: 'Competitive Moat', zh: '竞争护城河' },
                 context: {
                     en: "In blind taste tests — including the famous Pepsi Challenge — Pepsi consistently outperforms Coke in head-to-head sips. Yet Coca-Cola outsells Pepsi globally by a wide margin, across more than 200 countries.",
-                    zh: "在盲测中——包括著名的"百事挑战"——百事可乐在直接对比品尝中始终胜出。然而，可口可乐在全球超过200个国家的销量远超百事可乐。"
+                    zh: '在盲测中——包括著名的"百事挑战"——百事可乐在直接对比品尝中始终胜出。然而，可口可乐在全球超过200个国家的销量远超百事可乐。'
                 },
                 question: {
                     en: "What type of competitive moat does the Pepsi Challenge paradox reveal?",
-                    zh: ""百事挑战"悖论揭示了哪种类型的竞争护城河？"
+                    zh: '"百事挑战"悖论揭示了哪种类型的竞争护城河？'
                 },
                 options: {
                     en: [
@@ -154,7 +154,7 @@ const TRAINING_CASES = {
                 correct: 2,
                 insight: {
                     en: "The Pepsi Challenge paradox is the clearest illustration of brand moat. People buy Coke for reasons entirely disconnected from the liquid — ritual, identity, global ubiquity, memory. Buffett called this \"share of mind.\" A brand embedded in the habits of billions compounds its moat with every generation. The cost to replicate it: incalculable.",
-                    zh: ""百事挑战"悖论是品牌护城河最清晰的例证。人们购买可口可乐的理由与饮料本身完全无关——它关乎仪式感、身份认同和记忆。巴菲特将这称为"心智占有率"。一个深植于数十亿人习惯中的品牌，每一代人都在强化其护城河，复制它的成本无法估量。"
+                    zh: '"百事挑战"悖论是品牌护城河最清晰的例证。人们购买可口可乐的理由与饮料本身完全无关——它关乎仪式感、身份认同和记忆。巴菲特将这称为"心智占有率"。一个深植于数十亿人习惯中的品牌，每一代人都在强化其护城河，复制它的成本无法估量。'
                 },
                 attribution: {
                     en: 'Buffett, 1993 Letter: "Coca-Cola... has the most powerful brand in the world."',
@@ -222,7 +222,7 @@ const TRAINING_CASES = {
                 correct: 2,
                 insight: {
                     en: "This is where Buffett diverged from Graham's strict asset-based framework, heavily influenced by Munger. A business growing earnings reliably at 15% per year, bought at 15×, compounds dramatically over decades. Buffett later crystallized it: \"It's far better to buy a wonderful company at a fair price than a fair company at a wonderful price.\" Price is what you pay once. Earnings power works for you every year.",
-                    zh: "这正是巴菲特在芒格的影响下，开始偏离格雷厄姆严格资产基础框架的地方。一家盈利每年可靠增长15%的企业，以15倍市盈率买入，数十年后将呈现惊人的复利效果。巴菲特后来将其精炼为："以合理价格买入优秀企业，远胜于以优惠价格买入平庸企业。"价格只支付一次，盈利能力却年年为你工作。"
+                    zh: '这正是巴菲特在芒格的影响下，开始偏离格雷厄姆严格资产基础框架的地方。一家盈利每年可靠增长15%的企业，以15倍市盈率买入，数十年后将呈现惊人的复利效果。巴菲特后来将其精炼为："以合理价格买入优秀企业，远胜于以优惠价格买入平庸企业。"价格只支付一次，盈利能力却年年为你工作。'
                 },
                 attribution: {
                     en: 'Buffett, 1992 Letter — describing the shift from cigar-butt investing to quality compounders.',
@@ -256,7 +256,7 @@ const TRAINING_CASES = {
                 correct: 1,
                 insight: {
                     en: "The hidden friction in selling great businesses is enormous. Capital gains tax on a 10× gain means receiving only ~75 cents per dollar sold. You must then find a business of comparable quality to redeploy into — an extremely rare thing. \"Our favorite holding period is forever\" is not sentimentality. It is the deliberate recognition that activity has tax and opportunity costs, and that inaction with a great business is itself an active strategy.",
-                    zh: "卖出优质企业的隐性摩擦成本巨大。对10倍收益征收资本利得税意味着每出售1美元仅能获得约0.75美元。此后你还必须找到同等质量的企业来重新配置资金——这是极其罕见的事。"我们最喜欢的持有期是永远"并非情感化表达，而是对行动产生税收和机会成本的深思熟虑，以及对持有优质企业本身就是一种主动策略的清醒认知。"
+                    zh: '卖出优质企业的隐性摩擦成本巨大。对10倍收益征收资本利得税意味着每出售1美元仅能获得约0.75美元。此后你还必须找到同等质量的企业来重新配置资金——这是极其罕见的事。"我们最喜欢的持有期是永远"并非情感化表达，而是对行动产生税收和机会成本的深思熟虑，以及对持有优质企业本身就是一种主动策略的清醒认知。'
                 },
                 attribution: {
                     en: 'Buffett, 1988 Letter: "When we own portions of outstanding businesses... our favorite holding period is forever."',
@@ -275,7 +275,7 @@ const TRAINING_CASES = {
                 theme: { en: 'Price vs. Value', zh: '价格与价值' },
                 context: {
                     en: "It's 1972. Buffett is offered See's Candies for $25 million — roughly 3× book value. His Graham-trained instinct says never pay more than book. Charlie Munger pushes back: \"Warren, that's a wonderful business.\" See's earned $4.2M pre-tax on $8M of net tangible assets — a 52% return on capital.",
-                    zh: "1972年，巴菲特获得以2500万美元收购喜诗糖果的机会——约为账面价值的3倍。他受格雷厄姆培训的直觉告诉他，决不能支付超过账面价值的价格。合伙人查理·芒格强烈反驳："沃伦，那是一家了不起的企业。"喜诗以800万美元净有形资产创造了420万美元税前利润——52%的资本回报率。"
+                    zh: '1972年，巴菲特获得以2500万美元收购喜诗糖果的机会——约为账面价值的3倍。他受格雷厄姆培训的直觉告诉他，决不能支付超过账面价值的价格。合伙人查理·芒格强烈反驳："沃伦，那是一家了不起的企业。"喜诗以800万美元净有形资产创造了420万美元税前利润——52%的资本回报率。'
                 },
                 question: {
                     en: "Why was paying 3× book value rational for See's Candies?",
@@ -298,7 +298,7 @@ const TRAINING_CASES = {
                 correct: 1,
                 insight: {
                     en: "See's taught Buffett that the most valuable assets in great businesses don't appear on balance sheets: brand loyalty, customer habits, pricing power. The relevant question wasn't 'what are the assets worth at liquidation?' — it was 'what will this earnings engine produce over the next 20 years?' Munger's insistence on this forced a permanent upgrade to Buffett's framework.",
-                    zh: "喜诗教会了巴菲特：优质企业中最有价值的资产往往在资产负债表上看不见——品牌忠诚度、客户习惯、定价权。关键问题不是"资产清算价值是多少"，而是"这台盈利机器未来20年会产生什么收益"。芒格对此的坚持，迫使巴菲特对自己的投资框架进行了永久性的升级。"
+                    zh: '喜诗教会了巴菲特：优质企业中最有价值的资产往往在资产负债表上看不见——品牌忠诚度、客户习惯、定价权。关键问题不是"资产清算价值是多少"，而是"这台盈利机器未来20年会产生什么收益"。芒格对此的坚持，迫使巴菲特对自己的投资框架进行了永久性的升级。'
                 },
                 attribution: {
                     en: 'Buffett, 2007 Letter: "Charlie shoved me in the direction of thinking about durable competitive advantage."',
@@ -332,7 +332,7 @@ const TRAINING_CASES = {
                 correct: 2,
                 insight: {
                     en: "Buffett called See's the 'prototype of a dream business.' The ability to raise prices annually — with customers complaining but not leaving — is the clearest real-world proof of brand moat. The product carries emotional weight that transcends price. Buffett estimated that for every $1 of price increase, roughly $0.70 fell to the bottom line. That is pricing power made tangible.",
-                    zh: "巴菲特称喜诗是"梦想企业的原型"。每年提价——顾客投诉但不离去——是品牌护城河最清晰的现实验证。产品具有超越价格的情感意义。巴菲特估计，每提价1美元，约有0.70美元流入净利润——这就是定价权的具体体现。"
+                    zh: '巴菲特称喜诗是"梦想企业的原型"。每年提价——顾客投诉但不离去——是品牌护城河最清晰的现实验证。产品具有超越价格的情感意义。巴菲特估计，每提价1美元，约有0.70美元流入净利润——这就是定价权的具体体现。'
                 },
                 attribution: {
                     en: "Buffett, 1983 Letter: \"The ability to raise prices... without losing business to a competitor is a great business to own.\"",
@@ -393,7 +393,7 @@ const TRAINING_CASES = {
                     zh: [
                         "喜诗之后，巴菲特对下行保护的兴趣减少了，转而偏好高增长公司。",
                         "喜诗验证了格雷厄姆的方法——它只是在质量层面异常高的一根烟蒂。",
-                        "从"清算时资产值多少"到"这家企业未来20年以上能赚多少"——从资产负债表到盈利能力的根本性视角转换。",
+                        '从"清算时资产值多少"到"这家企业未来20年以上能赚多少"——从资产负债表到盈利能力的根本性视角转换。',
                         "巴菲特学会了关注账面价值增长而非市场价格，后者才是正确的长期衡量指标。"
                     ]
                 },
