@@ -1301,6 +1301,207 @@ html, body {
     text-align: center;
 }
 
+/* ─── Language Toggle ────────────────────────────────────── */
+.lang-toggle {
+    background: none;
+    border: 1px solid #e8eaed;
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #80868b;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.3px;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    flex-shrink: 0;
+}
+.lang-toggle:hover {
+    border-color: #b0b5bb;
+    color: #0d0d0d;
+    background: #f8f9fa;
+}
+
+/* Home view: absolute top-right */
+.lang-toggle--home {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    z-index: 10;
+}
+
+@media (max-width: 580px) {
+    .lang-toggle--home { top: 14px; right: 16px; }
+}
+
+/* ─── New Chat Button ─────────────────────────────────────── */
+.new-chat-btn {
+    background: none;
+    border: 1px solid #e8eaed;
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 13px;
+    color: #5f6368;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.new-chat-btn:hover {
+    border-color: #c0c5ca;
+    color: #0d0d0d;
+    background: #f8f9fa;
+}
+
+/* ─── Answer Text — Markdown Rendering ───────────────────── */
+.answer-text h1, .answer-text h2, .answer-text h3 {
+    font-weight: 600;
+    color: #0d0d0d;
+    line-height: 1.35;
+    letter-spacing: -0.2px;
+    margin-top: 1.4em;
+    margin-bottom: 0.5em;
+}
+.answer-text h1 { font-size: 18px; }
+.answer-text h2 { font-size: 16px; }
+.answer-text h3 { font-size: 15px; }
+.answer-text p { margin-bottom: 0.85em; line-height: 1.7; }
+.answer-text p:last-child { margin-bottom: 0; }
+.answer-text ul, .answer-text ol {
+    margin-left: 1.4em;
+    margin-bottom: 0.85em;
+}
+.answer-text li { margin-bottom: 0.35em; line-height: 1.65; }
+.answer-text strong { color: #0d0d0d; font-weight: 600; }
+.answer-text blockquote {
+    border-left: 3px solid #e0e0e0;
+    padding: 4px 0 4px 16px;
+    color: #5f6368;
+    font-style: italic;
+    margin: 0.85em 0;
+}
+.answer-text code {
+    background: #f4f4f4;
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 13px;
+    font-family: 'Menlo', 'Monaco', monospace;
+}
+.answer-text hr {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 1.2em 0;
+}
+
+/* ─── Case Selector ──────────────────────────────────────── */
+.case-selector {
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+}
+
+.case-selector-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.case-selector-label {
+    font-size: 24px;
+    font-weight: 600;
+    color: #0d0d0d;
+    letter-spacing: -0.4px;
+    line-height: 1.25;
+}
+
+.case-selector-sub {
+    font-size: 14px;
+    color: #9aa0a6;
+    line-height: 1.6;
+}
+
+.case-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.case-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #ffffff;
+    border: 1px solid #e8eaed;
+    border-radius: 12px;
+    padding: 20px 22px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.case-item:hover {
+    border-color: #c0c5ca;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.case-item-year {
+    font-size: 13px;
+    font-weight: 600;
+    color: #c0c5ca;
+    letter-spacing: 0.3px;
+    min-width: 36px;
+    flex-shrink: 0;
+}
+
+.case-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.case-item-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0d0d0d;
+    letter-spacing: -0.1px;
+}
+
+.case-item-desc {
+    font-size: 13px;
+    color: #9aa0a6;
+    line-height: 1.5;
+}
+
+.case-item-meta {
+    font-size: 12px;
+    color: #c0c5ca;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    flex-shrink: 0;
+}
+
+.case-item-arrow {
+    font-size: 16px;
+    color: #c8cdd2;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+.case-item:hover .case-item-arrow {
+    transform: translateX(3px);
+    color: #80868b;
+}
+
+@media (max-width: 768px) {
+    .case-item { padding: 16px 18px; gap: 14px; }
+    .case-selector-label { font-size: 20px; }
+    .case-item-year { min-width: 30px; }
+}
+
 /* Home mobile — stack cards below 580px */
 @media (max-width: 580px) {
     .home-cards {

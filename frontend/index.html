@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Compounder · 复利国</title>
-    <link rel="stylesheet" href="/static/style.css?v=5">
+    <link rel="stylesheet" href="/static/style.css?v=7">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=SF+Pro+Display:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="app">
         <!-- Home State -->
         <div id="home-view" class="hero">
+
+            <!-- Language toggle -->
+            <button class="lang-toggle lang-toggle--home" onclick="toggleLang()">EN</button>
 
             <!-- Hidden: preserves JS bindings for updateButtonsState / sendQuery -->
             <div id="home-search-wrap" style="display:none;" aria-hidden="true">
@@ -25,25 +28,25 @@
             </div>
 
             <!-- Headline -->
-            <h1 class="home-headline">Learn from the masters. Think for yourself.</h1>
-            <p class="home-subheadline">Learn how great investors think — and practice thinking independently.</p>
+            <h1 class="home-headline" id="home-headline">向大师学习，独立思考。</h1>
+            <p class="home-subheadline" id="home-subheadline">探索巴菲特、芒格、霍华德·马克斯和李录的投资智慧。</p>
 
             <!-- Mode selection cards -->
             <div class="home-cards">
                 <div class="home-card" onclick="openChat()">
-                    <div class="home-card-title">Ask Investment Questions</div>
-                    <div class="home-card-desc">Explore ideas from Buffett, Munger, Marks, and Li Lu.</div>
-                    <div class="home-card-cta">Enter Q&amp;A →</div>
+                    <div class="home-card-title" id="home-card-qa-title">提问投资问题</div>
+                    <div class="home-card-desc" id="home-card-qa-desc">探索巴菲特、芒格、马克斯和李录的思想。</div>
+                    <div class="home-card-cta" id="home-card-qa-cta">进入问答 →</div>
                 </div>
-                <div class="home-card" onclick="startTraining('coca-cola')">
-                    <div class="home-card-title">Train Your Thinking</div>
-                    <div class="home-card-desc">Work through real business cases and learn how investors think.</div>
-                    <div class="home-card-cta">Start with Coca-Cola →</div>
+                <div class="home-card" onclick="showCaseSelector()">
+                    <div class="home-card-title" id="home-card-train-title">训练你的思维</div>
+                    <div class="home-card-desc" id="home-card-train-desc">通过真实商业案例，学习投资大师的思考方式。</div>
+                    <div class="home-card-cta" id="home-card-train-cta">浏览案例 →</div>
                 </div>
             </div>
 
             <!-- Footer tag line -->
-            <div class="home-footer-line">Business · Thinking · Risk · Time</div>
+            <div class="home-footer-line" id="home-footer-line">商业 · 思维 · 风险 · 时间</div>
         </div>
 
         <!-- Chat State -->
@@ -51,28 +54,29 @@
             <header class="chat-header">
                 <div class="logo-container" onclick="location.reload()" title="New Conversation">
                     <img src="/static/logo.png" alt="Logo" class="nav-logo">
-                    <span class="brand-text">Value Investing</span>
+                    <span class="brand-text">价值投资</span>
                 </div>
                 <div class="header-actions">
-                    <!-- Future actions (e.g. Export, Settings) -->
+                    <button class="new-chat-btn" onclick="newChat()" title="New Conversation">+ 新对话</button>
+                    <button class="lang-toggle" onclick="toggleLang()">EN</button>
                 </div>
             </header>
-            
+
             <div class="chat-container">
                 <div id="sidebar" class="sidebar">
                     <div class="sidebar-header">
-                        <span id="sidebar-title">Source Fragment</span>
+                        <span id="sidebar-title">来源片段</span>
                         <button class="close-sidebar" onclick="closeSidebar()">✕</button>
                     </div>
                     <div id="sidebar-content"></div>
                 </div>
                 <div id="chat-main">
-                    <!-- 首屏引导区 -->
+                    <!-- Pre-chat landing -->
                     <div id="pre-chat">
-                        <h1 class="pre-chat-title">Learn from the masters.</h1>
+                        <h1 class="pre-chat-title" id="pre-chat-title">向大师学习。</h1>
                         <div class="search-wrap pre-chat-search-wrap">
                             <input id="pre-chat-input" class="search-input" type="text"
-                                   placeholder="Ask anything about value investing..." autocomplete="off" />
+                                   placeholder="询问任何价值投资相关问题…" autocomplete="off" />
                             <button class="wave-btn active" id="pre-chat-submit-btn">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="12" y1="19" x2="12" y2="5"></line>
@@ -81,10 +85,7 @@
                             </button>
                         </div>
                         <div class="pre-chat-suggestions">
-                            <button class="suggestion-chip" onclick="sendSuggestion('巴菲特如何判断一家公司是否值得长期持有？')">巴菲特如何判断一家公司是否值得长期持有？</button>
-                            <button class="suggestion-chip" onclick="sendSuggestion('什么是护城河？如何识别一家公司的护城河？')">什么是护城河？如何识别一家公司的护城河？</button>
-                            <button class="suggestion-chip" onclick="sendSuggestion('芒格的投资检查清单包含哪些核心要素？')">芒格的投资检查清单包含哪些核心要素？</button>
-                            <button class="suggestion-chip" onclick="sendSuggestion('价值投资者如何看待市场波动和短期下跌？')">价值投资者如何看待市场波动和短期下跌？</button>
+                            <!-- Populated by applyLang() -->
                         </div>
                     </div>
 
@@ -98,7 +99,7 @@
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
                                 </svg>
                             </button>
-                            <input id="chat-search-input" class="search-input" type="text" placeholder="Ask a follow-up question..." autocomplete="off" />
+                            <input id="chat-search-input" class="search-input" type="text" placeholder="继续提问…" autocomplete="off" />
                             <button class="wave-btn" id="chat-submit-btn">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="12" y1="19" x2="12" y2="5"></line>
@@ -116,11 +117,12 @@
             <header class="chat-header">
                 <div class="logo-container" onclick="exitTraining()">
                     <img src="/static/logo.png" alt="Logo" class="nav-logo">
-                    <span class="brand-text">Value Investing</span>
+                    <span class="brand-text">价值投资</span>
                 </div>
                 <div class="training-header-right">
                     <span id="training-step-label" class="training-step-label"></span>
-                    <button class="training-back-btn" onclick="exitTraining()">← Home</button>
+                    <button class="lang-toggle" onclick="toggleLang()">EN</button>
+                    <button class="training-back-btn" onclick="exitTraining()">← 主页</button>
                 </div>
             </header>
             <div id="training-progress-wrap">
@@ -134,6 +136,6 @@
 
     <!-- Marked.js for markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/script.js?v=5"></script>
+    <script src="/static/script.js?v=7"></script>
 </body>
 </html>
