@@ -1,10 +1,12 @@
 """
 RAG query engine: ChromaDB retrieval + Claude API generation.
+Supports both blocking and streaming (SSE) response modes.
 """
+import json
 import os
 import re
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Generator
 
 import chromadb
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
@@ -17,7 +19,8 @@ DB_DIR   = ROOT_DIR / "database"
 COLLECTION_NAME = "buffett_kb"
 EMBED_MODEL     = "sentence-transformers/all-MiniLM-L6-v2"
 CLAUDE_MODEL    = "claude-haiku-4-5-20251001"
-TOP_K           = 10
+TOP_K           = 6     # reduced from 10 → faster retrieval + less context = faster generation
+MAX_TOKENS      = 2048  # reduced from 4096 → most answers fit, noticeably faster
 
 SYSTEM_PROMPT = """你是"复利国"的学习向导，帮助用户像价值投资大师一样思考问题。
 
@@ -211,13 +214,65 @@ SYSTEM_PROMPT = """你是"复利国"的学习向导，帮助用户像价值投�
 【用户自研公司】模式下，追问改为下一层的引导问题，不用这个规则。"""
 
 
+# ── helpers ───────────────────────────────────────────────────────────────────
+
 def _get_collection():
     ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
     client = chromadb.PersistentClient(path=str(DB_DIR))
     return client.get_or_create_collection(name=COLLECTION_NAME, embedding_function=ef)
 
 
-def _format_context(results: dict) -> tuple[str, list[dict]]:
+def _extract_search_params(question: str, history: list, client_api) -> tuple:
+    """Call Haiku to extract keywords/year/doc_type. Returns (search_query, search_params, where_clause)."""
+    search_query = question
+    search_params = {"query": question, "year": None, "doc_type": None}
+    where_clause = None
+
+    try:
+        history_context = ""
+        if history:
+            history_context = "Recent conversation context:\n"
+            for msg in history[-3:]:
+                role = "User" if msg["role"] == "user" else "Assistant"
+                history_context += f"{role}: {msg['content'][:200]}\n"
+
+        prompt = f"""{history_context}
+Task: Analyze user query for a Buffett/Munger RAG system.
+1. search_query: 2-3 English keywords.
+2. year: Extract year if mentioned, else null.
+3. doc_type: "shareholder_letter", "meeting_transcript", or "munger_wisdom" if mentioned, else null.
+
+User Question: {question}
+
+Return ONLY JSON:
+{{"search_query": "keywords", "year": 2000 or null, "doc_type": "type" or null}}
+"""
+        res = client_api.messages.create(
+            model=CLAUDE_MODEL,
+            max_tokens=150,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        match = re.search(r'\{.*\}', res.content[0].text.strip(), re.DOTALL)
+        if match:
+            parsed = json.loads(match.group(0))
+            search_query = parsed.get("search_query", question)
+            search_params["query"] = search_query
+            where = {}
+            if parsed.get("year"):
+                where["year"] = int(parsed["year"])
+                search_params["year"] = where["year"]
+            if parsed.get("doc_type"):
+                where["doc_type"] = parsed["doc_type"]
+                search_params["doc_type"] = where["doc_type"]
+            if where:
+                where_clause = where if len(where) == 1 else {"$and": [{k: v} for k, v in where.items()]}
+    except Exception as e:
+        print(f"Search param extraction failed: {e}")
+
+    return search_query, search_params, where_clause
+
+
+def _format_context(results: dict) -> tuple:
     """Turn ChromaDB results into a context string and sources list."""
     docs      = results["documents"][0]
     metas     = results["metadatas"][0]
@@ -230,10 +285,9 @@ def _format_context(results: dict) -> tuple[str, list[dict]]:
         relevance    = round(1.0 - dist, 4)
         section_note = f" — {meta['section']}" if meta.get("section") else ""
         header       = f"[来源{i}] {meta['source_label']}{section_note}"
-
         context_parts.append(f"{header}\n{doc}")
 
-        # Extract extended context from original file if possible
+        # Extended context from original file — window reduced to ±3000 chars
         full_context = ""
         try:
             source_file = meta.get("source_file")
@@ -242,173 +296,60 @@ def _format_context(results: dict) -> tuple[str, list[dict]]:
                 if md_path.exists():
                     with open(md_path, "r", encoding="utf-8") as f:
                         content = f.read()
-                        # Strip frontmatter
-                        if content.startswith("---\n"):
-                            parts = content.split("---\n", 2)
-                            if len(parts) >= 3:
-                                content = parts[2].strip()
-                        
-                        idx = content.find(doc)
-                        if idx != -1:
-                            start = max(0, idx - 8000)
-                            end = min(len(content), idx + len(doc) + 8000)
-                            # snap to nearest line breaks
-                            start_snap = content.rfind("\n", 0, start)
-                            end_snap = content.find("\n", end)
-                            start = start_snap if start_snap != -1 else start
-                            end = end_snap if end_snap != -1 else end
-                            
-                            full_context = content[start:end]
-                            if start > 0:
-                                full_context = "...\n\n" + full_context.lstrip()
-                            if end < len(content):
-                                full_context = full_context.rstrip() + "\n\n..."
-                        else:
-                            full_context = content[:16000]
+                    if content.startswith("---\n"):
+                        parts = content.split("---\n", 2)
+                        if len(parts) >= 3:
+                            content = parts[2].strip()
+                    idx = content.find(doc)
+                    if idx != -1:
+                        start = max(0, idx - 3000)
+                        end   = min(len(content), idx + len(doc) + 3000)
+                        start = (content.rfind("\n", 0, start) or start)
+                        end   = (content.find("\n", end) or end)
+                        full_context = content[start:end]
+                        if start > 0:
+                            full_context = "...\n\n" + full_context.lstrip()
+                        if end < len(content):
+                            full_context = full_context.rstrip() + "\n\n..."
+                    else:
+                        full_context = content[:6000]
         except Exception:
             pass
 
         source = {
-            "label":    meta["source_label"],
-            "year":     meta.get("year", 0),
-            "doc_type": meta.get("doc_type", ""),
-            "section":  meta.get("section", ""),
-            "text":     doc,
+            "label":        meta["source_label"],
+            "year":         meta.get("year", 0),
+            "doc_type":     meta.get("doc_type", ""),
+            "section":      meta.get("section", ""),
+            "text":         doc,
             "full_context": full_context,
-            "relevance": relevance,
+            "relevance":    relevance,
         }
         if meta.get("cnbc_url"):
             source["url"] = meta["cnbc_url"]
         sources.append(source)
 
-    context = "\n\n---\n\n".join(context_parts)
-    return context, sources
+    return "\n\n---\n\n".join(context_parts), sources
 
 
-def query_knowledge_base(
-    question: str,
-    history: list = None,
-    api_key: Optional[str] = None,
-    top_k: int = TOP_K,
-) -> dict:
-    """
-    Query the knowledge base using Claude.
-    """
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-    if not key:
-        return {"answer": "", "sources": [], "error": "未设置 ANTHROPIC_API_KEY"}
-
-    client = anthropic.Anthropic(api_key=key)
-
-    # 1. Expand query using history for better retrieval context
-    search_query = question
-    where_clause = None
-    try:
-        import json
-
-        history_context = ""
-        if history and len(history) > 0:
-            history_context = "Recent conversation context:\n"
-            for msg in history[-3:]:  # Only use last 3 turns to prevent dilution
-                role = "User" if msg["role"] == "user" else "Assistant"
-                history_context += f"{role}: {msg['content'][:200]}\n"
-
-        prompt = f"""{history_context}
-
-Task: Analyze user query for a Buffett/Munger RAG system.
-1. search_query: 2-3 English keywords.
-2. year: Extract year if mentioned, else null.
-3. doc_type: "shareholder_letter", "meeting_transcript", or "munger_wisdom" if mentioned, else null.
-
-User Question: {question}
-
-Return ONLY JSON:
-{{
-  "search_query": "keywords",
-  "year": 2000 or null,
-  "doc_type": "type" or null
-}}
-"""
-        trans_res = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=200,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        json_match = re.search(r'\{.*\}', trans_res.content[0].text.strip(), re.DOTALL)
-
-        search_params = {"query": search_query, "year": None, "doc_type": None}
-        if json_match:
-            parsed = json.loads(json_match.group(0))
-            search_query = parsed.get("search_query", question)
-            search_params["query"] = search_query
-
-            where = {}
-            if parsed.get("year"):
-                where["year"] = int(parsed.get("year"))
-                search_params["year"] = where["year"]
-            if parsed.get("doc_type"):
-                where["doc_type"] = parsed.get("doc_type")
-                search_params["doc_type"] = where["doc_type"]
-
-            if where:
-                if len(where) == 1:
-                    where_clause = where
-                else:
-                    where_clause = {"$and": [{k: v} for k, v in where.items()]}
-    except Exception as e:
-        print(f"Translation/JSON extraction failed: {e}")
-        search_params = {"query": question, "year": None, "doc_type": None}
-
-    # 2. Retrieve from ChromaDB
-    try:
-        collection = _get_collection()
-    except Exception as e:
-        return {"answer": "", "sources": [], "error": f"数据库初始化失败\n({e})"}
-
-    try:
-        query_params = {
-            "query_texts": [search_query],
-            "n_results": top_k,
-            "include": ["documents", "metadatas", "distances"]
-        }
-        if where_clause:
-            query_params["where"] = where_clause
-            
-        results = collection.query(**query_params)
-        
-        # Fallback if empty due to strict filtering
-        if (not results["documents"] or not results["documents"][0]) and where_clause:
-            del query_params["where"]
-            results = collection.query(**query_params)
-            
-    except Exception as e:
-        return {"answer": "", "sources": [], "error": f"检索失败: {e}"}
-
-    if not results["documents"] or not results["documents"][0]:
-        return {"answer": "知识库为空，请先运行 ingest.py", "sources": [], "search_params": search_params, "error": None}
-
-    context, sources = _format_context(results)
-
-    # 3. Format history for chat session (Anthropic format)
+def _build_messages(question: str, context: str, history: list) -> list:
+    """Build messages array for the Claude API call."""
     chat_history = []
     if history:
         for msg in history:
             role = "user" if msg["role"] == "user" else "assistant"
             chat_history.append({"role": role, "content": msg["content"]})
 
-    # 4. Final user message with context
     has_chinese = any('\u4e00' <= c <= '\u9fff' for c in question)
     if has_chinese:
-        language_instruction = (
+        lang_instruction = (
             "【语言强制要求】用户用中文提问，你必须全程用中文回答，包括所有标题、正文和 <follow_ups> 内容。\n"
-            "严禁出现英文句子或英文段落（人名、公司名等专有名词除外）。\n"
-            "排版规范：执行摘要 → 分主题标题 → 要点列表 → <follow_ups>。"
+            "严禁出现英文句子或英文段落（人名、公司名等专有名词除外）。"
         )
     else:
-        language_instruction = (
+        lang_instruction = (
             "LANGUAGE REQUIREMENT: The user asked in English. Your ENTIRE response must be in English only.\n"
-            "Translate ALL retrieved Chinese content into English. NO Chinese characters allowed.\n"
-            "Layout: Executive Summary → Thematic headings → Bullet points → <follow_ups>."
+            "Translate ALL retrieved Chinese content into English. NO Chinese characters allowed."
         )
 
     user_msg = (
@@ -416,39 +357,141 @@ Return ONLY JSON:
         f"{context}\n\n"
         "---\n\n"
         f"【当前用户提问】：{question}\n\n"
-        f"{language_instruction}"
+        f"{lang_instruction}"
     )
+    return chat_history + [{"role": "user", "content": user_msg}]
+
+
+def _parse_follow_ups(text: str) -> tuple:
+    """Extract follow_ups from raw answer. Returns (clean_answer, follow_ups_list)."""
+    follow_ups = []
+    match = re.search(r"<follow_ups>(.*?)</follow_ups>", text, re.DOTALL)
+    if match:
+        for line in match.group(1).strip().split("\n"):
+            line = re.sub(r"^(\d+\.|\-|•)\s*", "", line.strip())
+            if line:
+                follow_ups.append(line)
+        text = text.replace(match.group(0), "").strip()
+    return text, follow_ups
+
+
+def _retrieve(search_query: str, where_clause, top_k: int) -> dict:
+    """Query ChromaDB with optional fallback if filter returns empty."""
+    collection = _get_collection()
+    params = {
+        "query_texts": [search_query],
+        "n_results": top_k,
+        "include": ["documents", "metadatas", "distances"],
+    }
+    if where_clause:
+        params["where"] = where_clause
+    results = collection.query(**params)
+    # Fallback: drop filter if empty result
+    if (not results["documents"] or not results["documents"][0]) and where_clause:
+        del params["where"]
+        results = collection.query(**params)
+    return results
+
+
+# ── Streaming ─────────────────────────────────────────────────────────────────
+
+def stream_query_knowledge_base(
+    question: str,
+    history: list = None,
+    api_key: str = None,
+    top_k: int = TOP_K,
+) -> Generator[str, None, None]:
+    """
+    SSE generator. Yields newline-delimited 'data: <json>\\n\\n' strings.
+    Event types: searching | token | done | error
+    """
+    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
+    if not key:
+        yield f"data: {json.dumps({'type': 'error', 'message': '未设置 ANTHROPIC_API_KEY'})}\n\n"
+        return
+
+    client_api = anthropic.Anthropic(api_key=key)
+
+    # 1. Extract search params
+    yield f"data: {json.dumps({'type': 'searching'})}\n\n"
+    search_query, search_params, where_clause = _extract_search_params(question, history, client_api)
+
+    # 2. Retrieve
+    try:
+        results = _retrieve(search_query, where_clause, top_k)
+    except Exception as e:
+        yield f"data: {json.dumps({'type': 'error', 'message': f'检索失败: {e}'})}\n\n"
+        return
+
+    if not results["documents"] or not results["documents"][0]:
+        yield f"data: {json.dumps({'type': 'error', 'message': '知识库为空，请先运行 ingest.py'})}\n\n"
+        return
+
+    context, sources = _format_context(results)
+    messages = _build_messages(question, context, history)
+
+    # 3. Stream answer tokens
+    full_text = ""
+    try:
+        with client_api.messages.stream(
+            model=CLAUDE_MODEL,
+            max_tokens=MAX_TOKENS,
+            system=SYSTEM_PROMPT,
+            messages=messages,
+        ) as stream:
+            for text in stream.text_stream:
+                full_text += text
+                yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
+    except Exception as e:
+        yield f"data: {json.dumps({'type': 'error', 'message': f'API调用失败: {e}'})}\n\n"
+        return
+
+    # 4. Parse follow_ups and send final event
+    clean_answer, follow_ups = _parse_follow_ups(full_text)
+    yield f"data: {json.dumps({'type': 'done', 'sources': sources, 'follow_ups': follow_ups, 'search_params': search_params, 'final_answer': clean_answer})}\n\n"
+
+
+# ── Blocking (kept for compatibility) ────────────────────────────────────────
+
+def query_knowledge_base(
+    question: str,
+    history: list = None,
+    api_key: str = None,
+    top_k: int = TOP_K,
+) -> dict:
+    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
+    if not key:
+        return {"answer": "", "sources": [], "error": "未设置 ANTHROPIC_API_KEY"}
+
+    client_api = anthropic.Anthropic(api_key=key)
+    search_query, search_params, where_clause = _extract_search_params(question, history, client_api)
 
     try:
-        messages = chat_history + [{"role": "user", "content": user_msg}]
-        response = client.messages.create(
+        results = _retrieve(search_query, where_clause, top_k)
+    except Exception as e:
+        return {"answer": "", "sources": [], "error": f"数据库初始化失败\n({e})"}
+
+    if not results["documents"] or not results["documents"][0]:
+        return {"answer": "知识库为空，请先运行 ingest.py", "sources": [], "search_params": search_params, "error": None}
+
+    context, sources = _format_context(results)
+    messages = _build_messages(question, context, history)
+
+    try:
+        response = client_api.messages.create(
             model=CLAUDE_MODEL,
-            max_tokens=4096,
+            max_tokens=MAX_TOKENS,
             system=SYSTEM_PROMPT,
             messages=messages,
         )
-
         raw_answer = response.content[0].text
-
-        # Parse follow_ups
-        follow_ups = []
-        match = re.search(r"<follow_ups>(.*?)</follow_ups>", raw_answer, re.DOTALL)
-        if match:
-            follow_ups_text = match.group(1).strip()
-            raw_answer = raw_answer.replace(match.group(0), "").strip()
-
-            for line in follow_ups_text.split("\n"):
-                line = line.strip()
-                clean_line = re.sub(r"^(\d+\.|\-|•)\s*", "", line)
-                if clean_line:
-                    follow_ups.append(clean_line)
-
+        clean_answer, follow_ups = _parse_follow_ups(raw_answer)
         return {
-            "answer": raw_answer,
+            "answer": clean_answer,
             "sources": sources,
             "follow_ups": follow_ups,
             "search_params": search_params,
-            "error": None
+            "error": None,
         }
     except Exception as e:
         return {"answer": "", "sources": sources, "search_params": search_params, "error": f"Claude API 调用失败: {e}"}
