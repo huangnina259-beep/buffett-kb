@@ -856,12 +856,17 @@ async function sendQuery(queryText) {
                     if (event.follow_ups && event.follow_ups.length > 0) {
                         const fuRow = document.createElement('div');
                         fuRow.className = 'message-row assistant';
-                        let html = '<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;align-items:flex-start;max-width:100%;">';
+                        const wrap = document.createElement('div');
+                        wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-top:12px;align-items:flex-start;max-width:100%;';
                         event.follow_ups.forEach(fq => {
-                            html += `<button class="chip" style="text-align:left;height:auto;padding:10px 16px;" onclick="submitChatQuery('${fq.replace(/'/g, "\\'")}')">${fq}</button>`;
+                            const btn = document.createElement('button');
+                            btn.className = 'chip';
+                            btn.style.cssText = 'text-align:left;height:auto;padding:10px 16px;';
+                            btn.textContent = fq;
+                            btn.addEventListener('click', () => submitChatQuery(fq));
+                            wrap.appendChild(btn);
                         });
-                        html += '</div>';
-                        fuRow.innerHTML = html;
+                        fuRow.appendChild(wrap);
                         document.getElementById('chat-history').appendChild(fuRow);
                     }
 
