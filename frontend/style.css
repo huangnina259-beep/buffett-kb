@@ -684,6 +684,21 @@ html, body {
     50%, 100% { background-color: rgba(102, 102, 102, 0.2); }
 }
 
+.typing-cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1em;
+    background: #0d0d0d;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: cursor-blink 0.8s step-end infinite;
+}
+
+@keyframes cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
 /* --- Mobile Responsive Adjustments --- */
 @media (max-width: 768px) {
     /* Headers & Branding */

@@ -3,6 +3,7 @@ let lastSources = [];
 let isGenerating = false;
 let hasStartedChat = false;
 let currentLang = localStorage.getItem('lang') || 'zh';
+let userScrolledUp = false;
 
 // ─── Language Strings ──────────────────────────────────────────
 const LANG = {
@@ -501,6 +502,12 @@ function scrollToBottom(el) {
     }
 }
 
+function scrollToBottomIfNeeded() {
+    if (userScrolledUp) return;
+    const el = document.getElementById('chat-history');
+    if (el) el.scrollTop = el.scrollHeight;
+}
+
 function switchToChatView() {
     document.getElementById('home-view').style.display = 'none';
     document.getElementById('chat-view').style.display = 'flex';
@@ -669,7 +676,6 @@ function removeLoading() {
 
 // ─── Generation control ────────────────────────────────────────
 let currentAbortController = null;
-let currentTypingInterval = null;
 
 const sendSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
     <line x1="12" y1="19" x2="12" y2="5"></line>
@@ -684,10 +690,6 @@ function stopGeneration() {
     if (currentAbortController) {
         currentAbortController.abort();
         currentAbortController = null;
-    }
-    if (currentTypingInterval) {
-        clearInterval(currentTypingInterval);
-        currentTypingInterval = null;
     }
     isGenerating = false;
     updateButtonsState();
@@ -719,11 +721,35 @@ function updateButtonsState() {
     }
 }
 
-// ─── sendQuery ─────────────────────────────────────────────────
+// ─── sendQuery (SSE streaming) ─────────────────────────────────
+function createAssistantBubble(searchParams) {
+    const historyDiv = document.getElementById('chat-history');
+    const row = document.createElement('div');
+    row.className = 'message-row assistant';
+    const bubble = document.createElement('div');
+    bubble.className = 'message-bubble';
+
+    let intentHtml = '';
+    if (searchParams) {
+        intentHtml = `<div class="search-intent-status">
+            <span>🔍 Search Intent:</span>
+            <span class="intent-tag">Keywords: ${searchParams.query}</span>
+            ${searchParams.year ? `<span class="intent-tag">Year: ${searchParams.year}</span>` : ''}
+            ${searchParams.doc_type ? `<span class="intent-tag">Type: ${searchParams.doc_type.replace('_', ' ')}</span>` : ''}
+        </div>`;
+    }
+    bubble.innerHTML = intentHtml + '<div class="answer-text"></div>';
+    row.appendChild(bubble);
+    historyDiv.appendChild(row);
+    scrollToBottomIfNeeded();
+    return { bubble, container: bubble.querySelector('.answer-text') };
+}
+
 async function sendQuery(queryText) {
     if (!queryText.trim() || isGenerating) return;
     enterChatMode();
     isGenerating = true;
+    userScrolledUp = false;
     updateButtonsState();
 
     switchToChatView();
@@ -736,68 +762,127 @@ async function sendQuery(queryText) {
 
     currentAbortController = new AbortController();
 
+    let assistantBubble = null;
+    let answerContainer = null;
+    let accText = '';
+    let finalSources = null;
+    let rafPending = false;
+
+    function scheduleRender() {
+        if (rafPending) return;
+        rafPending = true;
+        requestAnimationFrame(() => {
+            rafPending = false;
+            if (answerContainer) {
+                answerContainer.innerHTML = formatCitations(marked.parse(accText), finalSources) +
+                    '<span class="typing-cursor"></span>';
+                scrollToBottomIfNeeded();
+            }
+        });
+    }
+
     try {
-        const response = await fetch('/api/chat', {
+        const response = await fetch('/api/chat/stream', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: queryText, history: chatHistory }),
             signal: currentAbortController.signal
         });
 
-        const data = await response.json();
-        removeLoading();
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        if (data.error) {
-            renderMessage('assistant', `**Error:** ${data.error}`);
-            isGenerating = false;
-            updateButtonsState();
-            return;
-        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
-        const bubble = renderMessage('assistant', '', data.sources, data.search_params);
-        const answerContainer = bubble.querySelector('.answer-text');
-        let answer = data.answer;
-        let i = 0;
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-        const historyDiv = document.getElementById('chat-history');
-        currentTypingInterval = setInterval(() => {
-            let currentText = answer.substring(0, i);
-            answerContainer.innerHTML = formatCitations(marked.parse(currentText), data.sources) + '<span style="display:inline-block;width:4px;height:14px;background:#0d0d0d;margin-left:2px;animation:blink 1s step-end infinite;"></span>';
-            i += 2;
-            scrollToBottom(historyDiv);
+            buffer += decoder.decode(value, { stream: true });
 
-            if (i >= answer.length) {
-                clearInterval(currentTypingInterval);
-                currentTypingInterval = null;
-                answerContainer.innerHTML = formatCitations(marked.parse(answer), data.sources);
-                chatHistory.push({ "role": "user", "content": queryText });
-                chatHistory.push({ "role": "assistant", "content": answer, "sources": data.sources });
+            const parts = buffer.split('\n\n');
+            buffer = parts.pop();
 
-                if (data.follow_ups && data.follow_ups.length > 0) {
-                    setTimeout(() => {
+            for (const chunk of parts) {
+                if (!chunk.startsWith('data: ')) continue;
+                const jsonStr = chunk.slice(6).trim();
+                if (!jsonStr) continue;
+
+                let event;
+                try { event = JSON.parse(jsonStr); } catch { continue; }
+
+                if (event.type === 'searching') {
+                    // Loading indicator already shown
+                } else if (event.type === 'token') {
+                    // Remove loading indicator on first token
+                    removeLoading();
+                    // Create bubble on first token
+                    if (!assistantBubble) {
+                        const created = createAssistantBubble(null);
+                        assistantBubble = created.bubble;
+                        answerContainer = created.container;
+                    }
+                    accText += event.text;
+                    scheduleRender();
+                } else if (event.type === 'done') {
+                    removeLoading();
+                    finalSources = event.sources;
+
+                    if (!assistantBubble) {
+                        // No tokens streamed (shouldn't happen) — render full
+                        const created = createAssistantBubble(event.search_params);
+                        assistantBubble = created.bubble;
+                        answerContainer = created.container;
+                    } else if (event.search_params) {
+                        // Inject search params header above answer
+                        const sp = event.search_params;
+                        const intentHtml = `<div class="search-intent-status">
+                            <span>🔍 Search Intent:</span>
+                            <span class="intent-tag">Keywords: ${sp.query}</span>
+                            ${sp.year ? `<span class="intent-tag">Year: ${sp.year}</span>` : ''}
+                            ${sp.doc_type ? `<span class="intent-tag">Type: ${sp.doc_type.replace('_', ' ')}</span>` : ''}
+                        </div>`;
+                        assistantBubble.insertAdjacentHTML('afterbegin', intentHtml);
+                    }
+
+                    // Final render — no cursor
+                    const finalText = event.final_answer || accText;
+                    answerContainer.innerHTML = formatCitations(marked.parse(finalText), event.sources);
+
+                    chatHistory.push({ role: 'user', content: queryText });
+                    chatHistory.push({ role: 'assistant', content: finalText });
+
+                    if (event.follow_ups && event.follow_ups.length > 0) {
                         const fuRow = document.createElement('div');
                         fuRow.className = 'message-row assistant';
-                        let html = '<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; align-items: flex-start; max-width: 100%;">';
-                        data.follow_ups.forEach(fq => {
-                            html += `<button class="chip" style="text-align: left; height: auto; padding: 10px 16px;" onclick="submitChatQuery('${fq.replace(/'/g, "\\'")}')">${fq}</button>`;
+                        let html = '<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;align-items:flex-start;max-width:100%;">';
+                        event.follow_ups.forEach(fq => {
+                            html += `<button class="chip" style="text-align:left;height:auto;padding:10px 16px;" onclick="submitChatQuery('${fq.replace(/'/g, "\\'")}')">${fq}</button>`;
                         });
                         html += '</div>';
                         fuRow.innerHTML = html;
-                        historyDiv.appendChild(fuRow);
-                        isGenerating = false;
-                        updateButtonsState();
-                    }, 500);
-                } else {
+                        document.getElementById('chat-history').appendChild(fuRow);
+                    }
+
+                    isGenerating = false;
+                    updateButtonsState();
+                    scrollToBottomIfNeeded();
+                } else if (event.type === 'error') {
+                    removeLoading();
+                    renderMessage('assistant', `**Error:** ${event.message}`);
                     isGenerating = false;
                     updateButtonsState();
                 }
             }
-        }, 15);
-
+        }
     } catch (error) {
         removeLoading();
         if (error.name !== 'AbortError') {
             renderMessage('assistant', `**Network Error:** Could not reach the server.`);
+        } else if (answerContainer && accText) {
+            // User aborted — show partial answer without cursor
+            answerContainer.innerHTML = formatCitations(marked.parse(accText), finalSources);
         }
         isGenerating = false;
         updateButtonsState();
@@ -888,6 +973,12 @@ document.getElementById('pre-chat-submit-btn').addEventListener('click', () => {
 // Keyboard shortcuts
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeSidebar();
+});
+
+// Smart scroll: track if user has scrolled up during generation
+document.getElementById('chat-history').addEventListener('scroll', () => {
+    const el = document.getElementById('chat-history');
+    userScrolledUp = (el.scrollHeight - el.scrollTop - el.clientHeight) > 150;
 });
 
 // File upload
