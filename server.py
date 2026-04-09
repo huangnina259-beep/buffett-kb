@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 from pathlib import Path
@@ -6,6 +7,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 load_dotenv()  # Load ANTHROPIC_API_KEY from .env if present
 
@@ -43,6 +46,7 @@ async def chat(request: ChatRequest):
 
 @app.post("/api/chat/stream")
 async def chat_stream(request: ChatRequest):
+    logging.info(f"[RAG] Request received: {request.query[:80]!r}")
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
         import json
