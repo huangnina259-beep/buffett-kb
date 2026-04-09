@@ -232,52 +232,34 @@ def _get_collection():
     return client.get_or_create_collection(name=COLLECTION_NAME, embedding_function=ef)
 
 
-def _extract_search_params(question: str, history: list, client_api) -> tuple:
-    """Call Haiku to extract keywords/year/doc_type. Returns (search_query, search_params, where_clause)."""
+def _extract_search_params(question: str, history: list, client_api=None) -> tuple:
+    """Extract year/doc_type via regex — no API call, zero added latency."""
     search_query = question
     search_params = {"query": question, "year": None, "doc_type": None}
     where_clause = None
 
-    try:
-        history_context = ""
-        if history:
-            history_context = "Recent conversation context:\n"
-            for msg in history[-3:]:
-                role = "User" if msg["role"] == "user" else "Assistant"
-                history_context += f"{role}: {msg['content'][:200]}\n"
+    where = {}
 
-        prompt = f"""{history_context}
-Task: Analyze user query for a Buffett/Munger RAG system.
-1. search_query: 2-3 English keywords.
-2. year: Extract year if mentioned, else null.
-3. doc_type: "shareholder_letter", "meeting_transcript", or "munger_wisdom" if mentioned, else null.
+    # Year: match explicit 4-digit year in question
+    year_match = re.search(r'\b(19[7-9]\d|20[0-2]\d)\b', question)
+    if year_match:
+        where["year"] = int(year_match.group(0))
+        search_params["year"] = where["year"]
 
-User Question: {question}
+    # Doc type: simple keyword detection
+    q_lower = question.lower()
+    if any(w in q_lower for w in ("shareholder letter", "annual letter", "致股东信", "股东信")):
+        where["doc_type"] = "shareholder_letter"
+        search_params["doc_type"] = "shareholder_letter"
+    elif any(w in q_lower for w in ("meeting", "transcript", "annual meeting", "股东大会")):
+        where["doc_type"] = "meeting_transcript"
+        search_params["doc_type"] = "meeting_transcript"
+    elif any(w in q_lower for w in ("munger", "poor charlie", "芒格", "穷查理")):
+        where["doc_type"] = "munger_wisdom"
+        search_params["doc_type"] = "munger_wisdom"
 
-Return ONLY JSON:
-{{"search_query": "keywords", "year": 2000 or null, "doc_type": "type" or null}}
-"""
-        res = client_api.messages.create(
-            model=CLAUDE_MODEL,
-            max_tokens=150,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        match = re.search(r'\{.*\}', res.content[0].text.strip(), re.DOTALL)
-        if match:
-            parsed = json.loads(match.group(0))
-            search_query = parsed.get("search_query", question)
-            search_params["query"] = search_query
-            where = {}
-            if parsed.get("year"):
-                where["year"] = int(parsed["year"])
-                search_params["year"] = where["year"]
-            if parsed.get("doc_type"):
-                where["doc_type"] = parsed["doc_type"]
-                search_params["doc_type"] = where["doc_type"]
-            if where:
-                where_clause = where if len(where) == 1 else {"$and": [{k: v} for k, v in where.items()]}
-    except Exception as e:
-        print(f"Search param extraction failed: {e}")
+    if where:
+        where_clause = where if len(where) == 1 else {"$and": [{k: v} for k, v in where.items()]}
 
     return search_query, search_params, where_clause
 
@@ -420,11 +402,9 @@ def stream_query_knowledge_base(
         yield f"data: {json.dumps({'type': 'error', 'message': '未设置 ANTHROPIC_API_KEY'})}\n\n"
         return
 
-    client_api = anthropic.Anthropic(api_key=key)
-
-    # 1. Extract search params
+    # 1. Extract search params (pure regex, no API call)
     yield f"data: {json.dumps({'type': 'searching'})}\n\n"
-    search_query, search_params, where_clause = _extract_search_params(question, history, client_api)
+    search_query, search_params, where_clause = _extract_search_params(question, history)
 
     # 2. Retrieve
     try:
@@ -441,6 +421,7 @@ def stream_query_knowledge_base(
     messages = _build_messages(question, context, history)
 
     # 3. Stream answer tokens
+    client_api = anthropic.Anthropic(api_key=key)
     full_text = ""
     try:
         with client_api.messages.stream(
@@ -474,7 +455,7 @@ def query_knowledge_base(
         return {"answer": "", "sources": [], "error": "未设置 ANTHROPIC_API_KEY"}
 
     client_api = anthropic.Anthropic(api_key=key)
-    search_query, search_params, where_clause = _extract_search_params(question, history, client_api)
+    search_query, search_params, where_clause = _extract_search_params(question, history)
 
     try:
         results = _retrieve(search_query, where_clause, top_k)
