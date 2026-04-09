@@ -269,11 +269,19 @@ TERM_TRANSLATIONS = {
 }
 
 def _translate_query(question: str) -> str:
-    """Replace known Chinese investment terms with English equivalents."""
+    """Translate known Chinese investment terms, then strip remaining Chinese
+    characters so ChromaDB gets a clean English query to match against
+    English-language source documents."""
     q = question
     for zh, en in TERM_TRANSLATIONS.items():
         q = q.replace(zh, en)
-    return q
+
+    # Strip remaining Chinese/CJK characters and tidy up whitespace
+    q_en = re.sub(r'[\u4e00-\u9fff\u3000-\u303f\uff00-\uffef]+', ' ', q)
+    q_en = re.sub(r'\s+', ' ', q_en).strip()
+
+    # Fallback: if stripping left nothing useful, use the translated-but-mixed version
+    return q_en if len(q_en) >= 4 else q
 
 
 AUTHOR_KEYWORDS = {
