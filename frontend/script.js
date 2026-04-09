@@ -587,16 +587,26 @@ function formatCitations(html, sources) {
             const idx = num - 1;
             const source = sources && sources[idx];
             let tooltipHtml = '';
+            let label = '';
             if (source) {
+                // Build short label: "巴菲特 1993" / "芒格" / "Marks 2013" etc.
+                const authorShort = (source.author || '').split(',')[0].trim()
+                    .replace('Warren Buffett', '巴菲特')
+                    .replace('Charlie Munger', '芒格')
+                    .replace('Howard Marks', 'Marks')
+                    .replace('Li Lu', '李录');
+                const yearPart = source.year ? ` ${source.year}` : '';
+                label = authorShort ? `${authorShort}${yearPart}` : String(num);
+
                 let safeText = source.text.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 const safeLabel = source.label.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                const yearInfo = source.year ? ` • ${source.year}` : '';
                 tooltipHtml = `
                     <div class="cite-tooltip">
                         <div class="cite-text">"${safeText}"</div>
-                        <div class="cite-meta">${safeLabel}${yearInfo}</div>
+                        <div class="cite-meta">${safeLabel}${source.year ? ` • ${source.year}` : ''}</div>
                     </div>`;
             } else {
+                label = String(num);
                 tooltipHtml = `
                     <div class="cite-tooltip">
                         <div class="cite-text">Detailed source text for this citation is currently unavailable in the local cache.</div>
@@ -604,7 +614,7 @@ function formatCitations(html, sources) {
                     </div>`;
             }
             return `<span class="cite-tag" onclick="event.stopPropagation(); openSidebar(${idx}, ${num})">
-                <span class="cite-num">${num}</span>
+                <span class="cite-num">${label}</span>
                 ${tooltipHtml}
             </span>`;
         };

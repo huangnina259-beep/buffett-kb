@@ -513,17 +513,19 @@ html, body {
     justify-content: center;
     background-color: #f1f3f4;
     border-radius: 8px;
-    min-width: 16px;
-    height: 16px;
-    padding: 0 4px;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 6px;
     cursor: pointer;
     transition: all 0.2s ease;
+    white-space: nowrap;
 }
 .cite-num {
     color: #5f6368;
     font-size: 11px;
     font-weight: 500;
     line-height: 1;
+    letter-spacing: 0.01em;
 }
 .cite-tag:hover {
     background-color: #e8f0fe;
