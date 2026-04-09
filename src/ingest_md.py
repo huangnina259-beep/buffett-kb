@@ -66,13 +66,32 @@ def get_file_metadata(file_path: Path, text: str):
     label = meta_dict.get("title", name.replace(".md", ""))
     year = meta_dict.get("year", 0)
     doc_type = meta_dict.get("doc_type", "document")
-    
+
+    # Author: frontmatter has a list, ChromaDB needs a string
+    raw_author = meta_dict.get("author", [])
+    if isinstance(raw_author, list):
+        author = ", ".join(raw_author) if raw_author else ""
+    else:
+        author = str(raw_author).strip()
+
+    # Fallback: infer author from filename / doc_type
+    if not author:
+        n = name.lower()
+        if "buffett" in n or "shareholder_letter" in doc_type or "letter" in n:
+            author = "Warren Buffett"
+        elif "munger" in n or "poor_charlie" in n or "almanack" in n:
+            author = "Charlie Munger"
+        elif "howard_marks" in n or "marks" in n:
+            author = "Howard Marks"
+        elif "li_lu" in n or "lilu" in n:
+            author = "Li Lu"
+
     # Fallback to filename guessing if metadata is missing
     if not year:
         year_match = re.search(r"(19|20)\d{2}", name)
         if year_match:
             year = int(year_match.group(0))
-            
+
     if doc_type == "document":
         if "meeting" in name.lower() or "session" in name.lower() or "transcript" in name.lower():
             doc_type = "meeting_transcript"
@@ -82,18 +101,19 @@ def get_file_metadata(file_path: Path, text: str):
             doc_type = "munger_wisdom"
         elif "valuation" in name.lower():
             doc_type = "valuation_guide"
-            
+
     # Language detection based on filename
-    language = "en"  # Default to English
+    language = "en"
     if "_CN.md" in name or any('\u4e00' <= char <= '\u9fff' for char in name):
         language = "zh"
     elif "_EN.md" in name:
         language = "en"
-            
+
     return {
         "source_label": label,
         "year": year,
         "doc_type": doc_type,
+        "author": author,
         "source_file": name,
         "language": language
     }, content
@@ -176,7 +196,7 @@ def main():
                 metas.append(m)
                 
             try:
-                collection.add(
+                collection.upsert(
                     ids=ids,
                     documents=batch_chunks,
                     metadatas=metas
