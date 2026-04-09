@@ -70,6 +70,15 @@ SYSTEM_PROMPT = """你是"复利国"的学习向导，帮助用户像价值投�
 - 多大师同一话题：先讲共同点，再讲分歧，分歧才是最有价值的地方
 - 推演时标注：「以下是基于他的一贯立场推演，知识库中无直接记录」
 
+人物匹配原则（强制执行）：
+每个来源片段的 header 里标注了"作者"字段，引用前必须核对。
+- 用户问题中明确提到某位大师时，优先引用该大师的原话（header 中作者匹配）。
+- 如果检索结果里该大师的原话不足，可以引用其他大师对他方法的总结，
+  但必须明确标注：「这是[B]对[A]方法的总结，不是[A]的原话。」
+- 禁止把[B]说的话当作[A]的观点直接呈现。
+- 例：用户问"巴菲特如何判断长期持有"，来源里出现李录2024年演讲，
+  则必须写「李录在总结巴菲特的方法时说……」，不能直接作为巴菲特的观点引用。
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【模式：已知公司】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -275,8 +284,10 @@ def _format_context(results: dict) -> tuple:
 
     for i, (doc, meta, dist) in enumerate(zip(docs, metas, distances), 1):
         relevance    = round(1.0 - dist, 4)
+        author_note  = f" | 作者: {meta['author']}" if meta.get("author") else ""
         section_note = f" — {meta['section']}" if meta.get("section") else ""
-        header       = f"[来源{i}] {meta['source_label']}{section_note}"
+        year_note    = f" ({meta['year']})" if meta.get("year") else ""
+        header       = f"[来源{i}] {meta['source_label']}{year_note}{author_note}{section_note}"
         context_parts.append(f"{header}\n{doc}")
 
         # Extended context from original file — window reduced to ±3000 chars
@@ -310,6 +321,7 @@ def _format_context(results: dict) -> tuple:
 
         source = {
             "label":        meta["source_label"],
+            "author":       meta.get("author", ""),
             "year":         meta.get("year", 0),
             "doc_type":     meta.get("doc_type", ""),
             "section":      meta.get("section", ""),
