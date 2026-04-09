@@ -22,7 +22,7 @@ DB_DIR   = ROOT_DIR / "database"
 COLLECTION_NAME = "buffett_kb"
 EMBED_MODEL     = "sentence-transformers/all-MiniLM-L6-v2"
 CLAUDE_MODEL    = "claude-haiku-4-5-20251001"
-TOP_K           = 8     # 6 was too few for rich conceptual questions
+TOP_K           = 15    # larger candidate pool; file-cap dedup keeps diversity
 MAX_TOKENS      = 3000  # 2048 cut off detailed answers; 3000 is still fast
 
 SYSTEM_PROMPT = """你是"复利国"价值投资知识库。
@@ -211,15 +211,19 @@ def _get_collection():
 
 
 TERM_TRANSLATIONS = {
-    "护城河":   "economic moat",
-    "安全边际": "margin of safety",
-    "内在价值": "intrinsic value",
-    "能力圈":   "circle of competence",
-    "资本配置": "capital allocation",
-    "市场先生": "Mr. Market",
-    "浮存金":   "float",
-    "留存收益": "retained earnings",
-    "账面价值": "book value",
+    # moat variants — order matters: longer phrases first
+    "护城河变宽": "widening moat widen the moat",
+    "护城河变窄": "narrowing moat eroding moat",
+    "护城河":     "economic moat competitive moat moat durable competitive advantage",
+    "竞争优势":   "competitive advantage",
+    "安全边际":   "margin of safety",
+    "内在价值":   "intrinsic value business value",
+    "能力圈":     "circle of competence",
+    "资本配置":   "capital allocation",
+    "市场先生":   "Mr. Market",
+    "浮存金":     "float",
+    "留存收益":   "retained earnings",
+    "账面价值":   "book value",
     "特许经营权": "franchise value",
 }
 
@@ -298,16 +302,29 @@ def _extract_search_params(question: str, history: list, client_api=None) -> tup
     return search_query, search_params, where_clause
 
 
+MAX_CHUNKS_PER_FILE = 3  # prevent one file from dominating all source slots
+
 def _format_context(results: dict) -> tuple:
-    """Turn ChromaDB results into a context string and sources list."""
+    """Turn ChromaDB results into a context string and sources list.
+    Applies a per-source-file cap so no single document can fill all slots."""
     docs      = results["documents"][0]
     metas     = results["metadatas"][0]
     distances = results["distances"][0]
 
+    # Deduplicate: keep at most MAX_CHUNKS_PER_FILE chunks per source_file
+    file_counts: dict = {}
+    filtered = []
+    for doc, meta, dist in zip(docs, metas, distances):
+        sf = meta.get("source_file", "")
+        if file_counts.get(sf, 0) < MAX_CHUNKS_PER_FILE:
+            filtered.append((doc, meta, dist))
+            file_counts[sf] = file_counts.get(sf, 0) + 1
+    logging.info(f"[RAG] after file-cap: {len(filtered)}/{len(docs)} chunks from {len(file_counts)} files")
+
     context_parts = []
     sources = []
 
-    for i, (doc, meta, dist) in enumerate(zip(docs, metas, distances), 1):
+    for i, (doc, meta, dist) in enumerate(filtered, 1):
         relevance    = round(1.0 - dist, 4)
         author_note  = f" | 作者: {meta['author']}" if meta.get("author") else ""
         section_note = f" — {meta['section']}" if meta.get("section") else ""
