@@ -401,54 +401,116 @@ def _parse_follow_ups(text: str) -> tuple:
     return text, follow_ups
 
 
-def _retrieve(search_query: str, where_clause, top_k: int) -> dict:
-    """Query ChromaDB with graceful fallback if filters yield too few results.
+PRIMARY_AUTHORS   = {"Warren Buffett", "Charlie Munger"}
+SECONDARY_AUTHORS = {"Li Lu", "Howard Marks"}
 
-    Strategy:
-    1. Query with full where_clause (may include author + year + doc_type).
-    2. If result count < 3 and where_clause includes author, retry without
-       author filter so other sources can supplement.
-    3. If still empty, retry with no filter at all.
+
+def _merge_results(*result_lists, top_k: int) -> dict:
+    """Merge multiple ChromaDB result dicts, deduplicate by doc content, keep top_k."""
+    seen = set()
+    docs, metas, dists = [], [], []
+    for r in result_lists:
+        if not r["documents"] or not r["documents"][0]:
+            continue
+        for doc, meta, dist in zip(r["documents"][0], r["metadatas"][0], r["distances"][0]):
+            key = doc[:120]  # fingerprint by first 120 chars
+            if key not in seen:
+                seen.add(key)
+                docs.append(doc)
+                metas.append(meta)
+                dists.append(dist)
+    # Sort by distance (ascending = more relevant) and trim
+    combined = sorted(zip(dists, docs, metas), key=lambda x: x[0])[:top_k]
+    if not combined:
+        return {"documents": [[]], "metadatas": [[]], "distances": [[]]}
+    dists_out, docs_out, metas_out = zip(*combined)
+    return {"documents": [list(docs_out)], "metadatas": [list(metas_out)], "distances": [list(dists_out)]}
+
+
+def _retrieve(search_query: str, where_clause, top_k: int, target_author: Optional[str] = None) -> dict:
+    """Priority-aware retrieval.
+
+    Case A — specific author requested (target_author set):
+      1. Query with author filter.
+      2. If < 3 results, supplement with secondary sources (no author filter).
+
+    Case B — no specific author (target_author is None):
+      1. Query primary authors (Buffett + Munger) for top_k results.
+      2. If primary results < top_k, fill remaining slots from secondary
+         authors (Li Lu, Marks) — keeps primary sources dominant.
+      3. If still short, open to all sources.
+
+    Year/doc_type filters from where_clause are preserved in both cases.
     """
     collection = _get_collection()
 
-    def _query(where=None):
+    # Extract non-author filters (year, doc_type) from where_clause
+    base_filters = {}
+    if where_clause:
+        if "$and" in where_clause:
+            for cond in where_clause["$and"]:
+                if "author" not in cond:
+                    base_filters.update(cond)
+        elif "author" not in where_clause:
+            base_filters = dict(where_clause)
+
+    def _build_where(extra: dict) -> Optional[dict]:
+        merged = {**base_filters, **extra}
+        if not merged:
+            return None
+        if len(merged) == 1:
+            return merged
+        return {"$and": [{k: v} for k, v in merged.items()]}
+
+    def _query(where=None, n=top_k):
         p = {
             "query_texts": [search_query],
-            "n_results": top_k,
+            "n_results": n,
             "include": ["documents", "metadatas", "distances"],
         }
         if where:
             p["where"] = where
-        return collection.query(**p)
+        try:
+            return collection.query(**p)
+        except Exception:
+            return {"documents": [[]], "metadatas": [[]], "distances": [[]]}
 
-    results = _query(where_clause)
+    def _count(r):
+        return len(r["documents"][0]) if r["documents"] and r["documents"][0] else 0
 
-    n = len(results["documents"][0]) if results["documents"] and results["documents"][0] else 0
+    # ── Case A: specific author requested ────────────────────────────────────
+    if target_author:
+        results = _query(_build_where({"author": target_author}))
+        n = _count(results)
+        if n < 3:
+            # Supplement with other sources, but keep primary results on top
+            supp = _query(_build_where({}), n=top_k)
+            results = _merge_results(results, supp, top_k=top_k)
+        if _count(results) == 0:
+            results = _query(None)
+        return results
 
-    # Not enough results — try relaxing author filter first
-    if n < 3 and where_clause:
-        # Build a where_clause without the author condition
-        if isinstance(where_clause, dict) and "$and" in where_clause:
-            relaxed = [c for c in where_clause["$and"] if "author" not in c]
-            relaxed_clause = relaxed[0] if len(relaxed) == 1 else ({"$and": relaxed} if relaxed else None)
-        elif isinstance(where_clause, dict) and "author" in where_clause:
-            relaxed_clause = None
-        else:
-            relaxed_clause = None
+    # ── Case B: no specific author — priority tiers ───────────────────────────
+    # Tier 1: Buffett + Munger
+    primary_where = _build_where({"author": {"$in": list(PRIMARY_AUTHORS)}})
+    primary = _query(primary_where)
+    n_primary = _count(primary)
 
-        if relaxed_clause != where_clause:
-            results2 = _query(relaxed_clause)
-            n2 = len(results2["documents"][0]) if results2["documents"] and results2["documents"][0] else 0
-            if n2 > n:
-                results = results2
-                n = n2
+    if n_primary >= top_k:
+        return primary
 
-    # Still empty — drop all filters
-    if n == 0:
-        results = _query(None)
+    # Tier 2: fill remaining slots from secondary authors
+    need = top_k - n_primary
+    secondary_where = _build_where({"author": {"$in": list(SECONDARY_AUTHORS)}})
+    secondary = _query(secondary_where, n=need)
 
-    return results
+    results = _merge_results(primary, secondary, top_k=top_k)
+    if _count(results) >= 3:
+        return results
+
+    # Tier 3: open to all sources
+    fallback = _query(_build_where({}), n=top_k)
+    return _merge_results(results, fallback, top_k=top_k)
 
 
 # ── Streaming ─────────────────────────────────────────────────────────────────
@@ -471,10 +533,11 @@ def stream_query_knowledge_base(
     # 1. Extract search params (pure regex, no API call)
     yield f"data: {json.dumps({'type': 'searching'})}\n\n"
     search_query, search_params, where_clause = _extract_search_params(question, history)
+    target_author = search_params.get("author")
 
     # 2. Retrieve
     try:
-        results = _retrieve(search_query, where_clause, top_k)
+        results = _retrieve(search_query, where_clause, top_k, target_author=target_author)
     except Exception as e:
         yield f"data: {json.dumps({'type': 'error', 'message': f'检索失败: {e}'})}\n\n"
         return
@@ -522,9 +585,10 @@ def query_knowledge_base(
 
     client_api = anthropic.Anthropic(api_key=key)
     search_query, search_params, where_clause = _extract_search_params(question, history)
+    target_author = search_params.get("author")
 
     try:
-        results = _retrieve(search_query, where_clause, top_k)
+        results = _retrieve(search_query, where_clause, top_k, target_author=target_author)
     except Exception as e:
         return {"answer": "", "sources": [], "error": f"数据库初始化失败\n({e})"}
 
