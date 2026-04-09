@@ -548,24 +548,33 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
 
     # ── Case B: no specific author — priority tiers ───────────────────────────
     primary_where = _build_where({"author": {"$in": list(PRIMARY_AUTHORS)}})
+    logging.info(f"[RAG] tier1 where: {primary_where}")
     primary = _query(primary_where)
     n_primary = _count(primary)
+    logging.info(f"[RAG] tier1 returned: {n_primary} chunks (top_k={top_k})")
 
     if n_primary >= top_k:
+        logging.info("[RAG] no fallback needed")
         _log_chunks(primary, "Case B tier1 (primary only)")
         return primary
 
     need = top_k - n_primary
+    logging.info(f"[RAG] tier1 short by {need}, querying tier2 (secondary authors)")
     secondary_where = _build_where({"author": {"$in": list(SECONDARY_AUTHORS)}})
     secondary = _query(secondary_where, n=need)
+    n_secondary = _count(secondary)
+    logging.info(f"[RAG] tier2 returned: {n_secondary} chunks")
 
     results = _merge_results(primary, secondary, top_k=top_k)
     if _count(results) >= 3:
+        logging.info(f"[RAG] final total: {_count(results)} chunks (no tier3)")
         _log_chunks(results, "Case B tier1+2 (primary+secondary)")
         return results
 
+    logging.info("[RAG] tier1+2 still short, triggering tier3 (all sources)")
     fallback = _query(_build_where({}), n=top_k)
     results = _merge_results(results, fallback, top_k=top_k)
+    logging.info(f"[RAG] final total after tier3: {_count(results)} chunks")
     _log_chunks(results, "Case B tier3 (fallback)")
     return results
 
