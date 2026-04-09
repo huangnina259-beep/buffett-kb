@@ -3,10 +3,13 @@ RAG query engine: ChromaDB retrieval + Claude API generation.
 Supports both blocking and streaming (SSE) response modes.
 """
 import json
+import logging
 import os
 import re
 from pathlib import Path
 from typing import Optional, Generator
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 import chromadb
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
@@ -303,8 +306,8 @@ def _extract_search_params(question: str, history: list, client_api=None) -> tup
     if where:
         where_clause = where if len(where) == 1 else {"$and": [{k: v} for k, v in where.items()]}
 
-    print(f"[RAG] search_query: {search_query!r}")
-    print(f"[RAG] where_clause: {where_clause}")
+    logging.info(f"[RAG] search_query: {search_query!r}")
+    logging.info(f"[RAG] where_clause: {where_clause}")
 
     return search_query, search_params, where_clause
 
@@ -444,9 +447,9 @@ def _merge_results(*result_lists, top_k: int) -> dict:
 def _log_chunks(results: dict, label: str):
     metas = results["metadatas"][0] if results["metadatas"] and results["metadatas"][0] else []
     dists = results["distances"][0] if results["distances"] and results["distances"][0] else []
-    print(f"[RAG] {label} → {len(metas)} chunks:")
+    logging.info(f"[RAG] {label} → {len(metas)} chunks:")
     for i, (m, d) in enumerate(zip(metas, dists), 1):
-        print(f"  [{i}] {m.get('source_file','?')} | author={m.get('author','?')} | year={m.get('year','?')} | dist={d:.4f}")
+        logging.info(f"[RAG]   [{i}] {m.get('source_file','?')} | author={m.get('author','?')} | year={m.get('year','?')} | dist={d:.4f}")
 
 
 def _retrieve(search_query: str, where_clause, top_k: int, target_author: Optional[str] = None) -> dict:
