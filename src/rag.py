@@ -19,8 +19,8 @@ DB_DIR   = ROOT_DIR / "database"
 COLLECTION_NAME = "buffett_kb"
 EMBED_MODEL     = "sentence-transformers/all-MiniLM-L6-v2"
 CLAUDE_MODEL    = "claude-haiku-4-5-20251001"
-TOP_K           = 6     # reduced from 10 → faster retrieval + less context = faster generation
-MAX_TOKENS      = 2048  # reduced from 4096 → most answers fit, noticeably faster
+TOP_K           = 8     # 6 was too few for rich conceptual questions
+MAX_TOKENS      = 3000  # 2048 cut off detailed answers; 3000 is still fast
 
 SYSTEM_PROMPT = """你是"复利国"的学习向导，帮助用户像价值投资大师一样思考问题。
 
@@ -59,7 +59,8 @@ SYSTEM_PROMPT = """你是"复利国"的学习向导，帮助用户像价值投�
   年份、金额、公司名、具体数字——凡是来源里没有明确出现的，一律不得填入。
   宁可开头简单，也不能编造细节。一旦细节有误，用户点开引用就能发现，信任立刻崩塌。
 
-中间：把核心观点讲清楚，用真实案例和原文引用支撑，不超过3个主要论点。
+中间：把核心观点讲清楚，用真实案例和原文引用支撑。
+  论点数量由来源决定——来源丰富就多讲，来源单薄就少讲，不要凑数也不要人为截断。
   - 每个关键论点引用原文时，格式：
     「……」[来源N]
   - 多位大师有不同看法时，并列讲出来，指出分歧在哪
