@@ -241,13 +241,35 @@ def _get_collection():
     return client.get_or_create_collection(name=COLLECTION_NAME, embedding_function=ef)
 
 
+AUTHOR_KEYWORDS = {
+    "Warren Buffett":  ["巴菲特", "buffett"],
+    "Charlie Munger":  ["芒格", "munger", "穷查理", "poor charlie"],
+    "Howard Marks":    ["马克斯", "howard marks"],
+    "Li Lu":           ["李录", "li lu"],
+}
+
+def _detect_author(question: str) -> Optional[str]:
+    """Return canonical author name if question explicitly names one person."""
+    q = question.lower()
+    for author, keywords in AUTHOR_KEYWORDS.items():
+        if any(kw in q for kw in keywords):
+            return author
+    return None
+
+
 def _extract_search_params(question: str, history: list, client_api=None) -> tuple:
-    """Extract year/doc_type via regex — no API call, zero added latency."""
+    """Extract year/doc_type/author via regex — no API call, zero added latency."""
     search_query = question
-    search_params = {"query": question, "year": None, "doc_type": None}
+    search_params = {"query": question, "year": None, "doc_type": None, "author": None}
     where_clause = None
 
     where = {}
+
+    # Author: filter to the specific person being asked about
+    author = _detect_author(question)
+    if author:
+        where["author"] = author
+        search_params["author"] = author
 
     # Year: match explicit 4-digit year in question
     year_match = re.search(r'\b(19[7-9]\d|20[0-2]\d)\b', question)
@@ -380,20 +402,52 @@ def _parse_follow_ups(text: str) -> tuple:
 
 
 def _retrieve(search_query: str, where_clause, top_k: int) -> dict:
-    """Query ChromaDB with optional fallback if filter returns empty."""
+    """Query ChromaDB with graceful fallback if filters yield too few results.
+
+    Strategy:
+    1. Query with full where_clause (may include author + year + doc_type).
+    2. If result count < 3 and where_clause includes author, retry without
+       author filter so other sources can supplement.
+    3. If still empty, retry with no filter at all.
+    """
     collection = _get_collection()
-    params = {
-        "query_texts": [search_query],
-        "n_results": top_k,
-        "include": ["documents", "metadatas", "distances"],
-    }
-    if where_clause:
-        params["where"] = where_clause
-    results = collection.query(**params)
-    # Fallback: drop filter if empty result
-    if (not results["documents"] or not results["documents"][0]) and where_clause:
-        del params["where"]
-        results = collection.query(**params)
+
+    def _query(where=None):
+        p = {
+            "query_texts": [search_query],
+            "n_results": top_k,
+            "include": ["documents", "metadatas", "distances"],
+        }
+        if where:
+            p["where"] = where
+        return collection.query(**p)
+
+    results = _query(where_clause)
+
+    n = len(results["documents"][0]) if results["documents"] and results["documents"][0] else 0
+
+    # Not enough results — try relaxing author filter first
+    if n < 3 and where_clause:
+        # Build a where_clause without the author condition
+        if isinstance(where_clause, dict) and "$and" in where_clause:
+            relaxed = [c for c in where_clause["$and"] if "author" not in c]
+            relaxed_clause = relaxed[0] if len(relaxed) == 1 else ({"$and": relaxed} if relaxed else None)
+        elif isinstance(where_clause, dict) and "author" in where_clause:
+            relaxed_clause = None
+        else:
+            relaxed_clause = None
+
+        if relaxed_clause != where_clause:
+            results2 = _query(relaxed_clause)
+            n2 = len(results2["documents"][0]) if results2["documents"] and results2["documents"][0] else 0
+            if n2 > n:
+                results = results2
+                n = n2
+
+    # Still empty — drop all filters
+    if n == 0:
+        results = _query(None)
+
     return results
 
 
