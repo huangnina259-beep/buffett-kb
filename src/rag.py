@@ -303,6 +303,9 @@ def _extract_search_params(question: str, history: list, client_api=None) -> tup
     if where:
         where_clause = where if len(where) == 1 else {"$and": [{k: v} for k, v in where.items()]}
 
+    print(f"[RAG] search_query: {search_query!r}")
+    print(f"[RAG] where_clause: {where_clause}")
+
     return search_query, search_params, where_clause
 
 
@@ -438,6 +441,14 @@ def _merge_results(*result_lists, top_k: int) -> dict:
     return {"documents": [list(docs_out)], "metadatas": [list(metas_out)], "distances": [list(dists_out)]}
 
 
+def _log_chunks(results: dict, label: str):
+    metas = results["metadatas"][0] if results["metadatas"] and results["metadatas"][0] else []
+    dists = results["distances"][0] if results["distances"] and results["distances"][0] else []
+    print(f"[RAG] {label} → {len(metas)} chunks:")
+    for i, (m, d) in enumerate(zip(metas, dists), 1):
+        print(f"  [{i}] {m.get('source_file','?')} | author={m.get('author','?')} | year={m.get('year','?')} | dist={d:.4f}")
+
+
 def _retrieve(search_query: str, where_clause, top_k: int, target_author: Optional[str] = None) -> dict:
     """Priority-aware retrieval.
 
@@ -494,34 +505,35 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
         results = _query(_build_where({"author": target_author}))
         n = _count(results)
         if n < 3:
-            # Supplement with other sources, but keep primary results on top
             supp = _query(_build_where({}), n=top_k)
             results = _merge_results(results, supp, top_k=top_k)
         if _count(results) == 0:
             results = _query(None)
+        _log_chunks(results, f"Case A (author={target_author})")
         return results
 
     # ── Case B: no specific author — priority tiers ───────────────────────────
-    # Tier 1: Buffett + Munger
     primary_where = _build_where({"author": {"$in": list(PRIMARY_AUTHORS)}})
     primary = _query(primary_where)
     n_primary = _count(primary)
 
     if n_primary >= top_k:
+        _log_chunks(primary, "Case B tier1 (primary only)")
         return primary
 
-    # Tier 2: fill remaining slots from secondary authors
     need = top_k - n_primary
     secondary_where = _build_where({"author": {"$in": list(SECONDARY_AUTHORS)}})
     secondary = _query(secondary_where, n=need)
 
     results = _merge_results(primary, secondary, top_k=top_k)
     if _count(results) >= 3:
+        _log_chunks(results, "Case B tier1+2 (primary+secondary)")
         return results
 
-    # Tier 3: open to all sources
     fallback = _query(_build_where({}), n=top_k)
-    return _merge_results(results, fallback, top_k=top_k)
+    results = _merge_results(results, fallback, top_k=top_k)
+    _log_chunks(results, "Case B tier3 (fallback)")
+    return results
 
 
 # ── Streaming ─────────────────────────────────────────────────────────────────
