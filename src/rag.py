@@ -9,7 +9,11 @@ import re
 from pathlib import Path
 from typing import Optional, Generator
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    force=True,   # override uvicorn's pre-configured root logger so our [RAG] lines appear
+)
 
 import chromadb
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
@@ -211,20 +215,40 @@ def _get_collection():
 
 
 TERM_TRANSLATIONS = {
-    # moat variants — order matters: longer phrases first
-    "护城河变宽": "widening moat widen the moat",
-    "护城河变窄": "narrowing moat eroding moat",
-    "护城河":     "economic moat competitive moat moat durable competitive advantage",
-    "竞争优势":   "competitive advantage",
-    "安全边际":   "margin of safety",
-    "内在价值":   "intrinsic value business value",
-    "能力圈":     "circle of competence",
-    "资本配置":   "capital allocation",
-    "市场先生":   "Mr. Market",
-    "浮存金":     "float",
-    "留存收益":   "retained earnings",
-    "账面价值":   "book value",
+    # ── Person names (keep these first so they survive CJK stripping) ──────────
+    "巴菲特":    "Warren Buffett",
+    "芒格":      "Charlie Munger",
+    "李录":      "Li Lu",
+    "马克斯":    "Howard Marks",
+    # ── Moat — longer compound phrases before the stem ────────────────────────
+    "护城河变宽": "widening moat",
+    "护城河变窄": "narrowing moat",
+    "护城河":    "economic moat",
+    "竞争优势":  "competitive advantage",
+    # ── Valuation ─────────────────────────────────────────────────────────────
+    "安全边际":  "margin of safety",
+    "内在价值":  "intrinsic value",
+    "账面价值":  "book value",
+    "自由现金流": "free cash flow",
+    "现金流":    "cash flow",
+    "市盈率":    "price to earnings P/E ratio",
+    "市净率":    "price to book P/B ratio",
+    # ── Business concepts ─────────────────────────────────────────────────────
+    "能力圈":    "circle of competence",
+    "资本配置":  "capital allocation",
+    "市场先生":  "Mr. Market",
+    "浮存金":    "insurance float",
+    "留存收益":  "retained earnings",
     "特许经营权": "franchise value",
+    "股东权益":  "shareholders equity",
+    "再投资":    "reinvestment",
+    # ── Industry terms ────────────────────────────────────────────────────────
+    "航空":      "airline aviation",
+    "保险":      "insurance",
+    "银行":      "banking",
+    "零售":      "retail",
+    "科技":      "technology",
+    "石油":      "oil energy",
 }
 
 def _translate_query(question: str) -> str:
