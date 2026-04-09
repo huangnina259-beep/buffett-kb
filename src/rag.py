@@ -255,6 +255,27 @@ def _get_collection():
     return client.get_or_create_collection(name=COLLECTION_NAME, embedding_function=ef)
 
 
+TERM_TRANSLATIONS = {
+    "护城河":   "economic moat",
+    "安全边际": "margin of safety",
+    "内在价值": "intrinsic value",
+    "能力圈":   "circle of competence",
+    "资本配置": "capital allocation",
+    "市场先生": "Mr. Market",
+    "浮存金":   "float",
+    "留存收益": "retained earnings",
+    "账面价值": "book value",
+    "特许经营权": "franchise value",
+}
+
+def _translate_query(question: str) -> str:
+    """Replace known Chinese investment terms with English equivalents."""
+    q = question
+    for zh, en in TERM_TRANSLATIONS.items():
+        q = q.replace(zh, en)
+    return q
+
+
 AUTHOR_KEYWORDS = {
     "Warren Buffett":  ["巴菲特", "buffett"],
     "Charlie Munger":  ["芒格", "munger", "穷查理", "poor charlie"],
@@ -272,9 +293,11 @@ def _detect_author(question: str) -> Optional[str]:
 
 
 def _extract_search_params(question: str, history: list, client_api=None) -> tuple:
-    """Extract year/doc_type/author via regex — no API call, zero added latency."""
-    search_query = question
-    search_params = {"query": question, "year": None, "doc_type": None, "author": None}
+    """Extract year/doc_type/author via regex — no API call, zero added latency.
+    search_query has known Chinese investment terms replaced with English equivalents
+    so ChromaDB vector search matches English-language source documents better."""
+    search_query = _translate_query(question)
+    search_params = {"query": search_query, "year": None, "doc_type": None, "author": None}
     where_clause = None
 
     where = {}
