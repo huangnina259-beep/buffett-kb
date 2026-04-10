@@ -1,50 +1,30 @@
-export type HelpLevel = 'guided' | 'standard' | 'challenge';
+/* ── Tutor training system types ──────────────────────────────── */
 
-// Original skeleton Step type — used by existing STEPS data
-export interface Step {
-  id: number;
-  label: string;
-  question: string;
-  whyItMatters: string;
-  guidanceText: string;
-  placeholder: string;
+export interface Module {
+  id: number
+  title: string
+  description: string
+  cycles: CycleInfo[]
+  frameworkItems: string[]
 }
 
-// ── StepCard types ──────────────────────────────────────────────
-
-export type AnswerType = 'radio' | 'textarea';
-
-export interface RadioOption {
-  id: string;
-  text: string;
+export interface CycleInfo {
+  id: string
+  title: string
+  hint: string
 }
 
-export interface Guidance {
-  whereToFind: string;
-  whatToLookFor: string;
-  whatToDo: string;
-  strongAnswerExample: string;
-  commonMistake: string;
+export interface Message {
+  id: string
+  role: 'tutor' | 'student'
+  content: string
+  timestamp: number
 }
 
-/**
- * correct === true | false  →  radio: judgment shown after submit
- * correct === null          →  textarea: open-ended, no judgment
- */
-export interface Feedback {
-  correct: boolean | null;
-  explanation: string;
-}
-
-export interface StepCardData {
-  id: number;
-  label: string;
-  question: string;
-  whyItMatters: string;
-  answerType: AnswerType;
-  options?: RadioOption[];      // radio only
-  correctOptionId?: string;     // radio only
-  placeholder?: string;         // textarea only
-  feedback: Feedback;
-  guidance: Guidance;
+export interface CurriculumState {
+  currentModule: number
+  currentCycle: string        // e.g. "1.1"
+  completedCycles: string[]
+  frameworkInsights: string[]
+  parkingLot: string[]
 }

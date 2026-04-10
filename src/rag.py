@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import re
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Optional, Generator
 
@@ -21,9 +22,9 @@ DB_DIR   = ROOT_DIR / "database"
 
 COLLECTION_NAME = "buffett_kb"
 EMBED_MODEL     = "sentence-transformers/all-MiniLM-L6-v2"
-CLAUDE_MODEL    = "claude-haiku-4-5-20251001"
-TOP_K           = 8     # 6 was too few for rich conceptual questions
-MAX_TOKENS      = 3000  # 2048 cut off detailed answers; 3000 is still fast
+CLAUDE_MODEL    = "claude-sonnet-4-6"
+TOP_K           = 12    # more chunks ensures cross-source synthesis
+MAX_TOKENS      = 4000  # allow comprehensive multi-source answers
 
 SYSTEM_PROMPT = """你是"复利国"的学习向导，帮助用户像价值投资大师一样思考问题。
 
@@ -229,6 +230,18 @@ SYSTEM_PROMPT = """你是"复利国"的学习向导，帮助用户像价值投�
 - 禁止用"可能"、"大概"掩盖信息缺失
 - 可提示用户换一个知识库有记载的角度来问
 - 知识库收录截至2025年，此后信息不在范围内
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【跨来源综合】（核心要求）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+知识库会同时检索多位大师的内容（巴菲特、芒格、Howard Marks、李录）。
+回答综合类问题时，必须主动编织所有相关来源，而不是只依赖单一作者：
+
+- 如果多位大师谈到同一主题，把他们的观点并列或对比，这才是知识库的核心价值
+- 不要只用第一个来源就停手——扫描所有来源，找出互相印证或补充的角度
+- Howard Marks 的备忘录提供当下市场环境的判断；巴菲特的信提供长期原则；
+  芒格提供心理与思维框架；李录提供现实案例——这四者结合才是完整答案
+- 来源覆盖越多，综合越丰富，禁止因为"主要来源"已够用就忽略其他来源
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【追问】
@@ -546,33 +559,48 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
         _log_chunks(results, f"Case A (author={target_author})")
         return results
 
-    # ── Case B: no specific author — priority tiers ───────────────────────────
-    primary_where = _build_where({"author": {"$in": list(PRIMARY_AUTHORS)}})
-    logging.info(f"[RAG] tier1 where: {primary_where}")
-    primary = _query(primary_where)
-    n_primary = _count(primary)
-    logging.info(f"[RAG] tier1 returned: {n_primary} chunks (top_k={top_k})")
+    # ── Case B: no specific author — true parallel query of all tiers ───────────
+    # Each thread gets its own collection instance to avoid shared-state issues.
+    primary_k   = top_k
+    secondary_k = max(4, top_k // 2)
 
-    if n_primary >= top_k:
-        logging.info("[RAG] no fallback needed")
-        _log_chunks(primary, "Case B tier1 (primary only)")
-        return primary
-
-    need = top_k - n_primary
-    logging.info(f"[RAG] tier1 short by {need}, querying tier2 (secondary authors)")
+    primary_where   = _build_where({"author": {"$in": list(PRIMARY_AUTHORS)}})
     secondary_where = _build_where({"author": {"$in": list(SECONDARY_AUTHORS)}})
-    secondary = _query(secondary_where, n=need)
+    logging.info(f"[RAG] tier1 where: {primary_where}")
+    logging.info(f"[RAG] tier2 where: {secondary_where}")
+
+    def _query_isolated(where, n):
+        """Standalone query with its own collection — safe for concurrent use."""
+        col = _get_collection()
+        p = {
+            "query_texts": [search_query],
+            "n_results": n,
+            "include": ["documents", "metadatas", "distances"],
+        }
+        if where:
+            p["where"] = where
+        try:
+            return col.query(**p)
+        except Exception:
+            return {"documents": [[]], "metadatas": [[]], "distances": [[]]}
+
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        f_primary   = ex.submit(_query_isolated, primary_where,   primary_k)
+        f_secondary = ex.submit(_query_isolated, secondary_where, secondary_k)
+        primary   = f_primary.result()
+        secondary = f_secondary.result()
+
+    n_primary   = _count(primary)
     n_secondary = _count(secondary)
-    logging.info(f"[RAG] tier2 returned: {n_secondary} chunks")
+    logging.info(f"[RAG] tier1 returned: {n_primary}, tier2 returned: {n_secondary}")
 
     results = _merge_results(primary, secondary, top_k=top_k)
     if _count(results) >= 3:
-        logging.info(f"[RAG] final total: {_count(results)} chunks (no tier3)")
-        _log_chunks(results, "Case B tier1+2 (primary+secondary)")
+        _log_chunks(results, "Case B tier1+2 (primary+secondary parallel)")
         return results
 
     logging.info("[RAG] tier1+2 still short, triggering tier3 (all sources)")
-    fallback = _query(_build_where({}), n=top_k)
+    fallback = _query_isolated(_build_where({}), n=top_k)
     results = _merge_results(results, fallback, top_k=top_k)
     logging.info(f"[RAG] final total after tier3: {_count(results)} chunks")
     _log_chunks(results, "Case B tier3 (fallback)")
