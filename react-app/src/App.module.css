@@ -38,7 +38,7 @@
 }
 
 .leftSidebar {
-  width: 240px;
+  width: 260px;
   flex-shrink: 0;
   border-right: 1px solid #e8eaed;
   background: #fff;
