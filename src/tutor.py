@@ -8,7 +8,7 @@ import os
 import re
 from typing import Generator, Optional
 
-import anthropic
+from openai import OpenAI
 
 from rag import (
     _get_collection,
@@ -19,7 +19,8 @@ from rag import (
     COLLECTION_NAME,
 )
 
-TUTOR_MODEL  = "claude-sonnet-4-6"
+TUTOR_MODEL      = "HS-MiniMax-M2.5-W8A8"
+MINIMAX_BASE_URL = "http://aiagent.jaguar-network.cn:8095/v1"
 MAX_TOKENS   = 2000   # tutor replies should be focused, not essays
 
 # ── System prompt ────────────────────────────────────────────────────────────
@@ -225,10 +226,7 @@ def stream_tutor_response(
 ) -> Generator[str, None, None]:
     """SSE generator for tutor responses. Same event format as RAG chat."""
 
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-    if not key:
-        yield f"data: {json.dumps({'type': 'error', 'message': '未设置 ANTHROPIC_API_KEY'})}\n\n"
-        return
+    key = api_key or os.environ.get("MINIMAX_API_KEY", "no-key")
 
     state = curriculum_state or {"currentModule": 1, "currentCycle": "1.1", "completedCycles": []}
 
@@ -259,18 +257,20 @@ def stream_tutor_response(
 
     msgs.append({"role": "user", "content": user_content})
 
-    # 4. Stream Claude response
+    # 4. Stream MiniMax response
     try:
-        client = anthropic.Anthropic(api_key=key)
+        client = OpenAI(api_key=key, base_url=MINIMAX_BASE_URL)
         full_text = ""
 
-        with client.messages.stream(
+        stream = client.chat.completions.create(
             model=TUTOR_MODEL,
             max_tokens=MAX_TOKENS,
-            system=system,
-            messages=msgs,
-        ) as stream:
-            for text in stream.text_stream:
+            messages=[{"role": "system", "content": system}] + msgs,
+            stream=True,
+        )
+        for chunk in stream:
+            text = chunk.choices[0].delta.content or ""
+            if text:
                 full_text += text
                 # Don't stream meta tags to the user
                 if not re.search(r"<(advance_to|framework_insight|parking_lot)>", text):

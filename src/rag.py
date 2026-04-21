@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 
 import chromadb
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-import anthropic
+from openai import OpenAI
 
 SRC_DIR = Path(__file__).parent
 ROOT_DIR = SRC_DIR.parent
@@ -22,7 +22,8 @@ DB_DIR   = ROOT_DIR / "database"
 
 COLLECTION_NAME = "buffett_kb"
 EMBED_MODEL     = "sentence-transformers/all-MiniLM-L6-v2"
-CLAUDE_MODEL    = "claude-sonnet-4-6"
+CLAUDE_MODEL    = "HS-MiniMax-M2.5-W8A8"
+MINIMAX_BASE_URL = "http://aiagent.jaguar-network.cn:8095/v1"
 TOP_K           = 12    # more chunks ensures cross-source synthesis
 MAX_TOKENS      = 4000  # allow comprehensive multi-source answers
 
@@ -597,10 +598,7 @@ def stream_query_knowledge_base(
     SSE generator. Yields newline-delimited 'data: <json>\\n\\n' strings.
     Event types: searching | token | done | error
     """
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-    if not key:
-        yield f"data: {json.dumps({'type': 'error', 'message': '未设置 ANTHROPIC_API_KEY'})}\n\n"
-        return
+    key = api_key or os.environ.get("MINIMAX_API_KEY", "no-key")
 
     # 1. Extract search params (pure regex, no API call)
     yield f"data: {json.dumps({'type': 'searching'})}\n\n"
@@ -622,16 +620,18 @@ def stream_query_knowledge_base(
     messages = _build_messages(question, context, history)
 
     # 3. Stream answer tokens
-    client_api = anthropic.Anthropic(api_key=key)
+    client_api = OpenAI(api_key=key, base_url=MINIMAX_BASE_URL)
     full_text = ""
     try:
-        with client_api.messages.stream(
+        stream = client_api.chat.completions.create(
             model=CLAUDE_MODEL,
             max_tokens=MAX_TOKENS,
-            system=SYSTEM_PROMPT,
-            messages=messages,
-        ) as stream:
-            for text in stream.text_stream:
+            messages=[{"role": "system", "content": SYSTEM_PROMPT}] + messages,
+            stream=True,
+        )
+        for chunk in stream:
+            text = chunk.choices[0].delta.content or ""
+            if text:
                 full_text += text
                 yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
     except Exception as e:
@@ -651,11 +651,9 @@ def query_knowledge_base(
     api_key: str = None,
     top_k: int = TOP_K,
 ) -> dict:
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-    if not key:
-        return {"answer": "", "sources": [], "error": "未设置 ANTHROPIC_API_KEY"}
+    key = api_key or os.environ.get("MINIMAX_API_KEY", "no-key")
 
-    client_api = anthropic.Anthropic(api_key=key)
+    client_api = OpenAI(api_key=key, base_url=MINIMAX_BASE_URL)
     search_query, search_params, where_clause = _extract_search_params(question, history)
     target_author = search_params.get("author")
 
@@ -671,13 +669,12 @@ def query_knowledge_base(
     messages = _build_messages(question, context, history)
 
     try:
-        response = client_api.messages.create(
+        response = client_api.chat.completions.create(
             model=CLAUDE_MODEL,
             max_tokens=MAX_TOKENS,
-            system=SYSTEM_PROMPT,
-            messages=messages,
+            messages=[{"role": "system", "content": SYSTEM_PROMPT}] + messages,
         )
-        raw_answer = response.content[0].text
+        raw_answer = response.choices[0].message.content
         clean_answer, follow_ups = _parse_follow_ups(raw_answer)
         return {
             "answer": clean_answer,
@@ -687,4 +684,4 @@ def query_knowledge_base(
             "error": None,
         }
     except Exception as e:
-        return {"answer": "", "sources": sources, "search_params": search_params, "error": f"Claude API 调用失败: {e}"}
+        return {"answer": "", "sources": sources, "search_params": search_params, "error": f"API 调用失败: {e}"}
