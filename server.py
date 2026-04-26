@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-load_dotenv()  # Load ANTHROPIC_API_KEY from .env if present
+load_dotenv()  # Load MINIMAX_API_KEY from .env if present
 
 # Add src to path so we can import rag
 SRC_DIR = Path(__file__).parent / "src"
@@ -64,9 +64,9 @@ async def tutor_page():
 
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    api_key = os.environ.get("MINIMAX_API_KEY", "")
     if not api_key:
-        return JSONResponse(content={"error": "ANTHROPIC_API_KEY environment variable is missing."}, status_code=500)
+        return JSONResponse(content={"error": "MINIMAX_API_KEY environment variable is missing."}, status_code=500)
 
     result = query_knowledge_base(request.query, history=request.history, api_key=api_key)
     return result
@@ -74,10 +74,10 @@ async def chat(request: ChatRequest):
 @app.post("/api/chat/stream")
 async def chat_stream(request: ChatRequest):
     logging.info(f"[RAG] Request received: {request.query[:80]!r}")
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    api_key = os.environ.get("MINIMAX_API_KEY", "")
     if not api_key:
         import json
-        error_event = f"data: {json.dumps({'type': 'error', 'message': 'ANTHROPIC_API_KEY environment variable is missing.'})}\n\n"
+        error_event = f"data: {json.dumps({'type': 'error', 'message': 'MINIMAX_API_KEY environment variable is missing.'})}\n\n"
         return StreamingResponse(iter([error_event]), media_type="text/event-stream")
 
     def generate():
@@ -92,10 +92,10 @@ async def chat_stream(request: ChatRequest):
 @app.post("/api/tutor/stream")
 async def tutor_stream(request: TutorRequest):
     logging.info(f"[Tutor] Request received: {request.message[:80]!r}")
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    api_key = os.environ.get("MINIMAX_API_KEY", "")
     if not api_key:
         import json
-        error_event = f"data: {json.dumps({'type': 'error', 'message': 'ANTHROPIC_API_KEY environment variable is missing.'})}\n\n"
+        error_event = f"data: {json.dumps({'type': 'error', 'message': 'MINIMAX_API_KEY environment variable is missing.'})}\n\n"
         return StreamingResponse(iter([error_event]), media_type="text/event-stream")
 
     def generate():
