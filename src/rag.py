@@ -20,12 +20,12 @@ SRC_DIR = Path(__file__).parent
 ROOT_DIR = SRC_DIR.parent
 DB_DIR   = ROOT_DIR / "database"
 
-COLLECTION_NAME = "buffett_kb"
-EMBED_MODEL     = "sentence-transformers/all-MiniLM-L6-v2"
-CLAUDE_MODEL    = "HS-MiniMax-M2.5-W8A8"
-MINIMAX_BASE_URL = "http://aiagent.jaguar-network.cn:8095/v1"
-TOP_K           = 12    # more chunks ensures cross-source synthesis
-MAX_TOKENS      = 4000  # allow comprehensive multi-source answers
+COLLECTION_NAME  = "buffett_kb"
+EMBED_MODEL      = "sentence-transformers/all-MiniLM-L6-v2"
+LLM_MODEL        = os.environ.get("LLM_MODEL", "MiniMax-Text-01")
+LLM_BASE_URL     = os.environ.get("LLM_BASE_URL", "https://api.minimax.io/v1")
+TOP_K            = 12    # more chunks ensures cross-source synthesis
+MAX_TOKENS       = 4000  # allow comprehensive multi-source answers
 
 SYSTEM_PROMPT = """你是"复利国"的学习向导，帮助用户像价值投资大师一样思考问题。
 
@@ -620,11 +620,11 @@ def stream_query_knowledge_base(
     messages = _build_messages(question, context, history)
 
     # 3. Stream answer tokens
-    client_api = OpenAI(api_key=key, base_url=MINIMAX_BASE_URL)
+    client_api = OpenAI(api_key=key, base_url=LLM_BASE_URL)
     full_text = ""
     try:
         stream = client_api.chat.completions.create(
-            model=CLAUDE_MODEL,
+            model=LLM_MODEL,
             max_tokens=MAX_TOKENS,
             messages=[{"role": "system", "content": SYSTEM_PROMPT}] + messages,
             stream=True,
@@ -653,7 +653,7 @@ def query_knowledge_base(
 ) -> dict:
     key = api_key or os.environ.get("MINIMAX_API_KEY", "no-key")
 
-    client_api = OpenAI(api_key=key, base_url=MINIMAX_BASE_URL)
+    client_api = OpenAI(api_key=key, base_url=LLM_BASE_URL)
     search_query, search_params, where_clause = _extract_search_params(question, history)
     target_author = search_params.get("author")
 
@@ -670,7 +670,7 @@ def query_knowledge_base(
 
     try:
         response = client_api.chat.completions.create(
-            model=CLAUDE_MODEL,
+            model=LLM_MODEL,
             max_tokens=MAX_TOKENS,
             messages=[{"role": "system", "content": SYSTEM_PROMPT}] + messages,
         )

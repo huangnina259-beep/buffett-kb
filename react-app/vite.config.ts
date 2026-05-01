@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/buffett-kb/',
+  base: process.env.NODE_ENV === 'production' ? '/buffett-kb/' : '/',
 })
