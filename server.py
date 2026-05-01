@@ -24,7 +24,12 @@ app = FastAPI()
 from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:4173",
+        "https://huangnina259-beep.github.io",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -37,6 +42,10 @@ app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
 # React tutor assets at /assets (matches Vite build output paths)
 if react_dist.exists() and (react_dist / "assets").exists():
     app.mount("/assets", StaticFiles(directory=str(react_dist / "assets")), name="react-assets")
+
+class DigestRequest(BaseModel):
+    prompt: str
+    system: str
 
 class ChatRequest(BaseModel):
     query: str
@@ -61,6 +70,34 @@ async def tutor_page():
     """Serve the React tutor training app."""
     with open(react_dist / "index.html", "r", encoding="utf-8") as f:
         return f.read()
+
+@app.post("/api/digest")
+async def digest(request: DigestRequest):
+    """LLM call for daily business briefing — no RAG, just generation."""
+    import os
+    from openai import OpenAI
+
+    api_key = os.environ.get("MINIMAX_API_KEY", "")
+    if not api_key:
+        return JSONResponse(content={"error": "MINIMAX_API_KEY not set"}, status_code=500)
+
+    llm_model    = os.environ.get("LLM_MODEL", "MiniMax-Text-01")
+    llm_base_url = os.environ.get("LLM_BASE_URL", "https://api.minimax.io/v1")
+
+    try:
+        client = OpenAI(api_key=api_key, base_url=llm_base_url)
+        response = client.chat.completions.create(
+            model=llm_model,
+            max_tokens=2000,
+            messages=[
+                {"role": "system", "content": request.system},
+                {"role": "user",   "content": request.prompt},
+            ],
+        )
+        return {"content": response.choices[0].message.content}
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+
 
 @app.post("/api/chat")
 async def chat(request: ChatRequest):

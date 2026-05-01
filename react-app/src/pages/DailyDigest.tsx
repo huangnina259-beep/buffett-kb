@@ -46,56 +46,34 @@ Required format:
 signal must be exactly one of: OPPORTUNITY, RISK, WATCH, CONTEXT
 Return 3-4 stories. Output ONLY the JSON object, nothing else.`
 
-function getApiConfig(): { url: string; key: string; model: string } {
-  return {
-    url: localStorage.getItem('digest-api-url') || 'https://api.anthropic.com/v1/messages',
-    key: localStorage.getItem('digest-api-key') || '',
-    model: localStorage.getItem('digest-api-model') || 'claude-sonnet-4-20250514',
-  }
+// Default to the Railway backend — no API key needed in the browser.
+// User can override in settings if self-hosting elsewhere.
+const DEFAULT_BACKEND = localStorage.getItem('digest-backend-url') || ''
+
+function getBackendUrl(): string {
+  return localStorage.getItem('digest-backend-url') || DEFAULT_BACKEND
 }
 
 async function callLLM(prompt: string): Promise<string> {
-  const { url, key, model } = getApiConfig()
-  if (!key) throw new Error('请先在设置中配置 API Key')
+  const backendUrl = getBackendUrl()
 
-  const isAnthropic = url.includes('anthropic.com')
+  // Route through Railway backend (/api/digest) — key lives on the server
+  const endpoint = backendUrl
+    ? `${backendUrl.replace(/\/$/, '')}/api/digest`
+    : '/api/digest'
 
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  let body: string
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt, system: SYSTEM_PROMPT }),
+  })
 
-  if (isAnthropic) {
-    headers['x-api-key'] = key
-    headers['anthropic-version'] = '2023-06-01'
-    headers['anthropic-dangerous-direct-browser-access'] = 'true'
-    body = JSON.stringify({
-      model,
-      max_tokens: 2000,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: prompt }],
-    })
-  } else {
-    headers['Authorization'] = `Bearer ${key}`
-    body = JSON.stringify({
-      model,
-      max_tokens: 2000,
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: prompt },
-      ],
-    })
-  }
-
-  const res = await fetch(url, { method: 'POST', headers, body })
   const rawText = await res.text()
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${rawText.slice(0, 200)}`)
 
   const data = JSON.parse(rawText)
-  if (data.error) throw new Error(`API错误: ${data.error.message || JSON.stringify(data.error)}`)
-
-  if (isAnthropic) {
-    return (data.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('').trim()
-  }
-  return data.choices?.[0]?.message?.content?.trim() || ''
+  if (data.error) throw new Error(`服务器错误: ${data.error}`)
+  return data.content?.trim() || ''
 }
 
 function parseStories(raw: string): Story[] {
@@ -236,52 +214,41 @@ function Panel({ cat, stories, loading, error, onFetch }: {
 }
 
 function SettingsPanel({ onClose }: { onClose: () => void }) {
-  const [url, setUrl] = useState(localStorage.getItem('digest-api-url') || 'https://api.anthropic.com/v1/messages')
-  const [key, setKey] = useState(localStorage.getItem('digest-api-key') || '')
-  const [model, setModel] = useState(localStorage.getItem('digest-api-model') || 'claude-sonnet-4-20250514')
+  const [backendUrl, setBackendUrl] = useState(
+    localStorage.getItem('digest-backend-url') || ''
+  )
 
   const save = () => {
-    localStorage.setItem('digest-api-url', url)
-    localStorage.setItem('digest-api-key', key)
-    localStorage.setItem('digest-api-model', model)
+    localStorage.setItem('digest-backend-url', backendUrl.trim())
     onClose()
   }
 
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '7px 10px', background: '#0a0a0a',
+    border: '1px solid #2a2a2a', borderRadius: 2, color: '#e0d8c8',
+    fontFamily: 'monospace', fontSize: 12,
+  }
+
   return (
-    <div style={{
-      background: '#0f0f0f', border: '1px solid #1e1e1e', borderRadius: 3,
-      padding: 20, marginBottom: 16,
-    }}>
+    <div style={{ background: '#0f0f0f', border: '1px solid #1e1e1e', borderRadius: 3, padding: 20, marginBottom: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-        <span style={{ fontFamily: 'Georgia, serif', fontWeight: 700, fontSize: 14, color: '#e0d8c8' }}>
-          API 设置
-        </span>
+        <span style={{ fontFamily: 'Georgia, serif', fontWeight: 700, fontSize: 14, color: '#e0d8c8' }}>设置</span>
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: 14 }}>✕</button>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <div>
           <label style={{ display: 'block', fontFamily: 'monospace', fontSize: 10, color: '#666', marginBottom: 4, letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
-            API URL
+            后端地址（Railway URL）
           </label>
-          <input value={url} onChange={e => setUrl(e.target.value)}
-            style={{ width: '100%', padding: '7px 10px', background: '#0a0a0a', border: '1px solid #2a2a2a', borderRadius: 2, color: '#e0d8c8', fontFamily: 'monospace', fontSize: 12 }}
+          <input
+            value={backendUrl}
+            onChange={e => setBackendUrl(e.target.value)}
+            placeholder="https://你的应用.up.railway.app"
+            style={inputStyle}
           />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontFamily: 'monospace', fontSize: 10, color: '#666', marginBottom: 4, letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
-            API KEY
-          </label>
-          <input type="password" value={key} onChange={e => setKey(e.target.value)}
-            style={{ width: '100%', padding: '7px 10px', background: '#0a0a0a', border: '1px solid #2a2a2a', borderRadius: 2, color: '#e0d8c8', fontFamily: 'monospace', fontSize: 12 }}
-          />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontFamily: 'monospace', fontSize: 10, color: '#666', marginBottom: 4, letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
-            MODEL
-          </label>
-          <input value={model} onChange={e => setModel(e.target.value)}
-            style={{ width: '100%', padding: '7px 10px', background: '#0a0a0a', border: '1px solid #2a2a2a', borderRadius: 2, color: '#e0d8c8', fontFamily: 'monospace', fontSize: 12 }}
-          />
+          <div style={{ fontSize: 10, color: '#444', marginTop: 4, fontFamily: 'monospace' }}>
+            留空时走同域 /api/digest（本地开发用）
+          </div>
         </div>
         <button onClick={save} style={{
           padding: '7px 16px', background: '#e0d8c8', color: '#0a0a0a', border: 'none', borderRadius: 2,
@@ -305,6 +272,8 @@ export default function DailyDigest() {
   const today = new Date().toLocaleDateString('zh-CN', {
     year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
   })
+
+  const backendConfigured = !!localStorage.getItem('digest-backend-url')
 
   const fetchCat = async (cat: typeof CATEGORIES[0], forceRefresh = false) => {
     if (!forceRefresh && cache[cat.id]?.date === todayKey) {
@@ -336,7 +305,6 @@ export default function DailyDigest() {
 
   const fetchAll = () => { CATEGORIES.forEach(cat => fetchCat(cat)) }
   const anyLoading = Object.values(loading).some(Boolean)
-  const hasKey = !!localStorage.getItem('digest-api-key')
 
   return (
     <div style={{ minHeight: '100vh', color: '#e0d8c8' }}>
@@ -362,13 +330,13 @@ export default function DailyDigest() {
           }}>
             ⚙ 设置
           </button>
-          <button onClick={fetchAll} disabled={anyLoading || !hasKey} style={{
+          <button onClick={fetchAll} disabled={anyLoading} style={{
             padding: '8px 18px', fontSize: 11, fontFamily: 'monospace', fontWeight: 700,
             letterSpacing: '0.1em',
-            backgroundColor: (anyLoading || !hasKey) ? '#181818' : '#e0d8c8',
-            color: (anyLoading || !hasKey) ? '#444' : '#0a0a0a',
+            backgroundColor: anyLoading ? '#181818' : '#e0d8c8',
+            color: anyLoading ? '#444' : '#0a0a0a',
             border: 'none', borderRadius: 2,
-            cursor: (anyLoading || !hasKey) ? 'not-allowed' : 'pointer',
+            cursor: anyLoading ? 'not-allowed' : 'pointer',
           }}>
             {anyLoading ? '获取中…' : '▶ 一键获取全部'}
           </button>
@@ -379,14 +347,14 @@ export default function DailyDigest() {
         {/* Settings */}
         {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
 
-        {/* No API key notice */}
-        {!hasKey && !showSettings && (
+        {/* Backend URL notice */}
+        {!backendConfigured && !showSettings && (
           <div style={{
             background: '#1a2a3a', border: '1px solid #1e40af', borderRadius: 3,
             padding: '14px 16px', marginBottom: 16,
             fontSize: 12, color: '#60a5fa', fontFamily: 'monospace',
           }}>
-            首次使用请点击「⚙ 设置」配置 API Key
+            首次使用请点击「⚙ 设置」填入 Railway 后端地址 · 本地开发可直接使用
           </div>
         )}
 
