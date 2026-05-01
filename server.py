@@ -15,8 +15,6 @@ load_dotenv()  # Load MINIMAX_API_KEY from .env if present
 # Add src to path so we can import rag
 SRC_DIR = Path(__file__).parent / "src"
 sys.path.insert(0, str(SRC_DIR))
-from rag import query_knowledge_base, stream_query_knowledge_base
-from tutor import stream_tutor_response
 
 app = FastAPI()
 
@@ -105,6 +103,7 @@ async def chat(request: ChatRequest):
     if not api_key:
         return JSONResponse(content={"error": "MINIMAX_API_KEY environment variable is missing."}, status_code=500)
 
+    from rag import query_knowledge_base
     result = query_knowledge_base(request.query, history=request.history, api_key=api_key)
     return result
 
@@ -116,6 +115,8 @@ async def chat_stream(request: ChatRequest):
         import json
         error_event = f"data: {json.dumps({'type': 'error', 'message': 'MINIMAX_API_KEY environment variable is missing.'})}\n\n"
         return StreamingResponse(iter([error_event]), media_type="text/event-stream")
+
+    from rag import stream_query_knowledge_base
 
     def generate():
         yield from stream_query_knowledge_base(request.query, history=request.history, api_key=api_key)
@@ -134,6 +135,8 @@ async def tutor_stream(request: TutorRequest):
         import json
         error_event = f"data: {json.dumps({'type': 'error', 'message': 'MINIMAX_API_KEY environment variable is missing.'})}\n\n"
         return StreamingResponse(iter([error_event]), media_type="text/event-stream")
+
+    from tutor import stream_tutor_response
 
     def generate():
         yield from stream_tutor_response(
