@@ -8,7 +8,7 @@ import os
 import re
 from typing import Generator, Optional
 
-from openai import OpenAI
+from anthropic import Anthropic
 
 from rag import (
     _get_collection,
@@ -19,8 +19,7 @@ from rag import (
     COLLECTION_NAME,
 )
 
-TUTOR_MODEL      = "HS-MiniMax-M2.5-W8A8"
-MINIMAX_BASE_URL = "http://aiagent.jaguar-network.cn:8095/v1"
+TUTOR_MODEL  = os.environ.get("TUTOR_MODEL", "claude-sonnet-4-6")
 MAX_TOKENS   = 2000   # tutor replies should be focused, not essays
 
 # ── System prompt ────────────────────────────────────────────────────────────
@@ -226,7 +225,10 @@ def stream_tutor_response(
 ) -> Generator[str, None, None]:
     """SSE generator for tutor responses. Same event format as RAG chat."""
 
-    key = api_key or os.environ.get("MINIMAX_API_KEY", "no-key")
+    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
+    if not key:
+        yield f"data: {json.dumps({'type': 'error', 'message': 'ANTHROPIC_API_KEY 未设置'})}\n\n"
+        return
 
     state = curriculum_state or {"currentModule": 1, "currentCycle": "1.1", "completedCycles": []}
 
@@ -257,24 +259,23 @@ def stream_tutor_response(
 
     msgs.append({"role": "user", "content": user_content})
 
-    # 4. Stream MiniMax response
+    # 4. Stream via Anthropic
     try:
-        client = OpenAI(api_key=key, base_url=MINIMAX_BASE_URL)
+        client = Anthropic(api_key=key)
         full_text = ""
 
-        stream = client.chat.completions.create(
+        with client.messages.stream(
             model=TUTOR_MODEL,
             max_tokens=MAX_TOKENS,
-            messages=[{"role": "system", "content": system}] + msgs,
-            stream=True,
-        )
-        for chunk in stream:
-            text = chunk.choices[0].delta.content or ""
-            if text:
-                full_text += text
-                # Don't stream meta tags to the user
-                if not re.search(r"<(advance_to|framework_insight|parking_lot)>", text):
-                    yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
+            system=system,
+            messages=msgs,
+        ) as stream:
+            for text in stream.text_stream:
+                if text:
+                    full_text += text
+                    # Don't stream meta tags to the user
+                    if not re.search(r"<(advance_to|framework_insight|parking_lot)>", text):
+                        yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
 
         # 5. Parse meta and emit done event
         meta = _parse_tutor_meta(full_text)
