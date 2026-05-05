@@ -1,141 +1,714 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Compounder · 复利国</title>
-    <link rel="stylesheet" href="/static/style.css?v=9">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=SF+Pro+Display:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>复利国 — The Compounder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#FAF9F6;
+  --bg-warm:#F4F0E6;
+  --bg-dark:#141412;
+  --text:#1C1C1A;
+  --text-mid:#5A5852;
+  --text-muted:#9A9790;
+  --gold:#B8892E;
+  --gold-dark:#8A6520;
+  --gold-light:#E8D5A8;
+  --border:#E0DAD0;
+  --border-light:#ECDFD0;
+  --serif:'Playfair Display','Noto Serif SC',Georgia,serif;
+  --sans:'DM Sans',-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;
+  --max:1120px;
+  --nav-h:68px;
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+.container{max-width:var(--max);margin:0 auto;padding:0 40px}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:var(--nav-h);
+  background:rgba(250,249,246,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  transition:box-shadow .3s;
+}
+nav.scrolled{box-shadow:0 1px 20px rgba(0,0,0,0.06)}
+.nav-inner{
+  max-width:var(--max);margin:0 auto;padding:0 40px;
+  height:100%;display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{display:flex;align-items:baseline;gap:10px;cursor:pointer}
+.nav-logo-cn{font-family:var(--serif);font-size:20px;font-weight:700;letter-spacing:.02em}
+.nav-logo-sep{width:1px;height:14px;background:var(--gold);opacity:.5;align-self:center}
+.nav-logo-en{font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-mid)}
+.nav-links{display:flex;align-items:center;gap:36px}
+.nav-link{font-size:14px;font-weight:400;color:var(--text-mid);letter-spacing:.02em;transition:color .2s;padding-bottom:2px;border-bottom:1px solid transparent}
+.nav-link:hover{color:var(--text);border-bottom-color:var(--gold)}
+.nav-right{display:flex;align-items:center;gap:20px}
+.lang-toggle{
+  display:flex;align-items:center;gap:0;
+  background:var(--bg-warm);border:1px solid var(--border);border-radius:20px;
+  overflow:hidden;cursor:pointer;
+}
+.lang-btn{
+  padding:5px 14px;font-size:12px;font-weight:500;letter-spacing:.06em;
+  color:var(--text-muted);transition:all .2s;background:transparent;border:none;cursor:pointer;
+}
+.lang-btn.active{background:var(--text);color:var(--bg)}
+.nav-cta{
+  padding:8px 20px;background:var(--text);color:var(--bg);
+  font-size:13px;font-weight:500;letter-spacing:.04em;border-radius:3px;
+  border:none;cursor:pointer;transition:opacity .2s;
+}
+.nav-cta:hover{opacity:.8}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;display:flex;align-items:center;
+  padding-top:var(--nav-h);position:relative;overflow:hidden;
+}
+.hero-bg-line{
+  position:absolute;right:0;top:0;bottom:0;width:1px;
+  background:linear-gradient(to bottom,transparent,var(--border),transparent);
+}
+.hero-decoration{
+  position:absolute;right:80px;top:50%;transform:translateY(-50%);
+  width:380px;height:380px;pointer-events:none;opacity:.06;
+}
+.hero-content{max-width:720px;position:relative;z-index:1}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold-dark);margin-bottom:36px;
+}
+.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--gold)}
+.hero-h1{
+  font-family:var(--serif);font-size:clamp(44px,5.5vw,68px);
+  font-weight:700;line-height:1.1;letter-spacing:-.01em;
+  margin-bottom:28px;color:var(--text);
+}
+.hero-h1 em{font-style:italic;color:var(--gold-dark)}
+.hero-sub{
+  font-size:17px;color:var(--text-mid);line-height:1.75;
+  max-width:520px;margin-bottom:52px;font-weight:300;
+}
+.hero-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.btn-primary{
+  padding:14px 36px;background:var(--text);color:var(--bg);
+  font-size:14px;font-weight:500;letter-spacing:.06em;
+  border-radius:3px;border:none;cursor:pointer;transition:opacity .2s;
+}
+.btn-primary:hover{opacity:.8}
+.btn-secondary{
+  padding:14px 36px;background:transparent;color:var(--text);
+  font-size:14px;font-weight:400;letter-spacing:.04em;
+  border-radius:3px;border:1px solid var(--border);cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.btn-secondary:hover{border-color:var(--text-mid);color:var(--text)}
+.hero-stats{
+  display:flex;align-items:center;gap:40px;margin-top:72px;
+  padding-top:40px;border-top:1px solid var(--border);
+}
+.stat-item{display:flex;flex-direction:column;gap:4px}
+.stat-num{font-family:var(--serif);font-size:30px;font-weight:500;color:var(--text)}
+.stat-label{font-size:12px;color:var(--text-muted);letter-spacing:.06em}
+
+/* ── SECTION BASE ── */
+section{padding:120px 0}
+.section-label{
+  font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold-dark);margin-bottom:20px;
+}
+.section-title{
+  font-family:var(--serif);font-size:clamp(32px,4vw,48px);
+  font-weight:700;line-height:1.15;letter-spacing:-.01em;
+  margin-bottom:20px;
+}
+.section-sub{
+  font-size:17px;color:var(--text-mid);font-weight:300;
+  max-width:560px;line-height:1.75;
+}
+
+/* ── PILLARS ── */
+.pillars-section{background:var(--bg-warm)}
+.pillars-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  margin-top:72px;background:var(--border);
+}
+.pillar{
+  background:var(--bg-warm);padding:48px 40px;
+  transition:background .2s;
+}
+.pillar:hover{background:#EDE9DF}
+.pillar-icon{
+  width:36px;height:36px;margin-bottom:28px;
+  color:var(--gold);
+}
+.pillar-title{
+  font-family:var(--serif);font-size:22px;font-weight:500;
+  margin-bottom:14px;line-height:1.2;
+}
+.pillar-body{font-size:15px;color:var(--text-mid);line-height:1.75;font-weight:300}
+
+/* ── FEATURES ── */
+.features-header{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end;margin-bottom:80px}
+.feature-cards{display:flex;flex-direction:column;gap:2px}
+.feature-card{
+  display:grid;grid-template-columns:1fr 1fr;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:4px;overflow:hidden;
+  transition:border-color .3s,box-shadow .3s;
+}
+.feature-card:hover{border-color:var(--gold-light);box-shadow:0 8px 40px rgba(0,0,0,.06)}
+.feature-card-body{padding:64px 56px;display:flex;flex-direction:column;justify-content:space-between}
+.feature-tag{
+  display:inline-block;padding:5px 14px;
+  background:var(--gold-light);color:var(--gold-dark);
+  font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  border-radius:2px;margin-bottom:32px;
+}
+.feature-title{
+  font-family:var(--serif);font-size:30px;font-weight:700;
+  line-height:1.15;margin-bottom:18px;
+}
+.feature-desc{font-size:15px;color:var(--text-mid);font-weight:300;line-height:1.8;margin-bottom:36px}
+.feature-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:40px}
+.feature-list li{
+  font-size:14px;color:var(--text-mid);
+  display:flex;align-items:flex-start;gap:12px;line-height:1.5;
+}
+.feature-list li::before{
+  content:'';flex-shrink:0;
+  width:4px;height:4px;border-radius:50%;
+  background:var(--gold);margin-top:7px;
+}
+.feature-link{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:14px;font-weight:500;color:var(--text);
+  border-bottom:1px solid var(--text);padding-bottom:2px;
+  transition:color .2s,border-color .2s;
+}
+.feature-link:hover{color:var(--gold-dark);border-color:var(--gold-dark)}
+.feature-link svg{transition:transform .2s}
+.feature-link:hover svg{transform:translateX(3px)}
+.feature-card-visual{
+  background:var(--bg-warm);
+  display:flex;align-items:center;justify-content:center;
+  padding:48px;min-height:380px;
+  position:relative;overflow:hidden;
+}
+.mock-chat{
+  width:100%;max-width:300px;
+  background:#fff;border-radius:8px;border:1px solid var(--border);
+  box-shadow:0 12px 40px rgba(0,0,0,.08);overflow:hidden;
+}
+.mock-chat-header{
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  font-size:12px;font-weight:500;color:var(--text-mid);
+  display:flex;align-items:center;gap:8px;
+}
+.mock-dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.mock-msg{padding:14px 18px;border-bottom:1px solid var(--border-light)}
+.mock-msg-q{
+  font-size:12px;color:var(--text);line-height:1.5;
+  background:var(--bg-warm);padding:10px 12px;border-radius:4px;margin-bottom:10px;
+}
+.mock-msg-a{font-size:12px;color:var(--text-mid);line-height:1.6}
+.mock-highlight{color:var(--gold-dark);font-weight:500}
+
+.mock-training{
+  width:100%;max-width:300px;
+  background:#fff;border-radius:8px;border:1px solid var(--border);
+  box-shadow:0 12px 40px rgba(0,0,0,.08);overflow:hidden;
+}
+.mock-progress{
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.mock-progress-label{font-size:11px;font-weight:500;color:var(--text-mid);letter-spacing:.06em}
+.mock-progress-bar{height:3px;background:var(--border);border-radius:2px;flex:1;margin:0 12px}
+.mock-progress-fill{height:100%;width:60%;background:var(--gold);border-radius:2px}
+.mock-progress-num{font-size:11px;color:var(--text-muted)}
+.mock-question{padding:18px 18px 14px;border-bottom:1px solid var(--border-light)}
+.mock-question-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:8px;font-weight:500}
+.mock-question-text{font-size:12px;color:var(--text);line-height:1.6;font-weight:500}
+.mock-choices{padding:14px 18px;display:flex;flex-direction:column;gap:8px}
+.mock-choice{
+  padding:8px 12px;font-size:11px;color:var(--text-mid);
+  border:1px solid var(--border);border-radius:3px;cursor:pointer;
+  transition:all .15s;
+}
+.mock-choice.selected{border-color:var(--gold);background:rgba(184,137,46,.05);color:var(--text)}
+
+/* ── QUOTE ── */
+.quote-section{
+  background:var(--bg-dark);color:#FAF9F6;
+  padding:120px 0;
+}
+.quote-inner{max-width:800px;margin:0 auto;text-align:center}
+.quote-mark{
+  font-family:var(--serif);font-size:80px;line-height:.5;
+  color:var(--gold);opacity:.4;margin-bottom:24px;display:block;
+}
+.quote-text{
+  font-family:var(--serif);font-size:clamp(22px,3vw,30px);
+  font-weight:400;font-style:italic;line-height:1.55;
+  color:#EDE8DF;margin-bottom:32px;
+}
+.quote-author{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:rgba(250,249,246,.4)}
+.quote-author span{color:var(--gold-light)}
+
+/* ── HOW ── */
+.how-section{}
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-top:72px}
+.how-step{
+  background:var(--bg);padding:40px 32px;
+  display:flex;flex-direction:column;gap:20px;
+}
+.how-num{
+  font-family:var(--serif);font-size:36px;font-weight:700;
+  color:var(--gold-light);line-height:1;
+}
+.how-title{font-size:16px;font-weight:500;color:var(--text);line-height:1.3}
+.how-body{font-size:14px;color:var(--text-muted);line-height:1.7;font-weight:300}
+
+/* ── CTA ── */
+.cta-section{background:var(--bg-warm);text-align:center}
+.cta-inner{max-width:600px;margin:0 auto}
+.cta-title{font-family:var(--serif);font-size:clamp(32px,4vw,44px);font-weight:700;line-height:1.15;margin-bottom:20px}
+.cta-sub{font-size:17px;color:var(--text-mid);font-weight:300;margin-bottom:48px;line-height:1.7}
+.cta-actions{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--bg);border-top:1px solid var(--border);
+  padding:60px 0 40px;
+}
+.footer-inner{display:grid;grid-template-columns:2fr 1fr 1fr;gap:60px;margin-bottom:60px}
+.footer-brand{}
+.footer-logo{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:6px}
+.footer-logo-en{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:16px}
+.footer-tagline{font-size:13px;color:var(--text-muted);line-height:1.7;max-width:260px}
+.footer-col-title{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-mid);margin-bottom:20px}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:12px}
+.footer-links a{font-size:14px;color:var(--text-muted);transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+.footer-bottom{
+  border-top:1px solid var(--border);padding-top:32px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.footer-copy{font-size:13px;color:var(--text-muted)}
+.footer-gold-line{width:32px;height:1px;background:var(--gold);opacity:.4}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .container{padding:0 24px}
+  .nav-inner{padding:0 24px}
+  .pillars-grid{grid-template-columns:1fr}
+  .features-header{grid-template-columns:1fr;gap:32px}
+  .feature-card{grid-template-columns:1fr}
+  .feature-card-visual{min-height:260px}
+  .how-grid{grid-template-columns:1fr 1fr}
+  .footer-inner{grid-template-columns:1fr;gap:40px}
+  .hero-stats{gap:24px}
+  .nav-links{display:none}
+}
+
+/* ── HIDE/SHOW LANGUAGE ── */
+[data-en]{display:none}
+body.en [data-cn]{display:none}
+body.en [data-en]{display:revert}
+</style>
 </head>
 <body>
-    <div id="app">
-        <!-- Home State -->
-        <div id="home-view" class="hero">
 
-            <!-- Language toggle -->
-            <button class="lang-toggle lang-toggle--home" onclick="toggleLang()">EN</button>
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="scrollTo(0,0)">
+      <span class="nav-logo-cn">复利国</span>
+      <span class="nav-logo-sep"></span>
+      <span class="nav-logo-en">The Compounder</span>
+    </div>
+    <div class="nav-links">
+      <a class="nav-link" href="qa.html"><span data-cn>问答库</span><span data-en>Knowledge Library</span></a>
+      <a class="nav-link" href="gym.html"><span data-cn>思维训练营</span><span data-en>Thinking Gym</span></a>
+      <a class="nav-link" href="#how"><span data-cn>如何使用</span><span data-en>How It Works</span></a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="btn-cn" onclick="setLang('cn')">中</button>
+        <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="nav-cta" onclick="location.href='qa.html'">
+        <span data-cn>开始学习</span>
+        <span data-en>Start Learning</span>
+      </button>
+    </div>
+  </div>
+</nav>
 
-            <!-- Hidden: preserves JS bindings for updateButtonsState / sendQuery -->
-            <div id="home-search-wrap" style="display:none;" aria-hidden="true">
-                <input id="home-search-input" type="text" autocomplete="off" />
-                <button id="home-submit-btn"></button>
-            </div>
-
-            <!-- Brand -->
-            <div class="home-brand">
-                <div class="home-brand-cn">复利国</div>
-                <div class="home-brand-en">The Compounder</div>
-            </div>
-
-            <!-- Headline -->
-            <h1 class="home-headline" id="home-headline">向大师学习，独立思考。</h1>
-            <p class="home-subheadline" id="home-subheadline">探索巴菲特、芒格、霍华德·马克斯和李录的投资智慧。</p>
-
-            <!-- Mode selection cards -->
-            <div class="home-cards">
-                <div class="home-card" onclick="openChat()">
-                    <div class="home-card-title" id="home-card-qa-title">提问投资问题</div>
-                    <div class="home-card-desc" id="home-card-qa-desc">探索巴菲特、芒格、马克斯和李录的思想。</div>
-                    <div class="home-card-cta" id="home-card-qa-cta">进入问答 →</div>
-                </div>
-                <div class="home-card" onclick="window.location.href='/tutor'">
-                    <div class="home-card-title" id="home-card-train-title">实践课程</div>
-                    <div class="home-card-desc" id="home-card-train-desc">跟着学习地图，用可口可乐真实案例把投资框架学明白。</div>
-                    <div class="home-card-cta" id="home-card-train-cta">开始实践 →</div>
-                </div>
-            </div>
-
-            <!-- Footer tag line -->
-            <div class="home-footer-line" id="home-footer-line">商业 · 思维 · 风险 · 时间</div>
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span data-cn>价值投资入门平台</span>
+        <span data-en>Value Investing for Beginners</span>
+      </div>
+      <h1 class="hero-h1">
+        <span data-cn>像巴菲特一样<br><em>思考</em>投资</span>
+        <span data-en>Learn to Think<br>Like <em>Buffett</em></span>
+      </h1>
+      <p class="hero-sub">
+        <span data-cn>复利国是专为价值投资入门学员设计的学习平台。不给结论，只给能让你独立思考的框架与问题。</span>
+        <span data-en>The Compounder is built for investors just starting their value investing journey. We don't give conclusions — we give you the frameworks to think for yourself.</span>
+      </p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="location.href='qa.html'">
+          <span data-cn>进入问答库</span>
+          <span data-en>Explore the Library</span>
+        </button>
+        <button class="btn-secondary" onclick="location.href='gym.html'">
+          <span data-cn>开始思维训练</span>
+          <span data-en>Start the Thinking Gym</span>
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num">4</span>
+          <span class="stat-label"><span data-cn>价值投资核心支柱</span><span data-en>Core Pillars</span></span>
         </div>
-
-        <!-- Chat State -->
-        <div id="chat-view" style="display: none;">
-            <header class="chat-header">
-                <div class="logo-container" onclick="location.reload()" title="New Conversation">
-                    <img src="/static/logo.png" alt="Logo" class="nav-logo">
-                    <span class="brand-text">价值投资</span>
-                </div>
-                <div class="header-actions">
-                    <button class="new-chat-btn" onclick="newChat()" title="New Conversation">+ 新对话</button>
-                    <button class="lang-toggle" onclick="toggleLang()">EN</button>
-                </div>
-            </header>
-
-            <div class="chat-container">
-                <div id="sidebar" class="sidebar">
-                    <div class="sidebar-header">
-                        <span id="sidebar-title">来源片段</span>
-                        <button class="close-sidebar" onclick="closeSidebar()">✕</button>
-                    </div>
-                    <div id="sidebar-content"></div>
-                </div>
-                <div id="chat-main">
-                    <!-- Pre-chat landing -->
-                    <div id="pre-chat">
-                        <h1 class="pre-chat-title" id="pre-chat-title">向大师学习。</h1>
-                        <div class="search-wrap pre-chat-search-wrap">
-                            <input id="pre-chat-input" class="search-input" type="text"
-                                   placeholder="询问任何价值投资相关问题…" autocomplete="off" />
-                            <button class="wave-btn active" id="pre-chat-submit-btn">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="12" y1="19" x2="12" y2="5"></line>
-                                    <polyline points="5 12 12 5 19 12"></polyline>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="pre-chat-suggestions">
-                            <!-- Populated by applyLang() -->
-                        </div>
-                    </div>
-
-                    <div id="chat-history"></div>
-
-                    <div class="chat-input-container">
-                        <div class="search-wrap">
-                            <button class="plus-btn" title="Add files and more">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                            </button>
-                            <input id="chat-search-input" class="search-input" type="text" placeholder="继续提问…" autocomplete="off" />
-                            <button class="wave-btn" id="chat-submit-btn">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="12" y1="19" x2="12" y2="5"></line>
-                                    <polyline points="5 12 12 5 19 12"></polyline>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="stat-item">
+          <span class="stat-num">Graham → Buffett → Munger</span>
+          <span class="stat-label"><span data-cn>知识体系传承</span><span data-en>Intellectual Lineage</span></span>
         </div>
-
-        <!-- Training View -->
-        <div id="training-view" style="display: none;">
-            <header class="chat-header">
-                <div class="logo-container" onclick="exitTraining()">
-                    <img src="/static/logo.png" alt="Logo" class="nav-logo">
-                    <span class="brand-text">价值投资</span>
-                </div>
-                <div class="training-header-right">
-                    <span id="training-step-label" class="training-step-label"></span>
-                    <button class="lang-toggle" onclick="toggleLang()">EN</button>
-                    <button class="training-back-btn" onclick="exitTraining()">← 主页</button>
-                </div>
-            </header>
-            <div id="training-progress-wrap">
-                <div id="training-progress-fill"></div>
-            </div>
-            <div id="training-body"></div>
+        <div class="stat-item">
+          <span class="stat-num">Li Lu</span>
+          <span class="stat-label"><span data-cn>现代价值投资实践</span><span data-en>Modern Practice</span></span>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- decorative SVG -->
+  <svg class="hero-decoration" viewBox="0 0 380 380" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="190" cy="190" r="180" stroke="#B8892E" stroke-width="1"/>
+    <circle cx="190" cy="190" r="140" stroke="#B8892E" stroke-width="1"/>
+    <circle cx="190" cy="190" r="100" stroke="#B8892E" stroke-width="1"/>
+    <circle cx="190" cy="190" r="60" stroke="#B8892E" stroke-width="1"/>
+    <circle cx="190" cy="190" r="20" fill="#B8892E"/>
+    <line x1="10" y1="190" x2="370" y2="190" stroke="#B8892E" stroke-width="1"/>
+    <line x1="190" y1="10" x2="190" y2="370" stroke="#B8892E" stroke-width="1"/>
+  </svg>
+</section>
+
+<!-- PILLARS -->
+<section class="pillars-section">
+  <div class="container">
+    <div class="section-label" data-cn>为什么选择复利国</div>
+    <div class="section-label" data-en>Why The Compounder</div>
+    <h2 class="section-title">
+      <span data-cn>不是信息的堆砌<br>是思维的训练</span>
+      <span data-en>Not an information dump.<br>A thinking system.</span>
+    </h2>
+    <div class="pillars-grid">
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+          <path d="M6 30V12l12-8 12 8v18H6z" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M14 30v-8h8v8" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <div class="pillar-title"><span data-cn>经典智慧提炼</span><span data-en>Distilled Classics</span></div>
+        <p class="pillar-body">
+          <span data-cn>基于巴菲特股东信、芒格演讲、李录著作等一手原典，提炼最核心的价值投资知识体系。</span>
+          <span data-en>Drawn from Buffett's shareholder letters, Munger's speeches, and Li Lu's writings — the real primary sources, not secondhand summaries.</span>
+        </p>
+      </div>
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+          <circle cx="18" cy="18" r="12" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M18 10v8l6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <div class="pillar-title"><span data-cn>苏格拉底式训练</span><span data-en>Socratic Method</span></div>
+        <p class="pillar-body">
+          <span data-cn>我们不给你答案，我们问你问题。通过真实案例驱动的思维训练，建立你自己的分析框架。</span>
+          <span data-en>We don't give you answers — we ask you questions. Case-driven Socratic training builds your own analytical framework, not ours.</span>
+        </p>
+      </div>
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+          <path d="M8 28l6-8 6 4 8-12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="28" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <div class="pillar-title"><span data-cn>循序渐进成长</span><span data-en>Structured Growth</span></div>
+        <p class="pillar-body">
+          <span data-cn>从基础概念到真实企业分析，每一步都有明确路径。适合完全没有投资基础的入门学员。</span>
+          <span data-en>From first principles to real company analysis — a clear path for complete beginners, no prior finance knowledge required.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="features-header">
+      <div>
+        <div class="section-label" data-cn>核心功能</div>
+        <div class="section-label" data-en>Core Features</div>
+        <h2 class="section-title">
+          <span data-cn>两个工具<br>一个目标</span>
+          <span data-en>Two tools,<br>one goal</span>
+        </h2>
+      </div>
+      <p class="section-sub">
+        <span data-cn>问答库让你随时调取经典智慧；思维训练营帮你建立真正的投资思维。两者相辅相成，缺一不可。</span>
+        <span data-en>The library gives you on-demand access to classical wisdom. The gym builds the thinking muscle. Together, they form a complete learning system.</span>
+      </p>
     </div>
 
-    <input type="file" id="file-upload" style="display: none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,image/*,.png,.jpg,.jpeg,.webp" />
+    <div class="feature-cards">
+      <!-- Feature 1: KB -->
+      <div class="feature-card">
+        <div class="feature-card-body">
+          <div>
+            <div class="feature-tag" data-cn>功能 01</div>
+            <div class="feature-tag" data-en>Feature 01</div>
+            <h3 class="feature-title">
+              <span data-cn>价值投资<br>问答库</span>
+              <span data-en>Value Investing<br>Knowledge Library</span>
+            </h3>
+            <p class="feature-desc">
+              <span data-cn>输入任何价值投资问题，从经典文献中得到有出处、有逻辑的回答。不是 ChatGPT，是专门为价值投资打造的知识引擎。</span>
+              <span data-en>Ask any value investing question and get sourced, reasoned answers from the classics. Not a general AI — a focused knowledge engine built for investors.</span>
+            </p>
+            <ul class="feature-list">
+              <li data-cn>基于巴菲特/芒格/Graham 原著语料</li>
+              <li data-cn>回答附来源，可溯源验证</li>
+              <li data-cn>中文提问，精准理解投资语境</li>
+              <li data-en>Grounded in Buffett, Munger &amp; Graham's own words</li>
+              <li data-en>Every answer traceable to its source</li>
+              <li data-en>Ask in Chinese or English</li>
+            </ul>
+          </div>
+          <a class="feature-link" href="qa.html">
+            <span data-cn>进入问答库</span>
+            <span data-en>Open the Library</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+        <div class="feature-card-visual">
+          <div class="mock-chat">
+            <div class="mock-chat-header">
+              <div class="mock-dot"></div>
+              <span data-cn>复利国 · 问答库</span>
+              <span data-en>Knowledge Library</span>
+            </div>
+            <div class="mock-msg">
+              <div class="mock-msg-q">
+                <span data-cn>什么是护城河？巴菲特是怎么评估的？</span>
+                <span data-en>What is an economic moat, and how does Buffett evaluate it?</span>
+              </div>
+              <div class="mock-msg-a">
+                <span data-cn>护城河是企业相对竞争对手的<span class="mock-highlight">持久竞争优势</span>，使其能保护长期利润。巴菲特在 1995 年股东信中将其归纳为四类来源：品牌溢价、转换成本、网络效应与成本优势…</span>
+                <span data-en>A moat is a company's <span class="mock-highlight">durable competitive advantage</span> that protects long-term profits. Buffett identifies four sources in his 1995 letter: brand pricing power, switching costs, network effects, and cost advantages…</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- Marked.js for markdown parsing -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/script.js?v=9"></script>
+      <!-- Feature 2: Training -->
+      <div class="feature-card">
+        <div class="feature-card-body">
+          <div>
+            <div class="feature-tag" data-cn>功能 02</div>
+            <div class="feature-tag" data-en>Feature 02</div>
+            <h3 class="feature-title">
+              <span data-cn>投资思维<br>训练营</span>
+              <span data-en>Investment Thinking<br>Gym</span>
+            </h3>
+            <p class="feature-desc">
+              <span data-cn>以可口可乐等经典案例为素材，通过五轮苏格拉底式提问，训练你独立分析企业的能力。每次训练都有反馈，每个周期都有进步。</span>
+              <span data-en>Using real cases like Coca-Cola, five rounds of Socratic questioning train your ability to analyze companies independently. Feedback after each round, measurable progress over time.</span>
+            </p>
+            <ul class="feature-list">
+              <li data-cn>以真实上市公司为训练素材</li>
+              <li data-cn>五大价值投资维度逐轮拆解</li>
+              <li data-cn>每轮训练后提供专业反馈</li>
+              <li data-en>Real listed companies as training material</li>
+              <li data-en>Five value investing dimensions, one per round</li>
+              <li data-en>Expert feedback after each round</li>
+            </ul>
+          </div>
+          <a class="feature-link" href="gym.html">
+            <span data-cn>开始训练</span>
+            <span data-en>Start Training</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+        <div class="feature-card-visual">
+          <div class="mock-training">
+            <div class="mock-progress">
+              <span class="mock-progress-label" data-cn>训练进度</span>
+              <span class="mock-progress-label" data-en>Progress</span>
+              <div class="mock-progress-bar"><div class="mock-progress-fill"></div></div>
+              <span class="mock-progress-num">3/5</span>
+            </div>
+            <div class="mock-question">
+              <div class="mock-question-label" data-cn>第三轮 · 经济护城河</div>
+              <div class="mock-question-label" data-en>Round 3 · Economic Moat</div>
+              <div class="mock-question-text" data-cn>可口可乐的品牌定价权来自哪里？消费者为什么愿意为它支付溢价？</div>
+              <div class="mock-question-text" data-en>Where does Coca-Cola's brand pricing power come from? Why do consumers pay a premium?</div>
+            </div>
+            <div class="mock-choices">
+              <div class="mock-choice" data-cn>产品本身口味独特，无可替代</div>
+              <div class="mock-choice" data-en>The taste itself is unique and irreplaceable</div>
+              <div class="mock-choice selected" data-cn>百年情感积累形成的信任与习惯</div>
+              <div class="mock-choice selected" data-en>A century of emotional brand equity and habit</div>
+              <div class="mock-choice" data-cn>广告投入规模大，竞争者难以复制</div>
+              <div class="mock-choice" data-en>Advertising scale that competitors can't match</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <div class="container">
+    <div class="quote-inner">
+      <span class="quote-mark">"</span>
+      <p class="quote-text" data-cn>投资很简单，但并不容易。真正的优势，不在于信息，而在于思维方式。</p>
+      <p class="quote-text" data-en>Investing is simple, but not easy. The real edge doesn't come from information — it comes from how you think.</p>
+      <p class="quote-author"><span data-cn>沃伦·巴菲特 · </span><span data-en>Warren Buffett · </span><span>Berkshire Hathaway</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section id="how">
+  <div class="container">
+    <div class="section-label" data-cn>使用路径</div>
+    <div class="section-label" data-en>How It Works</div>
+    <h2 class="section-title">
+      <span data-cn>四步开始你的<br>价值投资之旅</span>
+      <span data-en>Four steps to start<br>your value investing journey</span>
+    </h2>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-num">01</div>
+        <div class="how-title"><span data-cn>进入问答库</span><span data-en>Enter the Library</span></div>
+        <p class="how-body"><span data-cn>用自然语言提问，获取基于经典原著的回答，建立概念基础。</span><span data-en>Ask questions in natural language and get answers grounded in the classics to build your conceptual foundation.</span></p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">02</div>
+        <div class="how-title"><span data-cn>选择训练案例</span><span data-en>Choose a Case</span></div>
+        <p class="how-body"><span data-cn>从可口可乐等经典企业出发，进入五轮结构化分析训练。</span><span data-en>Start with a classic like Coca-Cola and enter five rounds of structured analysis training.</span></p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">03</div>
+        <div class="how-title"><span data-cn>接受苏格拉底提问</span><span data-en>Socratic Questioning</span></div>
+        <p class="how-body"><span data-cn>系统不给答案，只问问题——逼你独立思考，形成自己的判断。</span><span data-en>The system doesn't give answers — it asks questions, forcing you to form independent judgments.</span></p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">04</div>
+        <div class="how-title"><span data-cn>记录投资备忘录</span><span data-en>Write Your Memo</span></div>
+        <p class="how-body"><span data-cn>每次训练结束，提炼成一份属于你自己的投资分析备忘录。</span><span data-en>After each training cycle, distill your thinking into a personal investment analysis memo.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-inner">
+      <h2 class="cta-title">
+        <span data-cn>现在开始，复利你的<br>投资思维</span>
+        <span data-en>Start compounding<br>your investment thinking</span>
+      </h2>
+      <p class="cta-sub">
+        <span data-cn>免费使用，无需注册。打开浏览器，第一个问题就是你的起点。</span>
+        <span data-en>Free to use, no registration needed. Open your browser — your first question is your starting point.</span>
+      </p>
+      <div class="cta-actions">
+        <button class="btn-primary" onclick="location.href='qa.html'">
+          <span data-cn>进入问答库 →</span>
+          <span data-en>Open the Library →</span>
+        </button>
+        <button class="btn-secondary" onclick="location.href='gym.html'">
+          <span data-cn>开始思维训练</span>
+          <span data-en>Start the Gym</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">复利国</div>
+        <div class="footer-logo-en">The Compounder</div>
+        <p class="footer-tagline">
+          <span data-cn>为价值投资入门学员打造的学习平台。不给结论，只给思维框架。</span>
+          <span data-en>A learning platform for value investing beginners. We give you frameworks, not conclusions.</span>
+        </p>
+      </div>
+      <div>
+        <div class="footer-col-title" data-cn>功能</div>
+        <div class="footer-col-title" data-en>Features</div>
+        <ul class="footer-links">
+          <li><a href="#features" data-cn>价值投资问答库</a><a href="#features" data-en>Knowledge Library</a></li>
+          <li><a href="#features" data-cn>投资思维训练营</a><a href="#features" data-en>Thinking Gym</a></li>
+          <li><a href="#how" data-cn>使用指南</a><a href="#how" data-en>How It Works</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title" data-cn>关于</div>
+        <div class="footer-col-title" data-en>About</div>
+        <ul class="footer-links">
+          <li><a href="#" data-cn>关于复利国</a><a href="#" data-en>About Us</a></li>
+          <li><a href="https://www.linkedin.com/in/your-profile" target="_blank">LinkedIn</a></li>
+          <li><a href="#" data-cn>播客：价值投资知识库</a><a href="#" data-en>Podcast</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 复利国 The Compounder. <span data-cn>保留所有权利。</span><span data-en>All rights reserved.</span></span>
+      <div class="footer-gold-line"></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function setLang(lang){
+  document.body.classList.toggle('en', lang==='en');
+  document.getElementById('btn-cn').classList.toggle('active', lang==='cn');
+  document.getElementById('btn-en').classList.toggle('active', lang==='en');
+}
+window.addEventListener('scroll',function(){
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+</script>
 </body>
 </html>
