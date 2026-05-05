@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>思维训练营 · 复利国 The Compounder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F6;--bg-warm:#F4F0E6;--bg-dark:#141412;
+  --text:#1C1C1A;--text-mid:#5A5852;--text-muted:#9A9790;
+  --gold:#B8892E;--gold-dark:#8A6520;--gold-light:#E8D5A8;
+  --border:#E0DAD0;--border-light:#ECDFD0;
+  --serif:'Playfair Display','Noto Serif SC',Georgia,serif;
+  --sans:'DM Sans',-apple-system,'PingFang SC',sans-serif;
+  --nav-h:68px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);background:rgba(250,249,246,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-inner{padding:0 32px;height:100%;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:baseline;gap:10px;cursor:pointer;text-decoration:none;color:inherit}
+.nav-logo-cn{font-family:var(--serif);font-size:19px;font-weight:700}
+.nav-logo-sep{width:1px;height:13px;background:var(--gold);opacity:.5;align-self:center}
+.nav-logo-en{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-mid)}
+.nav-center{display:flex;align-items:center;gap:4px;background:var(--bg-warm);border:1px solid var(--border);border-radius:4px;padding:3px}
+.nav-tab{padding:6px 20px;font-size:13px;font-weight:400;color:var(--text-mid);border-radius:3px;cursor:pointer;transition:all .2s;text-decoration:none;border:none;background:transparent}
+.nav-tab.active{background:var(--text);color:var(--bg);font-weight:500}
+.nav-tab:hover:not(.active){color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.lang-toggle{display:flex;align-items:center;background:var(--bg-warm);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.lang-btn{padding:5px 13px;font-size:11px;font-weight:500;color:var(--text-muted);transition:all .2s;background:transparent;border:none;cursor:pointer}
+.lang-btn.active{background:var(--text);color:var(--bg)}
+
+/* SCREENS */
+.screen{display:none;padding-top:var(--nav-h)}
+.screen.active{display:block}
+
+/* ── SCREEN 1: CASE SELECTION ── */
+.select-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px}
+.select-eyebrow{font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.select-eyebrow::before{content:'';width:24px;height:1px;background:var(--gold)}
+.select-title{font-family:var(--serif);font-size:clamp(36px,5vw,52px);font-weight:700;line-height:1.1;text-align:center;margin-bottom:16px}
+.select-sub{font-size:16px;color:var(--text-mid);text-align:center;max-width:480px;margin-bottom:64px;font-weight:300;line-height:1.75}
+.case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;width:100%;max-width:860px}
+.case-card{border:1px solid var(--border);border-radius:4px;padding:32px;background:#fff;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.case-card:hover{border-color:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.07)}
+.case-card.locked{opacity:.5;cursor:not-allowed}
+.case-card.locked:hover{transform:none;box-shadow:none;border-color:var(--border)}
+.case-badge{display:inline-block;padding:3px 10px;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;border-radius:2px;margin-bottom:20px}
+.case-badge.available{background:var(--gold-light);color:var(--gold-dark)}
+.case-badge.coming{background:var(--bg-warm);color:var(--text-muted)}
+.case-name{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:8px;line-height:1.2}
+.case-en{font-size:12px;color:var(--text-muted);letter-spacing:.08em;margin-bottom:16px}
+.case-desc{font-size:14px;color:var(--text-mid);line-height:1.65;font-weight:300}
+.case-meta{display:flex;align-items:center;gap:16px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border-light)}
+.case-meta-item{font-size:12px;color:var(--text-muted)}
+.case-meta-item span{color:var(--text-mid);font-weight:500}
+.case-card-arrow{position:absolute;bottom:28px;right:28px;width:28px;height:28px;border-radius:50%;background:var(--bg-warm);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.case-card:hover .case-card-arrow{opacity:1}
+
+/* ── SCREEN 2: TRAINING ── */
+.training-screen{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+.training-header{margin-bottom:48px}
+.training-case-label{font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:8px}
+.training-case-name{font-family:var(--serif);font-size:28px;font-weight:700;margin-bottom:24px}
+.progress-track{background:var(--bg-warm);border:1px solid var(--border);border-radius:3px;height:4px;overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;background:var(--gold);transition:width .5s ease;border-radius:3px}
+.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted)}
+.round-labels{display:flex;gap:0;margin-top:16px}
+.round-label{flex:1;text-align:center;font-size:11px;color:var(--text-muted);padding:6px 2px;border-radius:2px;transition:all .2s;cursor:default}
+.round-label.done{color:var(--gold-dark);font-weight:500}
+.round-label.current{color:var(--text);font-weight:500;background:var(--bg-warm)}
+
+/* QUESTION CARD */
+.question-card{background:#fff;border:1px solid var(--border);border-radius:4px;padding:48px;margin-bottom:32px}
+.round-tag{display:inline-flex;align-items:center;gap:8px;margin-bottom:24px}
+.round-num{width:28px;height:28px;border-radius:50%;background:var(--text);color:var(--bg);font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center}
+.round-name{font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-mid)}
+.question-text{font-family:var(--serif);font-size:clamp(20px,2.5vw,26px);font-weight:500;line-height:1.45;color:var(--text);margin-bottom:20px}
+.question-hint{font-size:14px;color:var(--text-muted);font-style:italic;padding:12px 16px;border-left:2px solid var(--gold-light);background:var(--bg-warm);border-radius:0 3px 3px 0}
+
+/* ANSWER AREA */
+.answer-section{margin-bottom:24px}
+.answer-label{font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px}
+.answer-textarea{width:100%;min-height:140px;padding:20px;border:1px solid var(--border);border-radius:4px;background:#fff;font-family:var(--sans);font-size:15px;color:var(--text);line-height:1.7;resize:vertical;outline:none;transition:border-color .2s}
+.answer-textarea:focus{border-color:var(--gold-light)}
+.answer-textarea::placeholder{color:var(--text-muted)}
+.submit-row{display:flex;align-items:center;justify-content:space-between;margin-top:16px}
+.skip-btn{font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.submit-btn{padding:12px 36px;background:var(--text);color:var(--bg);font-size:14px;font-weight:500;letter-spacing:.04em;border:none;border-radius:3px;cursor:pointer;transition:opacity .2s}
+.submit-btn:hover{opacity:.8}
+.submit-btn:disabled{opacity:.3;cursor:default}
+
+/* FEEDBACK */
+.feedback-card{background:var(--bg-warm);border:1px solid var(--border-light);border-radius:4px;padding:32px;margin-bottom:24px;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.feedback-label{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.feedback-label::before{content:'';width:20px;height:1px;background:var(--gold)}
+.feedback-text{font-size:15px;color:var(--text);line-height:1.8;margin-bottom:20px}
+.feedback-concepts{display:flex;flex-wrap:wrap;gap:8px}
+.concept-chip{padding:4px 12px;background:#fff;border:1px solid var(--border);border-radius:20px;font-size:12px;color:var(--text-mid)}
+.next-btn{display:flex;align-items:center;justify-content:flex-end;margin-top:24px}
+.next-btn button{padding:12px 36px;background:var(--text);color:var(--bg);font-size:14px;font-weight:500;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:opacity .2s}
+.next-btn button:hover{opacity:.8}
+
+/* COMPLETION */
+.completion-screen{max-width:720px;margin:0 auto;padding:64px 24px 120px}
+.completion-icon{width:64px;height:64px;border-radius:50%;background:var(--bg-warm);border:1px solid var(--gold-light);display:flex;align-items:center;justify-content:center;margin-bottom:32px}
+.completion-title{font-family:var(--serif);font-size:clamp(28px,4vw,40px);font-weight:700;line-height:1.15;margin-bottom:16px}
+.completion-sub{font-size:16px;color:var(--text-mid);font-weight:300;line-height:1.75;margin-bottom:48px;max-width:480px}
+.memo-card{background:#fff;border:1px solid var(--border);border-radius:4px;padding:48px;margin-bottom:32px}
+.memo-title{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:8px}
+.memo-date{font-size:12px;color:var(--text-muted);margin-bottom:32px;letter-spacing:.04em}
+.memo-section{margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border-light)}
+.memo-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.memo-section-title{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:10px}
+.memo-section-body{font-size:14px;color:var(--text);line-height:1.8}
+.memo-actions{display:flex;gap:12px;flex-wrap:wrap}
+.memo-btn{padding:11px 28px;font-size:14px;font-weight:400;border-radius:3px;cursor:pointer;transition:all .2s}
+.memo-btn.primary{background:var(--text);color:var(--bg);border:none}
+.memo-btn.primary:hover{opacity:.8}
+.memo-btn.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+.memo-btn.secondary:hover{border-color:var(--text-mid)}
+.restart-btn{margin-top:24px;background:none;border:none;font-size:14px;color:var(--text-muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:rgba(250,249,246,.85);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px)}
+.loading-inner{text-align:center}
+.loading-spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--text-muted)}
+
+/* LANG */
+[data-en]{display:none}
+body.en [data-cn]{display:none}
+body.en [data-en]{display:revert}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <span class="nav-logo-cn">复利国</span>
+      <span class="nav-logo-sep"></span>
+      <span class="nav-logo-en">The Compounder</span>
+    </a>
+    <div class="nav-center">
+      <a class="nav-tab" href="qa.html"><span data-cn>问答库</span><span data-en>Library</span></a>
+      <a class="nav-tab active" href="gym.html"><span data-cn>思维训练营</span><span data-en>Thinking Gym</span></a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="btn-cn" onclick="setLang('cn')">中</button>
+        <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- SCREEN 1: SELECT CASE -->
+<div class="screen active" id="screenSelect">
+  <div class="select-screen">
+    <div class="select-eyebrow"><span data-cn>思维训练营</span><span data-en>Thinking Gym</span></div>
+    <h1 class="select-title">
+      <span data-cn>选择你的训练案例</span>
+      <span data-en>Choose your training case</span>
+    </h1>
+    <p class="select-sub">
+      <span data-cn>每个案例包含五轮苏格拉底式提问。不要背答案——要训练思维方式。</span>
+      <span data-en>Each case contains five rounds of Socratic questioning. Don't memorize answers — train your thinking process.</span>
+    </p>
+    <div class="case-grid">
+      <div class="case-card" onclick="startCase('cocacola')">
+        <div class="case-badge available"><span data-cn>可训练</span><span data-en>Available</span></div>
+        <div class="case-name">可口可乐</div>
+        <div class="case-en">The Coca-Cola Company · KO</div>
+        <p class="case-desc"><span data-cn>巴菲特在1988年以12亿美元买入，持有至今。经典消费品护城河案例。</span><span data-en>Buffett's classic 1988 investment. The definitive consumer brand moat case study.</span></p>
+        <div class="case-meta">
+          <div class="case-meta-item"><span data-cn>5 轮训练</span><span data-en>5 rounds</span></div>
+          <div class="case-meta-item"><span data-cn>约 30 分钟</span><span data-en>~30 minutes</span></div>
+        </div>
+        <div class="case-card-arrow">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6.5 2.5L10 6l-3.5 3.5" stroke="#1C1C1A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="case-card locked">
+        <div class="case-badge coming"><span data-cn>即将推出</span><span data-en>Coming Soon</span></div>
+        <div class="case-name">喜诗糖果</div>
+        <div class="case-en">See's Candies · Private</div>
+        <p class="case-desc"><span data-cn>芒格口中"改变了巴菲特投资哲学"的关键收购。品牌溢价与资本回报率的绝佳教材。</span><span data-en>The acquisition Munger says "changed Buffett's investment philosophy." A masterclass in brand pricing power.</span></p>
+        <div class="case-meta">
+          <div class="case-meta-item"><span data-cn>5 轮训练</span><span data-en>5 rounds</span></div>
+        </div>
+      </div>
+      <div class="case-card locked">
+        <div class="case-badge coming"><span data-cn>即将推出</span><span data-en>Coming Soon</span></div>
+        <div class="case-name">GEICO 保险</div>
+        <div class="case-en">GEICO · BRK Subsidiary</div>
+        <p class="case-desc"><span data-cn>低成本运营优势与保险浮存金，巴菲特最爱的资本积累机器。</span><span data-en>Low-cost operations and insurance float — Buffett's favorite capital compounding machine.</span></p>
+        <div class="case-meta">
+          <div class="case-meta-item"><span data-cn>5 轮训练</span><span data-en>5 rounds</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2: TRAINING -->
+<div class="screen" id="screenTraining">
+  <div class="training-screen">
+    <div class="training-header">
+      <div class="training-case-label" id="caseLabel"></div>
+      <div class="training-case-name" id="caseName"></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-meta">
+        <span id="progressText"></span>
+        <span id="progressPct"></span>
+      </div>
+      <div class="round-labels" id="roundLabels"></div>
+    </div>
+
+    <div id="questionArea">
+      <div class="question-card" id="questionCard">
+        <div class="round-tag">
+          <div class="round-num" id="roundNum">1</div>
+          <div class="round-name" id="roundName"></div>
+        </div>
+        <div class="question-text" id="questionText"></div>
+        <div class="question-hint" id="questionHint"></div>
+      </div>
+
+      <div class="answer-section">
+        <div class="answer-label" id="answerLabel"></div>
+        <textarea class="answer-textarea" id="answerInput" rows="5" id="answerInput"></textarea>
+        <div class="submit-row">
+          <button class="skip-btn" onclick="skipRound()" id="skipBtn"></button>
+          <button class="submit-btn" onclick="submitAnswer()" id="submitBtn"></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="feedbackArea" style="display:none">
+      <div class="feedback-card">
+        <div class="feedback-label" id="feedbackLabel"></div>
+        <div class="feedback-text" id="feedbackText"></div>
+        <div class="feedback-concepts" id="feedbackConcepts"></div>
+      </div>
+      <div class="next-btn">
+        <button onclick="nextRound()" id="nextBtn">
+          <span id="nextBtnText"></span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: COMPLETION -->
+<div class="screen" id="screenComplete">
+  <div class="completion-screen">
+    <div class="completion-icon">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 14l6 6L23 7" stroke="#B8892E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2 class="completion-title" id="completionTitle"></h2>
+    <p class="completion-sub" id="completionSub"></p>
+    <div class="memo-card" id="memoCard"></div>
+    <div class="memo-actions">
+      <button class="memo-btn primary" onclick="copyMemo()" id="copyMemoBtn"></button>
+      <button class="memo-btn secondary" onclick="showScreen('screenSelect')" id="newCaseBtn"></button>
+    </div>
+    <br>
+    <button class="restart-btn" onclick="startCase('cocacola')" id="restartBtn"></button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none">
+  <div class="loading-inner">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText"></div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────
+// Expects: POST /gym/feedback
+// Body: { case_id, round, question, answer, language }
+// Response: { feedback: string, key_concepts: string[] }
+// If no endpoint, uses fallback feedback below.
+const GYM_ENDPOINT = '/gym/feedback';
+
+// ── TRAINING DATA ────────────────────────────────────────
+const CASES = {
+  cocacola: {
+    cn: { name: '可口可乐', label: '案例训练' },
+    en: { name: 'Coca-Cola Company', label: 'Case Study' },
+    rounds: [
+      {
+        cn: {
+          name: '理解商业模式',
+          question: '可口可乐公司真正在卖什么？它的收入来源是什么，为什么这个商业模式能持续产生现金流？',
+          hint: '思考一下：消费者付钱给谁？装瓶商扮演什么角色？可口可乐公司如何从整个供应链中获利？',
+          placeholder: '用自己的话描述可口可乐的商业模式，包括收入来源、成本结构和现金流特点……'
+        },
+        en: {
+          name: 'Business Model',
+          question: "What does Coca-Cola actually sell? Where does its revenue come from, and why does this business model consistently generate cash flow?",
+          hint: 'Think about: Who pays whom? What role do bottlers play? How does the company capture value across the chain?',
+          placeholder: 'Describe Coca-Cola\'s business model in your own words — revenue sources, cost structure, and cash flow characteristics…'
+        },
+        concepts: { cn: ['浓缩液业务', '轻资产模式', '品牌授权', '装瓶商网络', '高毛利率'], en: ['Concentrate model', 'Asset-light', 'Brand licensing', 'Bottler network', 'High margins'] }
+      },
+      {
+        cn: {
+          name: '经济护城河',
+          question: '可口可乐拥有哪些让竞争对手难以复制的优势？这些优势的根源是什么？它们是否会消失？',
+          hint: '护城河来自品牌、规模、转换成本还是网络效应？想想百事可乐为什么几十年都没有取代可口可乐。',
+          placeholder: '分析可口可乐的护城河来源，并评估其可持续性……'
+        },
+        en: {
+          name: 'Economic Moat',
+          question: "What advantages does Coca-Cola have that competitors can't easily replicate? What are the sources of these advantages, and are they durable?",
+          hint: 'Does the moat come from brand, scale, switching costs, or network effects? Why hasn\'t Pepsi displaced Coke in decades?',
+          placeholder: 'Analyze the sources of Coca-Cola\'s moat and assess their durability…'
+        },
+        concepts: { cn: ['品牌溢价', '情感连接', '全球分销网络', '定价权', '规模经济'], en: ['Brand premium', 'Emotional connection', 'Global distribution', 'Pricing power', 'Scale economics'] }
+      },
+      {
+        cn: {
+          name: '管理层评估',
+          question: '罗伯托·戈伊苏埃塔在1980年代如何改变了可口可乐？他的资本分配决策说明了什么样的管理层品质？',
+          hint: '巴菲特认为好的管理层要像"资本分配师"。戈伊苏埃塔如何处理资本？他如何对待股东？',
+          placeholder: '评估戈伊苏埃塔的管理质量，重点关注资本分配、股东利益和长期思维……'
+        },
+        en: {
+          name: 'Management Quality',
+          question: "How did Roberto Goizueta transform Coca-Cola in the 1980s? What do his capital allocation decisions reveal about his qualities as a manager?",
+          hint: "Buffett believes great managers think like 'capital allocators.' How did Goizueta deploy capital? How did he treat shareholders?",
+          placeholder: 'Evaluate Goizueta\'s management quality — focus on capital allocation, shareholder treatment, and long-term thinking…'
+        },
+        concepts: { cn: ['资本分配', '股份回购', '品牌投资', '股东导向', '长期思维'], en: ['Capital allocation', 'Share buybacks', 'Brand investment', 'Shareholder orientation', 'Long-term thinking'] }
+      },
+      {
+        cn: {
+          name: '财务健康分析',
+          question: '如果你看可口可乐的财务报表，哪几个指标最能体现这是一家优秀的企业？为什么这些数字重要？',
+          hint: '不要只背指标名称。想想：高 ROE 意味着什么？自由现金流代表什么能力？利润率说明什么？',
+          placeholder: '选择2-3个你认为最重要的财务指标，解释为什么它们能证明可口可乐是好生意……'
+        },
+        en: {
+          name: 'Financial Analysis',
+          question: "Looking at Coca-Cola's financials, which metrics best demonstrate that this is an exceptional business? Why do these numbers matter?",
+          hint: "Don't just name metrics. Think: what does high ROE mean? What does free cash flow represent? What does the margin tell you?",
+          placeholder: 'Pick 2-3 metrics you consider most important and explain why they prove Coca-Cola is a great business…'
+        },
+        concepts: { cn: ['高ROE', '自由现金流', '净利润率', '资产周转率', '资本回报率'], en: ['High ROE', 'Free cash flow', 'Net margin', 'Asset turnover', 'Return on invested capital'] }
+      },
+      {
+        cn: {
+          name: '估值与安全边际',
+          question: '假设是1988年，巴菲特以5倍市账率买入可口可乐。你会怎么判断这个价格是否合理？你的安全边际在哪里？',
+          hint: '价值投资不是买便宜的股票，而是以合理价格买优质企业。估值的本质是：这家企业未来能产生多少现金？',
+          placeholder: '解释你如何评估1988年可口可乐的估值，包括你会用什么方法和关注什么变量……'
+        },
+        en: {
+          name: 'Valuation & Margin of Safety',
+          question: "It's 1988. Buffett paid ~5x book value for Coca-Cola. How would you judge whether this price was reasonable? Where is the margin of safety?",
+          hint: 'Value investing isn\'t about buying cheap stocks — it\'s buying great businesses at fair prices. Valuation boils down to: how much cash will this business produce?',
+          placeholder: 'Explain how you would evaluate Coca-Cola\'s 1988 valuation — what method would you use and what variables matter most…'
+        },
+        concepts: { cn: ['内在价值', '安全边际', '未来现金流', '合理估值', '长期复利'], en: ['Intrinsic value', 'Margin of safety', 'Future cash flows', 'Fair valuation', 'Long-term compounding'] }
+      }
+    ]
+  }
+};
+
+// ── FALLBACK FEEDBACK ─────────────────────────────────────
+const FALLBACK_FEEDBACK = {
+  cn: [
+    '很好的思考起点！可口可乐的核心在于它卖的是"品牌许可"而非饮料本身——浓缩液业务让它以极低的资产占用换来极高的利润率。这种轻资产模式是它能持续产生自由现金流的根本原因。',
+    '你触及了关键。可口可乐的护城河本质上是"情感护城河"——不是配方秘密，而是百年情感积累形成的消费习惯。这解释了为什么百事可乐在盲测中常常胜出，却始终无法取代可口可乐的市场地位。',
+    '戈伊苏埃塔的伟大之处在于他是真正的"资本分配师"——他理解可口可乐的高ROE意味着保留在公司内部的每一分钱都应该为股东创造超额回报，否则就应该回购股票或分红。这种资本纪律是巴菲特最看重的管理层品质。',
+    '财务分析的关键不在于记住指标，而在于理解"为什么"。可口可乐持续的高ROE（30%+）背后，是品牌带来的定价权加上轻资产模式——不需要大量资本投入就能维持竞争优势，这才是好生意的本质。',
+    '估值是价值投资最困难也最关键的部分。1988年的可口可乐看起来"贵"，但巴菲特看到的是：一家拥有定价权的消费品企业，未来几十年每年都能以10%+增长自由现金流。安全边际不仅来自低价格，也来自对企业质量的高确信度。'
+  ],
+  en: [
+    "Good starting point. Coca-Cola's core insight is that it sells 'brand licensing,' not beverages — its concentrate model captures enormous margins with minimal capital. This asset-light structure is the fundamental reason it generates such consistent free cash flow.",
+    "You're touching on something crucial. Coca-Cola's moat is essentially an 'emotional moat' — not a secret formula, but a century of accumulated habit and trust. This explains why Pepsi often wins blind taste tests yet can never displace Coke's market position.",
+    "Goizueta's greatness lay in being a genuine capital allocator. He understood that Coca-Cola's high ROE meant every dollar retained should earn exceptional returns for shareholders — otherwise, return it via buybacks or dividends. This capital discipline is what Buffett prizes most in management.",
+    "The key isn't memorizing metrics but understanding the 'why.' Coca-Cola's consistently high ROE (30%+) reflects pricing power from the brand plus an asset-light model — no need for heavy capital investment to sustain competitive advantage. That's the essence of a great business.",
+    "Valuation is the hardest and most critical part of value investing. 1988 Coke looked 'expensive' at 5x book, but Buffett saw a consumer brand with pricing power that could grow free cash flow 10%+ annually for decades. Margin of safety comes not just from price, but from high conviction in business quality."
+  ]
+};
+
+// ── STATE ─────────────────────────────────────────────────
+let currentCase = null;
+let currentRound = 0;
+let answers = [];
+let feedbacks = [];
+let lang = 'cn';
+
+function setLang(l) {
+  lang = l;
+  document.body.classList.toggle('en', l === 'en');
+  document.getElementById('btn-cn').classList.toggle('active', l === 'cn');
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  if (currentCase && document.getElementById('screenTraining').classList.contains('active')) {
+    renderRound();
+  }
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── TRAINING ──────────────────────────────────────────────
+function startCase(caseId) {
+  currentCase = caseId;
+  currentRound = 0;
+  answers = [];
+  feedbacks = [];
+  showScreen('screenTraining');
+  renderRound();
+}
+
+function renderRound() {
+  const caseData = CASES[currentCase];
+  const round = caseData.rounds[currentRound];
+  const L = round[lang];
+  const caseL = caseData[lang];
+
+  document.getElementById('caseLabel').textContent = caseL.label;
+  document.getElementById('caseName').textContent = caseL.name;
+
+  const total = caseData.rounds.length;
+  const pct = Math.round((currentRound / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = lang === 'cn'
+    ? `第 ${currentRound + 1} 轮 / 共 ${total} 轮`
+    : `Round ${currentRound + 1} of ${total}`;
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  // Round labels
+  document.getElementById('roundLabels').innerHTML = caseData.rounds.map((r, i) => {
+    const cls = i < currentRound ? 'done' : i === currentRound ? 'current' : '';
+    return `<div class="round-label ${cls}">${r[lang].name}</div>`;
+  }).join('');
+
+  document.getElementById('roundNum').textContent = currentRound + 1;
+  document.getElementById('roundName').textContent = L.name;
+  document.getElementById('questionText').textContent = L.question;
+  document.getElementById('questionHint').textContent = L.hint;
+
+  const answerInput = document.getElementById('answerInput');
+  answerInput.placeholder = L.placeholder;
+  answerInput.value = '';
+
+  document.getElementById('answerLabel').textContent = lang === 'cn' ? '你的回答' : 'Your Answer';
+  document.getElementById('skipBtn').textContent = lang === 'cn' ? '跳过这轮' : 'Skip this round';
+  document.getElementById('submitBtn').textContent = lang === 'cn' ? '提交回答 →' : 'Submit Answer →';
+
+  document.getElementById('questionArea').style.display = 'block';
+  document.getElementById('feedbackArea').style.display = 'none';
+}
+
+async function submitAnswer() {
+  const answer = document.getElementById('answerInput').value.trim();
+  if (!answer) return;
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+
+  showLoading(lang === 'cn' ? '正在分析你的回答…' : 'Analyzing your answer…');
+  answers.push(answer);
+
+  let feedback = '';
+  let concepts = [];
+
+  try {
+    const res = await fetch(GYM_ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        case_id: currentCase,
+        round: currentRound,
+        question: CASES[currentCase].rounds[currentRound][lang].question,
+        answer,
+        language: lang
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      feedback = data.feedback || data.response || '';
+      concepts = data.key_concepts || data.concepts || [];
+    } else { throw new Error('API error'); }
+  } catch {
+    feedback = FALLBACK_FEEDBACK[lang][currentRound];
+    concepts = CASES[currentCase].rounds[currentRound].concepts[lang];
+  }
+
+  feedbacks.push({ feedback, concepts });
+  hideLoading();
+  showFeedback(feedback, concepts);
+  submitBtn.disabled = false;
+}
+
+function skipRound() {
+  answers.push('');
+  feedbacks.push({ feedback: FALLBACK_FEEDBACK[lang][currentRound], concepts: CASES[currentCase].rounds[currentRound].concepts[lang] });
+  showFeedback(FALLBACK_FEEDBACK[lang][currentRound], CASES[currentCase].rounds[currentRound].concepts[lang]);
+}
+
+function showFeedback(feedback, concepts) {
+  document.getElementById('questionArea').style.display = 'none';
+  document.getElementById('feedbackArea').style.display = 'block';
+  document.getElementById('feedbackLabel').textContent = lang === 'cn' ? '反馈与分析' : 'Feedback & Analysis';
+  document.getElementById('feedbackText').textContent = feedback;
+  document.getElementById('feedbackConcepts').innerHTML = concepts.map(c =>
+    `<span class="concept-chip">${c}</span>`).join('');
+
+  const isLast = currentRound === CASES[currentCase].rounds.length - 1;
+  document.getElementById('nextBtnText').textContent = isLast
+    ? (lang === 'cn' ? '生成投资备忘录' : 'Generate Investment Memo')
+    : (lang === 'cn' ? `进入第 ${currentRound + 2} 轮` : `Go to Round ${currentRound + 2}`);
+}
+
+function nextRound() {
+  const total = CASES[currentCase].rounds.length;
+  if (currentRound < total - 1) {
+    currentRound++;
+    renderRound();
+  } else {
+    showCompletion();
+  }
+}
+
+// ── COMPLETION ────────────────────────────────────────────
+function showCompletion() {
+  showScreen('screenComplete');
+  const caseL = CASES[currentCase][lang];
+
+  document.getElementById('completionTitle').textContent = lang === 'cn'
+    ? '训练完成！你的投资备忘录已生成' : 'Training Complete! Your Investment Memo is Ready';
+  document.getElementById('completionSub').textContent = lang === 'cn'
+    ? `你已完成 ${caseL.name} 的全部五轮分析训练。以下是根据你的回答整理的投资分析备忘录。`
+    : `You've completed all five rounds of analysis training on ${caseL.name}. Below is your investment analysis memo.`;
+
+  document.getElementById('copyMemoBtn').textContent = lang === 'cn' ? '复制备忘录' : 'Copy Memo';
+  document.getElementById('newCaseBtn').textContent = lang === 'cn' ? '选择新案例' : 'Choose New Case';
+  document.getElementById('restartBtn').textContent = lang === 'cn' ? '重新训练此案例' : 'Retrain this case';
+
+  const roundNames = CASES[currentCase].rounds.map(r => r[lang].name);
+  const date = new Date().toLocaleDateString(lang === 'cn' ? 'zh-CN' : 'en-US', {year:'numeric',month:'long',day:'numeric'});
+
+  document.getElementById('memoCard').innerHTML = `
+    <div class="memo-title">${lang === 'cn' ? '价值投资分析备忘录' : 'Value Investing Analysis Memo'}</div>
+    <div class="memo-date">${caseL.name} · ${date}</div>
+    ${CASES[currentCase].rounds.map((_, i) => `
+      <div class="memo-section">
+        <div class="memo-section-title">${roundNames[i]}</div>
+        <div class="memo-section-body">${answers[i] || (lang === 'cn' ? '（已跳过）' : '(Skipped)')}</div>
+      </div>`).join('')}
+  `;
+}
+
+function copyMemo() {
+  const text = CASES[currentCase].rounds.map((r, i) =>
+    `${r[lang].name}\n${answers[i] || (lang === 'cn' ? '（已跳过）' : '(Skipped)')}`
+  ).join('\n\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyMemoBtn');
+    btn.textContent = lang === 'cn' ? '已复制！' : 'Copied!';
+    setTimeout(() => { btn.textContent = lang === 'cn' ? '复制备忘录' : 'Copy Memo'; }, 2000);
+  });
+}
+
+// ── LOADING ───────────────────────────────────────────────
+function showLoading(text) {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingOverlay').style.display = 'flex';
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+// ── INIT ──────────────────────────────────────────────────
+document.getElementById('chatInput') && 0;
+</script>
+</body>
+</html>

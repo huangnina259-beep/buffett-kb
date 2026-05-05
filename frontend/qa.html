@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问答库 · 复利国 The Compounder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F6;--bg-warm:#F4F0E6;--bg-dark:#141412;
+  --text:#1C1C1A;--text-mid:#5A5852;--text-muted:#9A9790;
+  --gold:#B8892E;--gold-dark:#8A6520;--gold-light:#E8D5A8;
+  --border:#E0DAD0;--border-light:#ECDFD0;
+  --serif:'Playfair Display','Noto Serif SC',Georgia,serif;
+  --sans:'DM Sans',-apple-system,'PingFang SC',sans-serif;
+  --nav-h:68px;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);background:rgba(250,249,246,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:100%;margin:0 auto;padding:0 32px;height:100%;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:baseline;gap:10px;cursor:pointer;text-decoration:none;color:inherit}
+.nav-logo-cn{font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:.02em}
+.nav-logo-sep{width:1px;height:13px;background:var(--gold);opacity:.5;align-self:center}
+.nav-logo-en{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-mid)}
+.nav-center{display:flex;align-items:center;gap:4px;background:var(--bg-warm);border:1px solid var(--border);border-radius:4px;padding:3px}
+.nav-tab{padding:6px 20px;font-size:13px;font-weight:400;color:var(--text-mid);border-radius:3px;cursor:pointer;transition:all .2s;text-decoration:none;border:none;background:transparent}
+.nav-tab.active{background:var(--text);color:var(--bg);font-weight:500}
+.nav-tab:hover:not(.active){color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.lang-toggle{display:flex;align-items:center;background:var(--bg-warm);border:1px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer}
+.lang-btn{padding:5px 13px;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--text-muted);transition:all .2s;background:transparent;border:none;cursor:pointer}
+.lang-btn.active{background:var(--text);color:var(--bg)}
+
+/* LAYOUT */
+.app{display:flex;height:100vh;padding-top:var(--nav-h)}
+.sidebar{width:280px;flex-shrink:0;border-right:1px solid var(--border);background:var(--bg-warm);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-header{padding:24px 24px 16px;border-bottom:1px solid var(--border)}
+.sidebar-title{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px}
+.new-chat-btn{width:100%;padding:10px;background:var(--text);color:var(--bg);font-size:13px;font-weight:500;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
+.new-chat-btn:hover{opacity:.8}
+.new-chat-btn svg{flex-shrink:0}
+.sidebar-section{padding:20px 24px 12px}
+.sidebar-section-label{font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px}
+.suggested-q{padding:10px 12px;border:1px solid var(--border);border-radius:3px;background:var(--bg);font-size:13px;color:var(--text-mid);line-height:1.5;cursor:pointer;transition:all .2s;margin-bottom:8px}
+.suggested-q:hover{border-color:var(--gold-light);color:var(--text);background:#fff}
+.sidebar-divider{height:1px;background:var(--border);margin:0 24px}
+.history-section{flex:1;overflow-y:auto;padding:16px 24px}
+.history-item{padding:10px 12px;border-radius:3px;font-size:13px;color:var(--text-muted);cursor:pointer;transition:background .2s;line-height:1.4;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-item:hover{background:var(--border-light);color:var(--text)}
+
+/* CHAT AREA */
+.chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.chat-messages{flex:1;overflow-y:auto;padding:32px 48px 24px}
+.chat-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:16px}
+.chat-empty-icon{width:56px;height:56px;border-radius:50%;background:var(--bg-warm);border:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+.chat-empty-title{font-family:var(--serif);font-size:24px;font-weight:500;color:var(--text)}
+.chat-empty-sub{font-size:14px;color:var(--text-muted);max-width:340px;line-height:1.7}
+.quick-starts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px;max-width:500px}
+.quick-start{padding:8px 16px;border:1px solid var(--border);border-radius:20px;font-size:13px;color:var(--text-mid);cursor:pointer;transition:all .2s;background:var(--bg)}
+.quick-start:hover{border-color:var(--gold-light);color:var(--text)}
+
+/* MESSAGES */
+.message{display:flex;gap:16px;margin-bottom:32px;animation:msgIn .25s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.message.user{flex-direction:row-reverse}
+.msg-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;margin-top:2px}
+.msg-avatar.ai{background:var(--bg-warm);border:1px solid var(--border);color:var(--gold-dark)}
+.msg-avatar.user{background:var(--text);color:var(--bg)}
+.msg-body{max-width:620px}
+.msg-bubble{padding:16px 20px;border-radius:4px;font-size:15px;line-height:1.75}
+.message.ai .msg-bubble{background:#fff;border:1px solid var(--border);color:var(--text)}
+.message.user .msg-bubble{background:var(--bg-warm);border:1px solid var(--border-light);color:var(--text)}
+.msg-sources{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.source-chip{padding:3px 10px;background:var(--gold-light);color:var(--gold-dark);font-size:11px;font-weight:500;border-radius:2px;letter-spacing:.04em}
+.msg-time{font-size:11px;color:var(--text-muted);margin-top:6px;padding:0 2px}
+.message.user .msg-time{text-align:right}
+
+/* TYPING */
+.typing-dots{display:flex;gap:4px;padding:16px 20px;background:#fff;border:1px solid var(--border);border-radius:4px;width:fit-content}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--text-muted);animation:dot .9s infinite}
+.typing-dot:nth-child(2){animation-delay:.15s}
+.typing-dot:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{opacity:.25;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+
+/* INPUT */
+.chat-input-area{padding:16px 48px 24px;border-top:1px solid var(--border);background:var(--bg)}
+.input-wrapper{border:1px solid var(--border);border-radius:4px;background:#fff;transition:border-color .2s;display:flex;align-items:flex-end;gap:0}
+.input-wrapper:focus-within{border-color:var(--gold-light)}
+.chat-input{flex:1;padding:14px 18px;border:none;background:transparent;font-family:var(--sans);font-size:15px;color:var(--text);outline:none;resize:none;min-height:52px;max-height:140px;line-height:1.6}
+.chat-input::placeholder{color:var(--text-muted)}
+.send-btn{width:44px;height:44px;margin:4px;border-radius:3px;background:var(--text);color:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .2s}
+.send-btn:hover{opacity:.8}
+.send-btn:disabled{opacity:.3;cursor:default}
+.input-hint{font-size:12px;color:var(--text-muted);margin-top:8px;text-align:center}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* LANG */
+[data-en]{display:none}
+body.en [data-cn]{display:none}
+body.en [data-en]{display:revert}
+
+@media(max-width:768px){
+  .sidebar{display:none}
+  .chat-messages{padding:24px 20px}
+  .chat-input-area{padding:12px 20px 20px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <span class="nav-logo-cn">复利国</span>
+      <span class="nav-logo-sep"></span>
+      <span class="nav-logo-en">The Compounder</span>
+    </a>
+    <div class="nav-center">
+      <a class="nav-tab active" href="qa.html"><span data-cn>问答库</span><span data-en>Library</span></a>
+      <a class="nav-tab" href="gym.html"><span data-cn>思维训练营</span><span data-en>Thinking Gym</span></a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="btn-cn" onclick="setLang('cn')">中</button>
+        <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title" data-cn>问答库</div>
+      <div class="sidebar-title" data-en>Knowledge Library</div>
+      <button class="new-chat-btn" onclick="newChat()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span data-cn>新对话</span><span data-en>New Chat</span>
+      </button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label" data-cn>常见问题</div>
+      <div class="sidebar-section-label" data-en>Common Questions</div>
+      <div class="suggested-q" onclick="askSuggested(this)" data-cn>什么是价值投资的四大支柱？</div>
+      <div class="suggested-q" onclick="askSuggested(this)" data-en>What are the four pillars of value investing?</div>
+      <div class="suggested-q" onclick="askSuggested(this)" data-cn>如何判断一家公司有护城河？</div>
+      <div class="suggested-q" onclick="askSuggested(this)" data-en>How do I identify a company's economic moat?</div>
+      <div class="suggested-q" onclick="askSuggested(this)" data-cn>安全边际是什么意思？</div>
+      <div class="suggested-q" onclick="askSuggested(this)" data-en>What does "margin of safety" mean?</div>
+      <div class="suggested-q" onclick="askSuggested(this)" data-cn>巴菲特如何评估管理层？</div>
+      <div class="suggested-q" onclick="askSuggested(this)" data-en>How does Buffett evaluate management?</div>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="history-section" id="historyList"></div>
+  </div>
+
+  <!-- CHAT AREA -->
+  <div class="chat-area">
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-empty" id="emptyState">
+        <div class="chat-empty-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#B8892E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="chat-empty-title"><span data-cn>问任何关于价值投资的问题</span><span data-en>Ask anything about value investing</span></div>
+        <div class="chat-empty-sub"><span data-cn>基于巴菲特、芒格、Graham 等经典文献，给你有出处的回答。</span><span data-en>Get sourced answers from Buffett, Munger, Graham and other classics.</span></div>
+        <div class="quick-starts" id="quickStarts">
+          <div class="quick-start" onclick="askSuggested(this)" data-cn>护城河是什么？</div>
+          <div class="quick-start" onclick="askSuggested(this)" data-en>What is a moat?</div>
+          <div class="quick-start" onclick="askSuggested(this)" data-cn>安全边际怎么算？</div>
+          <div class="quick-start" onclick="askSuggested(this)" data-en>How to calculate margin of safety?</div>
+          <div class="quick-start" onclick="askSuggested(this)" data-cn>如何读懂财务报表？</div>
+          <div class="quick-start" onclick="askSuggested(this)" data-en>How to read a balance sheet?</div>
+          <div class="quick-start" onclick="askSuggested(this)" data-cn>什么是能力圈？</div>
+          <div class="quick-start" onclick="askSuggested(this)" data-en>What is a circle of competence?</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <div class="input-wrapper">
+        <textarea class="chat-input" id="chatInput" rows="1"
+          placeholder="" 
+          data-placeholder-cn="输入你的价值投资问题…"
+          data-placeholder-en="Ask a value investing question…"
+          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M8 3l7 5-7 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="input-hint"><span data-cn>回答来源于价值投资经典文献 · 仅供学习参考</span><span data-en>Answers sourced from value investing classics · For educational purposes only</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────
+// Point this to your FastAPI backend endpoint.
+// Expected: POST /query → { answer: string, sources: [{title,author,text}] }
+const API_ENDPOINT = '/query';
+
+// ── LANG ────────────────────────────────────────────────
+let currentLang = 'cn';
+function setLang(lang) {
+  currentLang = lang;
+  document.body.classList.toggle('en', lang === 'en');
+  document.getElementById('btn-cn').classList.toggle('active', lang === 'cn');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  const inp = document.getElementById('chatInput');
+  inp.placeholder = inp.dataset['placeholder' + lang.charAt(0).toUpperCase() + lang.slice(1)];
+}
+setLang('cn');
+
+// ── STATE ────────────────────────────────────────────────
+let chatHistory = [];
+let isLoading = false;
+let historyList = JSON.parse(localStorage.getItem('qa_history') || '[]');
+
+function saveHistory(q) {
+  historyList.unshift(q.slice(0, 50));
+  if (historyList.length > 20) historyList.pop();
+  localStorage.setItem('qa_history', JSON.stringify(historyList));
+  renderHistory();
+}
+
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  if (historyList.length === 0) { el.innerHTML = ''; return; }
+  const label = currentLang === 'cn' ? '历史对话' : 'History';
+  el.innerHTML = `<div class="sidebar-section-label">${label}</div>` +
+    historyList.map(q => `<div class="history-item" title="${q}">${q}</div>`).join('');
+}
+
+function newChat() {
+  chatHistory = [];
+  document.getElementById('chatMessages').innerHTML = '';
+  document.getElementById('emptyState') && 0;
+  const empty = document.createElement('div');
+  empty.id = 'emptyState';
+  empty.className = 'chat-empty';
+  empty.innerHTML = document.querySelector('.chat-empty')?.innerHTML || '';
+  document.getElementById('chatMessages').appendChild(empty);
+  // re-render empty state
+  location.reload();
+}
+
+// ── INPUT ────────────────────────────────────────────────
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+
+chatInput.addEventListener('input', () => {
+  sendBtn.disabled = !chatInput.value.trim() || isLoading;
+});
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    if (!sendBtn.disabled) sendMessage();
+  }
+}
+
+function askSuggested(el) {
+  const text = el.textContent.trim();
+  chatInput.value = text;
+  sendBtn.disabled = false;
+  autoResize(chatInput);
+  sendMessage();
+}
+
+// ── MESSAGES ─────────────────────────────────────────────
+function appendMessage(role, text, sources) {
+  const empty = document.getElementById('emptyState');
+  if (empty) empty.remove();
+
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+
+  const now = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'});
+  const avatarText = role === 'ai' ? '复' : '我';
+
+  let sourcesHtml = '';
+  if (sources && sources.length) {
+    sourcesHtml = '<div class="msg-sources">' +
+      sources.map(s => `<span class="source-chip">${s.title || s.author || '来源'}</span>`).join('') +
+      '</div>';
+  }
+
+  div.innerHTML = `
+    <div class="msg-avatar ${role}">${avatarText}</div>
+    <div class="msg-body">
+      <div class="msg-bubble">${formatText(text)}</div>
+      ${sourcesHtml}
+      <div class="msg-time">${now}</div>
+    </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function formatText(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>')
+    .replace(/^/, '<p>').replace(/$/, '</p>');
+}
+
+function showTyping() {
+  const empty = document.getElementById('emptyState');
+  if (empty) empty.remove();
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'message ai';
+  div.id = 'typingIndicator';
+  div.innerHTML = `
+    <div class="msg-avatar ai">复</div>
+    <div class="msg-body">
+      <div class="typing-dots">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+// ── API CALL ─────────────────────────────────────────────
+async function sendMessage() {
+  const question = chatInput.value.trim();
+  if (!question || isLoading) return;
+
+  isLoading = true;
+  sendBtn.disabled = true;
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+
+  appendMessage('user', question);
+  saveHistory(question);
+  chatHistory.push({role: 'user', content: question});
+  showTyping();
+
+  try {
+    const res = await fetch(API_ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({question, history: chatHistory, language: currentLang})
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    removeTyping();
+    const answer = data.answer || data.response || data.content || JSON.stringify(data);
+    const sources = data.sources || data.references || [];
+    appendMessage('ai', answer, sources);
+    chatHistory.push({role: 'assistant', content: answer});
+
+  } catch (err) {
+    removeTyping();
+    const errMsg = currentLang === 'cn'
+      ? `无法连接到后端服务。请检查 API 配置。<br><small style="color:var(--text-muted)">${err.message}</small>`
+      : `Could not reach the backend. Please check API config.<br><small style="color:var(--text-muted)">${err.message}</small>`;
+    appendMessage('ai', errMsg);
+  }
+
+  isLoading = false;
+  sendBtn.disabled = !chatInput.value.trim();
+}
+
+// ── INIT ─────────────────────────────────────────────────
+renderHistory();
+chatInput.placeholder = chatInput.dataset.placeholderCn;
+</script>
+</body>
+</html>
