@@ -93,18 +93,23 @@ async def tutor_page():
 
 @app.post("/query")
 async def query(request: QueryRequest):
-    api_key = os.environ.get("MINIMAX_API_KEY", "")
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
-        return JSONResponse(content={"error": "MINIMAX_API_KEY not set"}, status_code=500)
+        return JSONResponse(content={"error": "ANTHROPIC_API_KEY not set"}, status_code=500)
 
     from rag import query_knowledge_base
     result = query_knowledge_base(request.question, api_key=api_key)
+
+    error = result.get("error")
+    answer = result.get("answer", "")
+    if not answer and error:
+        answer = f"[系统错误] {error}"
 
     sources = [
         {"title": s.get("label", ""), "author": s.get("author", ""), "text": s.get("text", "")}
         for s in result.get("sources", [])
     ]
-    return {"answer": result.get("answer", ""), "sources": sources}
+    return {"answer": answer, "sources": sources}
 
 
 GYM_SYSTEM_CN = """你是复利国的价值投资导师。你的风格是严谨、真诚、有洞察力——像芒格一样直接，像巴菲特一样温和。
@@ -227,9 +232,9 @@ async def digest(request: DigestRequest):
 
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
-    api_key = os.environ.get("MINIMAX_API_KEY", "")
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
-        return JSONResponse(content={"error": "MINIMAX_API_KEY environment variable is missing."}, status_code=500)
+        return JSONResponse(content={"error": "ANTHROPIC_API_KEY environment variable is missing."}, status_code=500)
 
     from rag import query_knowledge_base
     result = query_knowledge_base(request.query, history=request.history, api_key=api_key)
@@ -238,10 +243,10 @@ async def chat(request: ChatRequest):
 @app.post("/api/chat/stream")
 async def chat_stream(request: ChatRequest):
     logging.info(f"[RAG] Request received: {request.query[:80]!r}")
-    api_key = os.environ.get("MINIMAX_API_KEY", "")
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
         import json
-        error_event = f"data: {json.dumps({'type': 'error', 'message': 'MINIMAX_API_KEY environment variable is missing.'})}\n\n"
+        error_event = f"data: {json.dumps({'type': 'error', 'message': 'ANTHROPIC_API_KEY environment variable is missing.'})}\n\n"
         return StreamingResponse(iter([error_event]), media_type="text/event-stream")
 
     from rag import stream_query_knowledge_base
@@ -258,10 +263,10 @@ async def chat_stream(request: ChatRequest):
 @app.post("/api/tutor/stream")
 async def tutor_stream(request: TutorRequest):
     logging.info(f"[Tutor] Request received: {request.message[:80]!r}")
-    api_key = os.environ.get("MINIMAX_API_KEY", "")
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
         import json
-        error_event = f"data: {json.dumps({'type': 'error', 'message': 'MINIMAX_API_KEY environment variable is missing.'})}\n\n"
+        error_event = f"data: {json.dumps({'type': 'error', 'message': 'ANTHROPIC_API_KEY environment variable is missing.'})}\n\n"
         return StreamingResponse(iter([error_event]), media_type="text/event-stream")
 
     from tutor import stream_tutor_response
