@@ -113,35 +113,48 @@ async def query(request: QueryRequest):
     return {"answer": answer, "sources": sources, "follow_ups": result.get("follow_ups", [])}
 
 
-GYM_SYSTEM_CN = """你是复利国的价值投资导师。你的风格是严谨、真诚、有洞察力——像芒格一样直接，像巴菲特一样温和。
+GYM_SYSTEM_CN = """你是复利国的价值投资导师。风格：像芒格一样直接，像巴菲特一样温和。
 
-你的任务：评估学员对价值投资案例问题的回答，给出有深度的反馈。
+你的任务：基于提供的知识库原文，评估学员的案例分析回答。
 
 反馈要求：
-- 150-200字，聚焦最重要的1-2个概念
-- 指出学员答对的部分（鼓励正确思维）
-- 指出遗漏或需要深化的部分
-- 用巴菲特/芒格/Graham的视角来补充
-- 不要给分数，不要说"很好"这种空洞评价
+- 200-280字，聚焦最重要的1-2个概念
+- 先肯定学员答对的部分（具体指出为什么对，不要空洞夸奖）
+- 再指出遗漏或需要深化的地方
+- **必须引用知识库原文**支撑你的每一个核心观点，格式：「原文」——作者/来源
+- 如果知识库里没有直接相关原文，直接说"知识库里没有关于这点的直接记录"
+- 不给分数
 - key_concepts 列出3-5个本轮核心概念（中文词语）
 
-必须返回严格的JSON格式（不要markdown，不要代码块）：
-{"feedback": "...", "key_concepts": ["概念1", "概念2", "概念3"]}"""
+返回严格JSON（不要代码块）：
+{"feedback": "反馈正文（可用**加粗**强调关键词）", "key_concepts": ["概念1", "概念2"]}"""
 
-GYM_SYSTEM_EN = """You are a value investing mentor at The Compounder. Your style is rigorous and insightful — direct like Munger, warm like Buffett.
+GYM_SYSTEM_EN = """You are a value investing mentor at The Compounder. Direct like Munger, warm like Buffett.
 
-Your task: Evaluate a student's answer to a value investing case study question and provide substantive feedback.
+Your task: Evaluate the student's case analysis using the knowledge base excerpts provided.
 
 Feedback requirements:
-- 150-200 words, focused on 1-2 key ideas
-- Acknowledge what the student got right (reinforce correct thinking)
-- Point out what was missing or needs deepening
-- Add perspective from Buffett/Munger/Graham's viewpoint
-- No scores, no hollow praise like "great job"
-- key_concepts: list 3-5 core concepts from this round (short English phrases)
+- 200-280 words, focused on 1-2 key concepts
+- First: acknowledge what the student got right (be specific, no hollow praise)
+- Then: point out what's missing or needs deepening
+- **Must quote the knowledge base** to support every core point. Format: "quote" — Author/Source
+- If there's no directly relevant excerpt, say "The knowledge base has no direct record on this point"
+- No scores
+- key_concepts: 3-5 core concepts for this round (short phrases)
 
-Must return strict JSON (no markdown, no code blocks):
-{"feedback": "...", "key_concepts": ["concept 1", "concept 2", "concept 3"]}"""
+Return strict JSON (no code blocks):
+{"feedback": "feedback text (can use **bold** for key terms)", "key_concepts": ["concept 1", "concept 2"]}"""
+
+# Per-round search queries for RAG retrieval — maps case_id → list of queries (one per round)
+GYM_ROUND_QUERIES = {
+    "cocacola": [
+        "Coca-Cola concentrate model bottler asset-light business free cash flow margins",
+        "Coca-Cola brand moat consumer franchise competitive advantage durable",
+        "capital allocation management Goizueta share buyback ROE shareholder returns",
+        "Coca-Cola ROE return on equity free cash flow net margin financial metrics",
+        "Coca-Cola intrinsic value margin of safety consumer brand valuation 1988",
+    ]
+}
 
 GYM_ROUND_CONTEXT = {
     "cocacola": {
@@ -173,29 +186,54 @@ async def gym_feedback(request: GymFeedbackRequest):
         return JSONResponse(content={"error": "ANTHROPIC_API_KEY not set"}, status_code=500)
 
     lang = request.language
-    system = GYM_SYSTEM_CN if lang == "cn" else GYM_SYSTEM_EN
 
-    case_ctx = GYM_ROUND_CONTEXT.get(request.case_id, {}).get(lang, [])
-    context = case_ctx[request.round] if request.round < len(case_ctx) else ""
+    # Retrieve knowledge base context for this round
+    kb_context = ""
+    try:
+        from rag import retrieve_context
+        queries = GYM_ROUND_QUERIES.get(request.case_id, [])
+        query = queries[request.round] if request.round < len(queries) else request.question
+        kb_context, _ = retrieve_context(query, top_k=8)
+    except Exception as e:
+        logging.warning(f"[Gym] KB retrieval failed: {e}")
+
+    round_ctx = (GYM_ROUND_CONTEXT.get(request.case_id, {}).get(lang, []) or [])[request.round] \
+        if request.round < len(GYM_ROUND_CONTEXT.get(request.case_id, {}).get(lang, [])) else ""
 
     if lang == "cn":
-        user_msg = f"{context}\n\n问题：{request.question}\n学员回答：{request.answer}"
+        user_msg = (
+            f"【知识库原文摘录】\n{kb_context}\n\n"
+            f"---\n\n"
+            f"【本轮主题】{round_ctx}\n\n"
+            f"【学员问题】{request.question}\n"
+            f"【学员回答】{request.answer}\n\n"
+            f"请基于以上知识库内容给出反馈，必须引用原文。"
+        )
     else:
-        user_msg = f"{context}\n\nQuestion: {request.question}\nStudent answer: {request.answer}"
+        user_msg = (
+            f"[Knowledge base excerpts]\n{kb_context}\n\n"
+            f"---\n\n"
+            f"[Round context] {round_ctx}\n\n"
+            f"[Question] {request.question}\n"
+            f"[Student answer] {request.answer}\n\n"
+            f"Give feedback based on the knowledge base above. Must quote original text."
+        )
 
     client_ant = Anthropic(api_key=anthropic_key)
     response = client_ant.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=600,
-        system=system,
+        model="claude-sonnet-4-6",
+        max_tokens=900,
+        system=GYM_SYSTEM_CN if lang == "cn" else GYM_SYSTEM_EN,
         messages=[{"role": "user", "content": user_msg}],
     )
 
     text = response.content[0].text.strip()
+    # Strip markdown code fences if present
     if text.startswith("```"):
         text = text.split("```")[1]
         if text.startswith("json"):
             text = text[4:]
+    text = text.strip()
 
     try:
         return json_lib.loads(text)
