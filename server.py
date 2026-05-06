@@ -110,7 +110,7 @@ async def query(request: QueryRequest):
         {"title": s.get("label", ""), "author": s.get("author", ""), "text": s.get("text", "")}
         for s in result.get("sources", [])
     ]
-    return {"answer": answer, "sources": sources}
+    return {"answer": answer, "sources": sources, "follow_ups": result.get("follow_ups", [])}
 
 
 GYM_SYSTEM_CN = """你是复利国的价值投资导师。你的风格是严谨、真诚、有洞察力——像芒格一样直接，像巴菲特一样温和。
