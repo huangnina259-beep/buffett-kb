@@ -493,17 +493,26 @@ PRIMARY_AUTHORS   = {"Warren Buffett", "Charlie Munger"}
 SECONDARY_AUTHORS = {"Li Lu", "Howard Marks"}
 
 
-def _merge_results(*result_lists, top_k: int, max_per_author: int = 4) -> dict:
-    """Merge multiple ChromaDB result dicts, deduplicate by doc content, keep top_k.
-    Caps each author at max_per_author chunks to prevent single-source domination."""
-    seen = set()
-    docs, metas, dists = [], [], []
+def _merge_results(*result_lists, top_k: int, max_per_author: int = 4,
+                   guaranteed: dict | None = None) -> dict:
+    """Merge ChromaDB result dicts, deduplicate, keep top_k.
+
+    guaranteed: {author: min_slots} — reserve seats for specified authors
+    regardless of relevance rank, so secondary voices always appear.
+    Remaining slots are filled by relevance order.
+    """
+    guaranteed = guaranteed or {}
+
+    # Collect all candidates, deduplicated, respecting max_per_author cap
+    seen: set = set()
+    candidates: list[tuple] = []   # (dist, doc, meta)
     author_counts: dict = {}
+
     for r in result_lists:
         if not r["documents"] or not r["documents"][0]:
             continue
         for doc, meta, dist in zip(r["documents"][0], r["metadatas"][0], r["distances"][0]):
-            key = doc[:120]  # fingerprint by first 120 chars
+            key = doc[:120]
             if key in seen:
                 continue
             author = meta.get("author") or "other"
@@ -511,14 +520,45 @@ def _merge_results(*result_lists, top_k: int, max_per_author: int = 4) -> dict:
                 continue
             seen.add(key)
             author_counts[author] = author_counts.get(author, 0) + 1
-            docs.append(doc)
-            metas.append(meta)
-            dists.append(dist)
-    # Sort by distance (ascending = more relevant) and trim
-    combined = sorted(zip(dists, docs, metas), key=lambda x: x[0])[:top_k]
-    if not combined:
+            candidates.append((dist, doc, meta))
+
+    if not candidates:
         return {"documents": [[]], "metadatas": [[]], "distances": [[]]}
-    dists_out, docs_out, metas_out = zip(*combined)
+
+    # Sort all candidates by relevance
+    candidates.sort(key=lambda x: x[0])
+
+    # Phase 1: fill guaranteed slots (best chunk per guaranteed author first)
+    chosen: list[tuple] = []
+    chosen_keys: set = set()
+    guaranteed_filled: dict = {}
+
+    for author, min_slots in guaranteed.items():
+        count = 0
+        for item in candidates:
+            if count >= min_slots:
+                break
+            if item[2].get("author") == author and id(item) not in chosen_keys:
+                chosen.append(item)
+                chosen_keys.add(id(item))
+                count += 1
+        guaranteed_filled[author] = count
+
+    # Phase 2: fill remaining slots by relevance, skipping already chosen
+    remaining = top_k - len(chosen)
+    for item in candidates:
+        if remaining <= 0:
+            break
+        if id(item) not in chosen_keys:
+            chosen.append(item)
+            chosen_keys.add(id(item))
+            remaining -= 1
+
+    # Final sort by relevance
+    chosen.sort(key=lambda x: x[0])
+    chosen = chosen[:top_k]
+
+    dists_out, docs_out, metas_out = zip(*chosen)
     return {"documents": [list(docs_out)], "metadatas": [list(metas_out)], "distances": [list(dists_out)]}
 
 
@@ -635,7 +675,13 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
     n_books     = _count(books)
     logging.info(f"[RAG] tier1={n_primary}, tier2={n_secondary}, tier3(books)={n_books}")
 
-    results = _merge_results(primary, secondary, books, top_k=top_k)
+    # Guarantee at least 2 slots each for Marks and Li Lu so their perspective
+    # always appears even when Buffett/Munger dominate on relevance.
+    results = _merge_results(
+        primary, secondary, books,
+        top_k=top_k,
+        guaranteed={"Howard Marks": 2, "Li Lu": 2},
+    )
     _log_chunks(results, "Case B 3-tier merge (primary+secondary+books)")
     return results
 
