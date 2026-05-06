@@ -72,6 +72,19 @@ class GymSynthesisRequest(BaseModel):
     feedbacks: list[str]
     language: str = "cn"
 
+class AnalystFeedbackRequest(BaseModel):
+    company: str           # user-supplied company name (e.g. "苹果", "茅台", "Microsoft")
+    framework: str         # one of: business_model | moat | management | margin_of_safety
+    question: str          # the question text the user was answering
+    answer: str            # the user's answer
+    language: str = "cn"
+
+class AnalystSynthesisRequest(BaseModel):
+    company: str
+    answers: list[str]     # 4 answers, one per framework
+    feedbacks: list[str]   # 4 feedback summaries
+    language: str = "cn"
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
@@ -97,6 +110,12 @@ async def gym_page():
 @app.get("/tutor.html", response_class=HTMLResponse)
 async def tutor_page():
     with open(frontend_dir / "tutor.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/analyst", response_class=HTMLResponse)
+@app.get("/analyst.html", response_class=HTMLResponse)
+async def analyst_page():
+    with open(frontend_dir / "analyst.html", "r", encoding="utf-8") as f:
         return f.read()
 
 @app.post("/query")
@@ -355,6 +374,242 @@ async def gym_synthesis(request: GymSynthesisRequest):
     )
 
     return {"synthesis": response.content[0].text.strip()}
+
+
+# ── Analyst tool: user-selected company, 4-framework guided analysis ────────
+
+ANALYST_FEEDBACK_SYSTEM_CN = """你是复利国的价值投资助手。学员正在用 4 框架(商业模式/护城河/管理层/安全边际)分析一家**他自己选的公司**。
+
+你的任务:基于知识库原文 + 你对价值投资原则的理解,评估学员当前这一题的回答。
+
+反馈要求:
+- 200-280 字,聚焦本框架最关键的 1-2 个判断
+- 先肯定答对的部分,具体指出**为什么对**(不空洞夸奖)
+- 再指出遗漏或盲点,**用反问引导学员自己想**(不直接给答案)
+- **只要 KB 里有相关原文,必须引用,格式:「原文」——作者**
+- KB 没有这家公司的直接记录?**用同类公司或同类原则的 KB 原文做类比锚定**(比如分析新能源车,可引用 Buffett 关于汽车工业的判断)
+- 反馈结尾必须有一句:「这个维度套到任何公司都该问 ___」(把案例抽象成框架)
+- 不给买卖建议,不给目标价
+
+返回严格 JSON(不要代码块):
+{"feedback": "反馈正文(可用 **加粗** 强调)", "key_concepts": ["概念1", "概念2", "概念3"]}"""
+
+ANALYST_FEEDBACK_SYSTEM_EN = """You are a value investing assistant at The Compounder. The student is analyzing a company they chose themselves, using the 4-framework method (Business Model / Moat / Management / Margin of Safety).
+
+Your task: evaluate their answer for the current framework, grounded in the knowledge base.
+
+Requirements:
+- 200-280 words, focused on the 1-2 most important judgments for this framework
+- First acknowledge what they got right (be specific, no hollow praise)
+- Then surface gaps via Socratic questioning (don't just give the answer)
+- **If the KB contains a relevant excerpt, you MUST quote it, format: "quote" — Author**
+- KB has nothing on this exact company? Anchor by analogy using KB excerpts on similar companies or matching principles (e.g. analyzing an EV maker — quote Buffett on auto industry)
+- End with: "Applied to any company, this dimension asks ___" (abstract case → framework)
+- No buy/sell calls, no target prices
+
+Return strict JSON (no code blocks):
+{"feedback": "feedback text (can use **bold**)", "key_concepts": ["concept 1", "concept 2", "concept 3"]}"""
+
+# Per-framework KB query templates — {company} substituted at runtime
+ANALYST_FRAMEWORK_QUERIES = {
+    "business_model":   "{company} business model how makes money revenue customers Buffett",
+    "moat":             "{company} economic moat competitive advantage brand pricing power Buffett Munger",
+    "management":       "{company} CEO management capital allocation buyback dividend acquisition Buffett",
+    "margin_of_safety": "{company} valuation P/E ROIC free cash flow intrinsic value margin of safety Howard Marks",
+}
+
+ANALYST_FRAMEWORK_LABELS_CN = {
+    "business_model":   "商业模式",
+    "moat":             "护城河",
+    "management":       "管理层",
+    "margin_of_safety": "安全边际",
+}
+
+ANALYST_FRAMEWORK_LABELS_EN = {
+    "business_model":   "Business Model",
+    "moat":             "Moat",
+    "management":       "Management",
+    "margin_of_safety": "Margin of Safety",
+}
+
+
+@app.post("/analyst/feedback")
+async def analyst_feedback(request: AnalystFeedbackRequest):
+    import json as json_lib
+    from anthropic import Anthropic
+
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not anthropic_key:
+        return JSONResponse(content={"error": "ANTHROPIC_API_KEY not set"}, status_code=500)
+
+    lang = request.language
+    framework = request.framework
+
+    # Build KB query: company + framework template
+    query_template = ANALYST_FRAMEWORK_QUERIES.get(framework, "{company} value investing analysis")
+    kb_query = query_template.replace("{company}", request.company)
+
+    kb_context = ""
+    try:
+        from rag import retrieve_context
+        kb_context, _ = retrieve_context(kb_query, top_k=8)
+    except Exception as e:
+        logging.warning(f"[Analyst] KB retrieval failed: {e}")
+
+    framework_label = (ANALYST_FRAMEWORK_LABELS_CN if lang == "cn" else ANALYST_FRAMEWORK_LABELS_EN).get(framework, framework)
+
+    if lang == "cn":
+        user_msg = (
+            f"【知识库原文摘录】\n{kb_context}\n\n"
+            f"---\n\n"
+            f"【学员分析的公司】{request.company}\n"
+            f"【本题框架】{framework_label}\n"
+            f"【题目】{request.question}\n"
+            f"【学员回答】{request.answer}\n\n"
+            f"请基于知识库给反馈。如果 KB 里没有这家公司的直接记录,用同类公司/原则做类比锚定。"
+        )
+    else:
+        user_msg = (
+            f"[Knowledge base excerpts]\n{kb_context}\n\n"
+            f"---\n\n"
+            f"[Student's company] {request.company}\n"
+            f"[Framework] {framework_label}\n"
+            f"[Question] {request.question}\n"
+            f"[Student answer] {request.answer}\n\n"
+            f"Give feedback using the KB. If no direct record on this company, anchor by analogy."
+        )
+
+    client_ant = Anthropic(api_key=anthropic_key)
+    response = client_ant.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=900,
+        system=ANALYST_FEEDBACK_SYSTEM_CN if lang == "cn" else ANALYST_FEEDBACK_SYSTEM_EN,
+        messages=[{"role": "user", "content": user_msg}],
+    )
+
+    text = response.content[0].text.strip()
+    if text.startswith("```"):
+        text = text.split("```")[1]
+        if text.startswith("json"):
+            text = text[4:]
+    text = text.strip()
+
+    try:
+        return json_lib.loads(text)
+    except json_lib.JSONDecodeError:
+        return {"feedback": text, "key_concepts": []}
+
+
+ANALYST_SYNTHESIS_SYSTEM_CN = """你是复利国的价值投资助手。学员刚用 4 框架完整分析了一家公司,现在你要给一份"个人投资笔记"。
+
+格式要求:
+
+## 投资判断
+2-3 句话:这家公司是不是值得 Buffett 式投资人关注的标的?**必须基于学员的回答 + KB 原文**得出结论,不要拍脑袋。
+
+## 学员思维优势
+具体指出学员在哪 1-2 个框架上展现了正确的价值投资思维。引用学员自己的话印证。
+
+## 思维盲点
+1-2 个最关键的认知盲点,不是批评,是下次分析任何公司时都该问的问题。配 KB 原文说明为什么这个角度重要。
+
+## 大师对照
+从知识库里找出 1-2 条 Buffett/Munger/Howard Marks/Li Lu 对这家公司或同类公司最深刻的原话。格式:「原文」——作者
+**如果 KB 没有这家公司的直接记录**,引用一条最相关的同类原则。
+
+## 你的下一步
+1 句话:学员现在该再去年报里看哪个具体数字/章节,验证自己的判断?(如:看 10-K 里的 R&D 占比,或看股东信里 CEO 谈资本配置)
+
+规则:
+- 全文 400-600 字
+- 每个核心观点必须 KB 引用
+- 不给买卖建议,不给目标价
+- 直接 markdown,无代码块"""
+
+ANALYST_SYNTHESIS_SYSTEM_EN = """You are a value investing assistant at The Compounder. The student just completed a 4-framework analysis of a company they chose. Write their "personal investment memo".
+
+Format:
+
+## Investment Verdict
+2-3 sentences: is this worth a Buffett-style investor's attention? Must be grounded in the student's answers + KB excerpts, not vibes.
+
+## Student's Strengths
+1-2 frameworks where they showed real value investing thinking. Quote their own words.
+
+## Thinking Blind Spots
+1-2 critical blind spots, framed as "questions to ask any company". Use KB to explain why each angle matters.
+
+## Master's Mirror
+1-2 deep quotes from Buffett/Munger/Howard Marks/Li Lu about this company or its peer category. Format: "quote" — Author. If KB has nothing on the exact company, quote the most relevant principle.
+
+## Your Next Step
+One sentence: which specific 10-K section / metric / shareholder letter should the student go read next to validate their thesis?
+
+Rules:
+- 400-600 words total
+- Every core point needs a KB citation
+- No buy/sell calls, no target prices
+- Direct markdown, no code blocks"""
+
+
+@app.post("/analyst/synthesis")
+async def analyst_synthesis(request: AnalystSynthesisRequest):
+    from anthropic import Anthropic
+
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not anthropic_key:
+        return JSONResponse(content={"error": "ANTHROPIC_API_KEY not set"}, status_code=500)
+
+    lang = request.language
+
+    # Broad KB retrieval covering the company + general value investing principles
+    kb_context = ""
+    try:
+        from rag import retrieve_context
+        kb_query = f"{request.company} business model moat management valuation Buffett Munger value investing"
+        kb_context, _ = retrieve_context(kb_query, top_k=10)
+    except Exception as e:
+        logging.warning(f"[Analyst synthesis] KB retrieval failed: {e}")
+
+    fw_labels = ANALYST_FRAMEWORK_LABELS_CN if lang == "cn" else ANALYST_FRAMEWORK_LABELS_EN
+    fw_order = ["business_model", "moat", "management", "margin_of_safety"]
+    skipped = "(已跳过)" if lang == "cn" else "(Skipped)"
+
+    answers_block = "\n\n".join(
+        f"【{fw_labels[fw_order[i]]}】\n{request.answers[i] or skipped}"
+        for i in range(min(len(request.answers), len(fw_order)))
+    )
+    feedbacks_block = "\n\n".join(
+        f"【{fw_labels[fw_order[i]]} 反馈摘要】\n{request.feedbacks[i][:200] if i < len(request.feedbacks) else ''}"
+        for i in range(min(len(request.answers), len(fw_order)))
+    )
+
+    if lang == "cn":
+        user_msg = (
+            f"【知识库原文摘录】\n{kb_context}\n\n"
+            f"---\n\n【学员分析的公司】{request.company}\n\n"
+            f"【学员的 4 框架回答】\n{answers_block}\n\n"
+            f"---\n\n【各框架反馈摘要】\n{feedbacks_block}\n\n"
+            f"请写这位学员的个人投资笔记。"
+        )
+    else:
+        user_msg = (
+            f"[Knowledge base excerpts]\n{kb_context}\n\n"
+            f"---\n\n[Company] {request.company}\n\n"
+            f"[Student's 4-framework answers]\n{answers_block}\n\n"
+            f"---\n\n[Framework feedback summaries]\n{feedbacks_block}\n\n"
+            f"Write the student's personal investment memo."
+        )
+
+    client_ant = Anthropic(api_key=anthropic_key)
+    response = client_ant.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1400,
+        system=ANALYST_SYNTHESIS_SYSTEM_CN if lang == "cn" else ANALYST_SYNTHESIS_SYSTEM_EN,
+        messages=[{"role": "user", "content": user_msg}],
+    )
+
+    return {"synthesis": response.content[0].text.strip(), "company": request.company}
 
 
 @app.post("/api/digest")

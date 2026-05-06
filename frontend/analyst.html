@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>公司分析 · 复利国 The Compounder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F6;--bg-warm:#F4F0E6;--bg-dark:#141412;
+  --text:#1C1C1A;--text-mid:#5A5852;--text-muted:#9A9790;
+  --gold:#B8892E;--gold-dark:#8A6520;--gold-light:#E8D5A8;
+  --border:#E0DAD0;--border-light:#ECDFD0;
+  --serif:'Playfair Display','Noto Serif SC',Georgia,serif;
+  --sans:'DM Sans',-apple-system,'PingFang SC',sans-serif;
+  --nav-h:68px;
+}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);background:rgba(250,249,246,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:100%;margin:0 auto;padding:0 32px;height:100%;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:baseline;gap:10px;cursor:pointer;text-decoration:none;color:inherit}
+.nav-logo-cn{font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:.02em}
+.nav-logo-sep{width:1px;height:13px;background:var(--gold);opacity:.5;align-self:center}
+.nav-logo-en{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-mid)}
+.nav-center{display:flex;align-items:center;gap:4px;background:var(--bg-warm);border:1px solid var(--border);border-radius:4px;padding:3px}
+.nav-tab{padding:6px 16px;font-size:13px;font-weight:400;color:var(--text-mid);border-radius:3px;cursor:pointer;transition:all .2s;text-decoration:none;border:none;background:transparent}
+.nav-tab.active{background:var(--text);color:var(--bg);font-weight:500}
+.nav-tab:hover:not(.active){color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.lang-toggle{display:flex;align-items:center;background:var(--bg-warm);border:1px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer}
+.lang-btn{padding:5px 13px;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--text-muted);transition:all .2s;background:transparent;border:none;cursor:pointer}
+.lang-btn.active{background:var(--text);color:var(--bg)}
+
+/* MAIN */
+main{padding-top:calc(var(--nav-h) + 40px);padding-bottom:80px;max-width:820px;margin:0 auto;padding-left:32px;padding-right:32px}
+
+/* STEP 1 · COMPANY INPUT */
+.intake{padding:60px 0 40px;text-align:center}
+.intake-eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-dark);font-weight:500;margin-bottom:14px}
+.intake-title{font-family:var(--serif);font-size:42px;font-weight:700;line-height:1.15;color:var(--text);margin-bottom:18px}
+.intake-sub{font-size:16px;color:var(--text-mid);max-width:560px;margin:0 auto 36px;line-height:1.7;font-weight:300}
+.intake-input-wrap{max-width:520px;margin:0 auto 24px;position:relative}
+.intake-input{width:100%;padding:18px 24px;font-size:18px;font-family:var(--serif);background:#fff;border:1.5px solid var(--border);border-radius:4px;color:var(--text);outline:none;transition:border-color .2s;text-align:center}
+.intake-input:focus{border-color:var(--gold)}
+.intake-input::placeholder{color:var(--text-muted);font-style:italic}
+.intake-suggestions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:560px;margin:0 auto 32px}
+.suggestion{padding:8px 18px;background:var(--bg-warm);border:1px solid var(--border);border-radius:20px;font-size:13px;color:var(--text-mid);cursor:pointer;transition:all .2s;font-family:var(--sans)}
+.suggestion:hover{border-color:var(--gold);color:var(--text);background:#fff}
+.intake-start{padding:14px 40px;background:var(--text);color:var(--bg);font-size:14px;font-weight:500;letter-spacing:.05em;border:none;border-radius:3px;cursor:pointer;transition:opacity .2s}
+.intake-start:hover{opacity:.85}
+.intake-start:disabled{opacity:.3;cursor:not-allowed}
+.intake-note{font-size:12px;color:var(--text-muted);margin-top:18px;letter-spacing:.04em}
+
+/* STEP 2-5 · FRAMEWORK QUESTIONS */
+.workspace{display:none}
+.workspace.active{display:block}
+
+/* Progress bar */
+.progress-row{display:flex;align-items:center;gap:18px;padding:24px 0;border-bottom:1px solid var(--border);margin-bottom:32px}
+.progress-company{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--text)}
+.progress-company small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);font-weight:500;font-family:var(--sans);display:block;margin-bottom:2px}
+.progress-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .4s ease}
+.progress-num{font-size:12px;color:var(--text-muted);letter-spacing:.04em;flex-shrink:0}
+.progress-reset{font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0}
+.progress-reset:hover{color:var(--text)}
+
+/* Framework chips */
+.framework-chips{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+.fchip{padding:6px 14px;background:var(--bg-warm);border:1px solid var(--border);border-radius:14px;font-size:12px;color:var(--text-muted);font-weight:400;letter-spacing:.02em}
+.fchip.done{background:rgba(184,137,46,.12);border-color:var(--gold-light);color:var(--gold-dark);font-weight:500}
+.fchip.current{background:var(--text);border-color:var(--text);color:var(--bg);font-weight:500}
+
+/* Question card */
+.q-card{background:#fff;border:1px solid var(--border);border-radius:6px;padding:36px 40px;margin-bottom:24px}
+.q-eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-dark);font-weight:600;margin-bottom:10px}
+.q-text{font-family:var(--serif);font-size:20px;font-weight:500;color:var(--text);line-height:1.45;margin-bottom:24px}
+.q-textarea{width:100%;min-height:140px;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:4px;font-family:var(--sans);font-size:15px;line-height:1.7;color:var(--text);resize:vertical;outline:none;transition:border-color .2s}
+.q-textarea:focus{border-color:var(--gold-light);background:#fff}
+.q-actions{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px}
+.q-skip{padding:9px 20px;background:transparent;color:var(--text-muted);font-size:13px;border:1px solid var(--border);border-radius:3px;cursor:pointer;transition:all .2s}
+.q-skip:hover{color:var(--text);border-color:var(--text-mid)}
+.q-submit{padding:11px 30px;background:var(--text);color:var(--bg);font-size:14px;font-weight:500;letter-spacing:.04em;border:none;border-radius:3px;cursor:pointer;transition:opacity .2s}
+.q-submit:hover{opacity:.85}
+.q-submit:disabled{opacity:.3;cursor:not-allowed}
+
+/* Feedback card */
+.fb-card{background:var(--bg-warm);border:1px solid var(--gold-light);border-left:3px solid var(--gold);border-radius:4px;padding:24px 28px;margin-bottom:24px;display:none}
+.fb-card.show{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fb-eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-dark);font-weight:600;margin-bottom:10px}
+.fb-body{font-size:15px;line-height:1.75;color:var(--text)}
+.fb-body strong{color:var(--gold-dark);font-weight:600}
+.fb-body em{font-style:italic}
+.fb-body p{margin:0 0 10px}
+.fb-body p:last-child{margin-bottom:0}
+.fb-body blockquote{border-left:2px solid var(--gold);padding:6px 12px;margin:10px 0;background:#fff;color:var(--text-mid);font-style:italic;border-radius:0 3px 3px 0}
+.fb-quote{display:inline-block;background:#fff;border-left:2px solid var(--gold);padding:2px 10px;margin:2px 0;font-style:italic;color:var(--text-mid)}
+.fb-next{display:flex;justify-content:flex-end;margin-top:18px}
+.fb-next-btn{padding:11px 26px;background:var(--text);color:var(--bg);font-size:13px;font-weight:500;letter-spacing:.04em;border:none;border-radius:3px;cursor:pointer;transition:opacity .2s}
+.fb-next-btn:hover{opacity:.85}
+
+/* Loading */
+.loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:32px;color:var(--text-muted);font-size:13px}
+.loading-dots{display:flex;gap:4px}
+.loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.4;animation:bounce 1.4s infinite}
+.loading-dots span:nth-child(2){animation-delay:.15s}
+.loading-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+/* Synthesis card */
+.synthesis-card{background:var(--bg-dark);color:#FAF9F6;border-radius:6px;padding:48px;margin-top:8px;display:none}
+.synthesis-card.show{display:block;animation:fadeIn .4s ease}
+.synth-eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-light);font-weight:500;margin-bottom:8px}
+.synth-title{font-family:var(--serif);font-size:30px;font-weight:600;color:#fff;line-height:1.2;margin-bottom:6px}
+.synth-company{font-family:var(--serif);font-size:18px;color:var(--gold-light);font-style:italic;margin-bottom:32px}
+.synth-body{font-size:15px;line-height:1.85;color:rgba(250,249,246,.92)}
+.synth-body h2{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--gold-light);margin:24px 0 8px;letter-spacing:.01em}
+.synth-body h2:first-child{margin-top:0}
+.synth-body p{margin:0 0 12px}
+.synth-body strong{color:#fff;font-weight:600}
+.synth-body em{font-style:italic;color:rgba(250,249,246,.85)}
+.synth-body ul{margin:8px 0 12px 20px;padding:0}
+.synth-body li{margin-bottom:6px}
+.synth-body blockquote{border-left:2px solid var(--gold);padding:6px 14px;margin:10px 0;color:rgba(250,249,246,.78);font-style:italic}
+.synth-actions{display:flex;gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid rgba(250,249,246,.15)}
+.synth-btn{padding:10px 22px;background:transparent;color:#FAF9F6;border:1px solid rgba(250,249,246,.3);border-radius:3px;font-size:13px;cursor:pointer;transition:all .2s;font-family:var(--sans)}
+.synth-btn:hover{border-color:var(--gold-light);color:var(--gold-light)}
+.synth-btn.primary{background:var(--gold);color:#fff;border-color:var(--gold)}
+.synth-btn.primary:hover{opacity:.9;color:#fff}
+
+/* Past attempts dropdown */
+.past-row{margin-bottom:18px;font-size:12px;color:var(--text-muted)}
+.past-row a{color:var(--gold-dark);text-decoration:underline;cursor:pointer;margin-left:8px}
+.past-row a:hover{color:var(--gold)}
+
+@media(max-width:640px){
+  main{padding-left:20px;padding-right:20px}
+  .q-card{padding:24px 22px}
+  .synthesis-card{padding:32px 24px}
+  .intake-title{font-size:32px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <span class="nav-logo-cn">复利国</span>
+      <span class="nav-logo-sep"></span>
+      <span class="nav-logo-en">The Compounder</span>
+    </a>
+    <div class="nav-center">
+      <a class="nav-tab" href="qa.html">问答库</a>
+      <a class="nav-tab" href="tutor.html">价值投资课</a>
+      <a class="nav-tab active" href="analyst.html">公司分析</a>
+      <a class="nav-tab" href="gym.html">思维训练营</a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-toggle"><button class="lang-btn active">中</button><button class="lang-btn">EN</button></div>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <!-- STEP 1 · INTAKE -->
+  <section class="intake" id="intake">
+    <div class="intake-eyebrow">用 4 框架分析任意公司</div>
+    <h1 class="intake-title">你想分析哪家公司?</h1>
+    <p class="intake-sub">输入公司名,我会带你用 Buffett 的 4 框架(商业模式 / 护城河 / 管理层 / 安全边际)走一遍。每一题都会引用知识库里大师的原话给你反馈。</p>
+
+    <div class="intake-input-wrap">
+      <input
+        type="text"
+        class="intake-input"
+        id="companyInput"
+        placeholder="例如:苹果、贵州茅台、微软、可口可乐..."
+        onkeydown="if(event.key==='Enter')startAnalysis()"
+        oninput="document.getElementById('startBtn').disabled = !this.value.trim()">
+    </div>
+
+    <div class="intake-suggestions">
+      <div class="suggestion" onclick="pickCompany('苹果')">苹果 Apple</div>
+      <div class="suggestion" onclick="pickCompany('贵州茅台')">贵州茅台</div>
+      <div class="suggestion" onclick="pickCompany('微软')">微软 Microsoft</div>
+      <div class="suggestion" onclick="pickCompany('可口可乐')">可口可乐</div>
+      <div class="suggestion" onclick="pickCompany('伯克希尔')">伯克希尔 Berkshire</div>
+    </div>
+
+    <button class="intake-start" id="startBtn" onclick="startAnalysis()" disabled>开始分析 →</button>
+    <div class="intake-note">不给买卖建议 · 不给目标价 · 只给思考框架</div>
+  </section>
+
+  <!-- STEP 2-5 · WORKSPACE -->
+  <section class="workspace" id="workspace">
+
+    <div class="progress-row">
+      <div class="progress-company">
+        <small>分析中</small>
+        <span id="companyLabel"></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-num" id="progressNum">1 / 4</div>
+      <button class="progress-reset" onclick="resetAll()">换一家</button>
+    </div>
+
+    <div class="framework-chips" id="chips"></div>
+
+    <div class="q-card" id="qCard">
+      <div class="q-eyebrow" id="qEyebrow">框架 1 · 商业模式</div>
+      <div class="q-text" id="qText"></div>
+      <textarea class="q-textarea" id="qInput" placeholder="把你的想法写出来——粗略也行,1-3 句即可"></textarea>
+      <div class="q-actions">
+        <button class="q-skip" onclick="skipFramework()">跳过这题</button>
+        <button class="q-submit" id="submitBtn" onclick="submitAnswer()">提交答案 · 看反馈</button>
+      </div>
+    </div>
+
+    <div class="fb-card" id="fbCard">
+      <div class="fb-eyebrow">大师视角反馈</div>
+      <div class="fb-body" id="fbBody"></div>
+      <div class="fb-next">
+        <button class="fb-next-btn" onclick="nextFramework()" id="nextBtn">下一框架 →</button>
+      </div>
+    </div>
+
+    <div class="loading" id="loading" style="display:none">
+      <span>正在检索知识库,准备反馈</span>
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+    </div>
+
+  </section>
+
+  <!-- STEP 6 · SYNTHESIS -->
+  <section class="synthesis-card" id="synthesisCard">
+    <div class="synth-eyebrow">个人投资笔记</div>
+    <h2 class="synth-title">分析完成</h2>
+    <div class="synth-company" id="synthCompany"></div>
+    <div class="synth-body" id="synthBody">
+      <div class="loading" style="color:var(--gold-light);padding:60px 0">
+        <span>正在生成你的投资笔记</span>
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+    <div class="synth-actions">
+      <button class="synth-btn primary" onclick="copySynthesis()">复制笔记</button>
+      <button class="synth-btn" onclick="resetAll()">分析另一家公司</button>
+      <button class="synth-btn" onclick="location.href='qa.html'">问答库继续学</button>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ── Framework definitions ─────────────────────────────────────────────
+const FRAMEWORKS = [
+  {id:'business_model', label:'商业模式', q:(c)=>`用一句话讲清楚 ${c} 怎么赚钱:它的客户是谁?卖什么给他们?为什么持续买?`},
+  {id:'moat',           label:'护城河',   q:(c)=>`${c} 的护城河是什么类型(品牌 / 网络效应 / 转换成本 / 规模成本 / 无形资产)?这条护城河会变宽还是变窄?为什么?`},
+  {id:'management',     label:'管理层',   q:(c)=>`${c} 的 CEO 把赚到的钱主要花在哪里(分红 / 回购 / 收购 / 再投资)?这反映他是好管家,还是帝国建造者?`},
+  {id:'margin_of_safety', label:'安全边际', q:(c)=>`${c} 现在贵还是便宜?给我一个数(P/E、ROIC、自由现金流收益率任选一个)+ 你的判断理由。`},
+];
+
+// ── State ──────────────────────────────────────────────────────────────
+const STATE_KEY = 'compounder_analyst_v1';
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STATE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return { company:'', step:0, answers:[], feedbacks:[], synthesis:'' };
+}
+
+function saveState() {
+  try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+// ── Step 1: Company input ─────────────────────────────────────────────
+function pickCompany(name) {
+  document.getElementById('companyInput').value = name;
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('companyInput').focus();
+}
+
+function startAnalysis() {
+  const company = document.getElementById('companyInput').value.trim();
+  if (!company) return;
+  state = { company, step:0, answers:[], feedbacks:[], synthesis:'' };
+  saveState();
+  enterWorkspace();
+}
+
+function enterWorkspace() {
+  document.getElementById('intake').style.display = 'none';
+  document.getElementById('workspace').classList.add('active');
+  document.getElementById('synthesisCard').classList.remove('show');
+  document.getElementById('companyLabel').textContent = state.company;
+  renderChips();
+  renderCurrentQuestion();
+}
+
+function renderChips() {
+  const chips = document.getElementById('chips');
+  chips.innerHTML = '';
+  FRAMEWORKS.forEach((fw, i) => {
+    const cls = i < state.step ? 'fchip done' : (i === state.step ? 'fchip current' : 'fchip');
+    const div = document.createElement('div');
+    div.className = cls;
+    div.textContent = `${i+1}. ${fw.label}`;
+    chips.appendChild(div);
+  });
+}
+
+function renderCurrentQuestion() {
+  const i = state.step;
+  if (i >= FRAMEWORKS.length) { showSynthesis(); return; }
+  const fw = FRAMEWORKS[i];
+  document.getElementById('qEyebrow').textContent = `框架 ${i+1} · ${fw.label}`;
+  document.getElementById('qText').textContent = fw.q(state.company);
+  document.getElementById('qInput').value = '';
+  document.getElementById('qCard').style.display = 'block';
+  document.getElementById('fbCard').classList.remove('show');
+  document.getElementById('loading').style.display = 'none';
+
+  const fill = ((i) / FRAMEWORKS.length) * 100;
+  document.getElementById('progressFill').style.width = fill + '%';
+  document.getElementById('progressNum').textContent = `${i+1} / ${FRAMEWORKS.length}`;
+  document.getElementById('qInput').focus();
+}
+
+// ── Submit answer → fetch feedback ────────────────────────────────────
+async function submitAnswer() {
+  const answer = document.getElementById('qInput').value.trim();
+  if (!answer) { alert('写一两句再提交'); return; }
+  const i = state.step;
+  const fw = FRAMEWORKS[i];
+
+  document.getElementById('qCard').style.display = 'none';
+  document.getElementById('loading').style.display = 'flex';
+
+  state.answers[i] = answer;
+  saveState();
+
+  try {
+    const resp = await fetch('/analyst/feedback', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        company: state.company,
+        framework: fw.id,
+        question: fw.q(state.company),
+        answer: answer,
+        language: 'cn',
+      })
+    });
+    const data = await resp.json();
+    const feedback = data.feedback || (data.error ? `[错误] ${data.error}` : '反馈生成失败');
+    state.feedbacks[i] = feedback;
+    saveState();
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('fbBody').innerHTML = renderFeedback(feedback);
+    document.getElementById('fbCard').classList.add('show');
+
+    const fill = ((i+1) / FRAMEWORKS.length) * 100;
+    document.getElementById('progressFill').style.width = fill + '%';
+
+    document.getElementById('nextBtn').textContent =
+      (i+1 >= FRAMEWORKS.length) ? '生成投资笔记 →' : '下一框架 →';
+  } catch(e) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('qCard').style.display = 'block';
+    alert('网络错误:' + e.message);
+  }
+}
+
+function skipFramework() {
+  if (!confirm('确定跳过?反馈会少一段。')) return;
+  state.answers[state.step] = '';
+  state.feedbacks[state.step] = '(已跳过)';
+  saveState();
+  state.step += 1;
+  saveState();
+  renderChips();
+  renderCurrentQuestion();
+}
+
+function nextFramework() {
+  state.step += 1;
+  saveState();
+  if (state.step >= FRAMEWORKS.length) {
+    showSynthesis();
+  } else {
+    renderChips();
+    renderCurrentQuestion();
+  }
+}
+
+// ── Feedback markdown rendering (lightweight, mirrors gym style) ─────
+function escapeHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function renderFeedback(text) {
+  let s = escapeHtml(text);
+  // Quote 「...」 = inline citation
+  s = s.replace(/「([^」]+)」/g, '<span class="fb-quote">「$1」</span>');
+  // Bold
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Italic (single *)
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+  // Paragraphs
+  s = s.split(/\n\n+/).map(p => p.trim() ? `<p>${p.replace(/\n/g,'<br>')}</p>` : '').join('');
+  return s;
+}
+
+// ── Synthesis ─────────────────────────────────────────────────────────
+async function showSynthesis() {
+  document.getElementById('qCard').style.display = 'none';
+  document.getElementById('fbCard').classList.remove('show');
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('synthCompany').textContent = state.company;
+
+  const synthCard = document.getElementById('synthesisCard');
+  synthCard.classList.add('show');
+  synthCard.scrollIntoView({behavior:'smooth', block:'start'});
+
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressNum').textContent = '完成';
+
+  // Render existing if cached
+  if (state.synthesis) {
+    document.getElementById('synthBody').innerHTML = renderSynthesisMd(state.synthesis);
+    return;
+  }
+
+  // Show loading
+  document.getElementById('synthBody').innerHTML = `
+    <div class="loading" style="color:var(--gold-light);padding:60px 0">
+      <span>正在生成你的投资笔记</span>
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+    </div>`;
+
+  try {
+    const resp = await fetch('/analyst/synthesis', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        company: state.company,
+        answers: state.answers,
+        feedbacks: state.feedbacks,
+        language:'cn',
+      })
+    });
+    const data = await resp.json();
+    const synthesis = data.synthesis || (data.error ? `[错误] ${data.error}` : '生成失败');
+    state.synthesis = synthesis;
+    saveState();
+    document.getElementById('synthBody').innerHTML = renderSynthesisMd(synthesis);
+  } catch(e) {
+    document.getElementById('synthBody').innerHTML = `<p style="color:#f5b">网络错误:${escapeHtml(e.message)}</p>`;
+  }
+}
+
+function renderSynthesisMd(text) {
+  let s = escapeHtml(text);
+  // ## headings
+  s = s.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  // bold
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // italic
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+  // 「quote」
+  s = s.replace(/「([^」]+)」/g, '<blockquote>「$1」</blockquote>');
+  // bullet lists
+  s = s.replace(/(^|\n)((?:- .+\n?)+)/g, (m, pfx, list) => {
+    const items = list.trim().split(/\n/).map(l => `<li>${l.replace(/^- /, '')}</li>`).join('');
+    return `${pfx}<ul>${items}</ul>`;
+  });
+  // paragraphs
+  s = s.split(/\n\n+/).map(p => {
+    p = p.trim();
+    if (!p) return '';
+    if (p.startsWith('<h2>') || p.startsWith('<ul>') || p.startsWith('<blockquote>')) return p;
+    return `<p>${p.replace(/\n/g,'<br>')}</p>`;
+  }).join('');
+  return s;
+}
+
+function copySynthesis() {
+  const text = state.synthesis ||
+    (state.answers.map((a,i) => `【${FRAMEWORKS[i].label}】\n${a || '(已跳过)'}`).join('\n\n'));
+  const memo = `复利国 · ${state.company} · 个人投资笔记\n\n${text}`;
+  navigator.clipboard.writeText(memo).then(() => {
+    const btn = document.querySelector('.synth-btn.primary');
+    const old = btn.textContent;
+    btn.textContent = '✓ 已复制';
+    setTimeout(() => btn.textContent = old, 1800);
+  }).catch(() => alert('复制失败'));
+}
+
+function resetAll() {
+  if (!confirm('换一家公司分析?当前进度会清除。')) return;
+  state = { company:'', step:0, answers:[], feedbacks:[], synthesis:'' };
+  saveState();
+  document.getElementById('intake').style.display = 'block';
+  document.getElementById('workspace').classList.remove('active');
+  document.getElementById('synthesisCard').classList.remove('show');
+  document.getElementById('companyInput').value = '';
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('companyInput').focus();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────
+if (state.company && state.step >= 0) {
+  // Resume previous session
+  enterWorkspace();
+  if (state.step >= FRAMEWORKS.length) {
+    showSynthesis();
+  } else if (state.feedbacks[state.step]) {
+    document.getElementById('qCard').style.display = 'none';
+    document.getElementById('fbBody').innerHTML = renderFeedback(state.feedbacks[state.step]);
+    document.getElementById('fbCard').classList.add('show');
+    document.getElementById('nextBtn').textContent =
+      (state.step+1 >= FRAMEWORKS.length) ? '生成投资笔记 →' : '下一框架 →';
+  }
+} else {
+  document.getElementById('companyInput').focus();
+}
+</script>
+</body>
+</html>
