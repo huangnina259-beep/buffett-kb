@@ -18,6 +18,28 @@ from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunct
 
 SRC_DIR = Path(__file__).parent
 ROOT_DIR = SRC_DIR.parent
+
+_PDF_NOISE = re.compile(
+    r'(?m)'
+    r'^#\s+.+\.pdf\s*$'          # markdown headers that are pdf filenames
+    r'|^original_path\s*:.*$'    # original_path metadata lines
+    r'|\(\s*PDFDrive\s*\)'       # (PDFDrive) tags anywhere in text
+    r'|\.pdf\b'                  # stray .pdf extensions
+)
+
+def _clean_text(text: str) -> str:
+    """Strip PDF metadata noise from chunk/context text."""
+    text = _PDF_NOISE.sub("", text)
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    return text.strip()
+
+def _clean_label(label: str) -> str:
+    """Return a readable display name from a raw source_label."""
+    label = re.sub(r'\(\s*PDFDrive\s*\)', '', label)   # remove (PDFDrive)
+    label = re.sub(r'\.pdf\s*$', '', label, flags=re.IGNORECASE)  # remove .pdf suffix
+    label = re.sub(r'_+', ' ', label)                  # underscores → spaces
+    label = re.sub(r'\s{2,}', ' ', label)              # collapse spaces
+    return label.strip()
 DB_DIR   = ROOT_DIR / "database"
 
 COLLECTION_NAME  = "buffett_kb"
@@ -235,7 +257,20 @@ Howard Marks：系统严谨，层层递进，善于区分一阶思维和二阶�
 - 来源只覆盖2个有价值方向，就只写2个，不凑数
 
 【用户自研公司】模式下，不使用上述追问规则。
-每层结束只问一个问题——最能推动用户深入思考的那个。"""
+每层结束只问一个问题——最能推动用户深入思考的那个。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【排版规范】（强制）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+目标：清晰、易读、层次分明。
+
+- 用 **加粗** 标注核心观点或关键词，不要整段加粗
+- 多个并列观点用短横线列表（- ），不要连续长段落
+- 引用原文用「……」引号包裹，引用完紧跟来源标注 [来源N]
+- 段落之间空一行，同一段落内不换行
+- 禁止在正文中出现文件路径、.pdf 字样、PDFDrive 等元数据噪声
+- 禁止出现书名后跟括号内的文件来源说明（如"（PDFDrive）"）
+- 回答结束后列来源清单时，只写作者和年份，不要重复文件名"""
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -345,11 +380,11 @@ def _format_context(results: dict) -> tuple:
 
     for i, (doc, meta, dist) in enumerate(zip(docs, metas, distances), 1):
         relevance    = round(1.0 - dist, 4)
+        display_label = _clean_label(meta["source_label"])
         author_note  = f" | 作者: {meta['author']}" if meta.get("author") else ""
         section_note = f" — {meta['section']}" if meta.get("section") else ""
         year_note    = f" ({meta['year']})" if meta.get("year") else ""
-        header       = f"[来源{i}] {meta['source_label']}{year_note}{author_note}{section_note}"
-        context_parts.append(f"{header}\n{doc}")
+        header       = f"[来源{i}] {display_label}{year_note}{author_note}{section_note}"
 
         # Extended context from original file — window reduced to ±3000 chars
         full_context = ""
@@ -380,8 +415,11 @@ def _format_context(results: dict) -> tuple:
         except Exception:
             pass
 
+        body = _clean_text(full_context if full_context else doc)
+        context_parts.append(f"{header}\n{body}")
+
         source = {
-            "label":        meta["source_label"],
+            "label":        display_label,
             "author":       meta.get("author", ""),
             "year":         meta.get("year", 0),
             "doc_type":     meta.get("doc_type", ""),
@@ -444,20 +482,27 @@ PRIMARY_AUTHORS   = {"Warren Buffett", "Charlie Munger"}
 SECONDARY_AUTHORS = {"Li Lu", "Howard Marks"}
 
 
-def _merge_results(*result_lists, top_k: int) -> dict:
-    """Merge multiple ChromaDB result dicts, deduplicate by doc content, keep top_k."""
+def _merge_results(*result_lists, top_k: int, max_per_author: int = 4) -> dict:
+    """Merge multiple ChromaDB result dicts, deduplicate by doc content, keep top_k.
+    Caps each author at max_per_author chunks to prevent single-source domination."""
     seen = set()
     docs, metas, dists = [], [], []
+    author_counts: dict = {}
     for r in result_lists:
         if not r["documents"] or not r["documents"][0]:
             continue
         for doc, meta, dist in zip(r["documents"][0], r["metadatas"][0], r["distances"][0]):
             key = doc[:120]  # fingerprint by first 120 chars
-            if key not in seen:
-                seen.add(key)
-                docs.append(doc)
-                metas.append(meta)
-                dists.append(dist)
+            if key in seen:
+                continue
+            author = meta.get("author") or "other"
+            if author_counts.get(author, 0) >= max_per_author:
+                continue
+            seen.add(key)
+            author_counts[author] = author_counts.get(author, 0) + 1
+            docs.append(doc)
+            metas.append(meta)
+            dists.append(dist)
     # Sort by distance (ascending = more relevant) and trim
     combined = sorted(zip(dists, docs, metas), key=lambda x: x[0])[:top_k]
     if not combined:
@@ -537,15 +582,19 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
         _log_chunks(results, f"Case A (author={target_author})")
         return results
 
-    # ── Case B: no specific author — true parallel query of all tiers ───────────
+    # ── Case B: no specific author — 3-way parallel query across all tiers ──────
     # Each thread gets its own collection instance to avoid shared-state issues.
     primary_k   = top_k
     secondary_k = max(4, top_k // 2)
+    books_k     = max(4, top_k // 3)
 
     primary_where   = _build_where({"author": {"$in": list(PRIMARY_AUTHORS)}})
     secondary_where = _build_where({"author": {"$in": list(SECONDARY_AUTHORS)}})
+    # Books and other sources have empty author — query with no author filter
+    books_where     = _build_where({})
     logging.info(f"[RAG] tier1 where: {primary_where}")
     logging.info(f"[RAG] tier2 where: {secondary_where}")
+    logging.info(f"[RAG] tier3 (books/other) where: {books_where}")
 
     def _query_isolated(where, n):
         """Standalone query with its own collection — safe for concurrent use."""
@@ -562,26 +611,21 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
         except Exception:
             return {"documents": [[]], "metadatas": [[]], "distances": [[]]}
 
-    with ThreadPoolExecutor(max_workers=2) as ex:
+    with ThreadPoolExecutor(max_workers=3) as ex:
         f_primary   = ex.submit(_query_isolated, primary_where,   primary_k)
         f_secondary = ex.submit(_query_isolated, secondary_where, secondary_k)
+        f_books     = ex.submit(_query_isolated, books_where,     books_k)
         primary   = f_primary.result()
         secondary = f_secondary.result()
+        books     = f_books.result()
 
     n_primary   = _count(primary)
     n_secondary = _count(secondary)
-    logging.info(f"[RAG] tier1 returned: {n_primary}, tier2 returned: {n_secondary}")
+    n_books     = _count(books)
+    logging.info(f"[RAG] tier1={n_primary}, tier2={n_secondary}, tier3(books)={n_books}")
 
-    results = _merge_results(primary, secondary, top_k=top_k)
-    if _count(results) >= 3:
-        _log_chunks(results, "Case B tier1+2 (primary+secondary parallel)")
-        return results
-
-    logging.info("[RAG] tier1+2 still short, triggering tier3 (all sources)")
-    fallback = _query_isolated(_build_where({}), n=top_k)
-    results = _merge_results(results, fallback, top_k=top_k)
-    logging.info(f"[RAG] final total after tier3: {_count(results)} chunks")
-    _log_chunks(results, "Case B tier3 (fallback)")
+    results = _merge_results(primary, secondary, books, top_k=top_k)
+    _log_chunks(results, "Case B 3-tier merge (primary+secondary+books)")
     return results
 
 

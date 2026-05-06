@@ -296,7 +296,7 @@ function appendMessage(role, text, sources) {
   let sourcesHtml = '';
   if (sources && sources.length) {
     sourcesHtml = '<div class="msg-sources">' +
-      sources.map(s => `<span class="source-chip">${s.title || s.author || '来源'}</span>`).join('') +
+      sources.map(s => { const raw = s.title || s.author || '来源'; const label = raw.length > 40 ? raw.slice(0, 40) + '…' : raw; return `<span class="source-chip" title="${raw}">${label}</span>`; }).join('') +
       '</div>';
   }
 
