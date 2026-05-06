@@ -5,6 +5,3 @@ dockerfilePath = "Dockerfile"
 [deploy]
 healthcheckPath = "/health"
 healthcheckTimeout = 600
-
-[[volumes]]
-mountPath = "/app/database"
