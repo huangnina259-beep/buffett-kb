@@ -94,8 +94,9 @@ async def gym_page():
         return f.read()
 
 @app.get("/tutor", response_class=HTMLResponse)
+@app.get("/tutor.html", response_class=HTMLResponse)
 async def tutor_page():
-    with open(react_dist / "index.html", "r", encoding="utf-8") as f:
+    with open(frontend_dir / "tutor.html", "r", encoding="utf-8") as f:
         return f.read()
 
 @app.post("/query")
