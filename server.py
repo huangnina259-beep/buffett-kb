@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-load_dotenv()  # Load MINIMAX_API_KEY from .env if present
+load_dotenv(Path(__file__).parent / ".env", override=True)  # Load API keys from .env if present
 
 # Add src to path so we can import rag
 SRC_DIR = Path(__file__).parent / "src"
