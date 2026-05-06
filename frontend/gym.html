@@ -116,13 +116,37 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);backgrou
 .completion-icon{width:64px;height:64px;border-radius:50%;background:var(--bg-warm);border:1px solid var(--gold-light);display:flex;align-items:center;justify-content:center;margin-bottom:32px}
 .completion-title{font-family:var(--serif);font-size:clamp(28px,4vw,40px);font-weight:700;line-height:1.15;margin-bottom:16px}
 .completion-sub{font-size:16px;color:var(--text-mid);font-weight:300;line-height:1.75;margin-bottom:48px;max-width:480px}
-.memo-card{background:#fff;border:1px solid var(--border);border-radius:4px;padding:48px;margin-bottom:32px}
-.memo-title{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:8px}
-.memo-date{font-size:12px;color:var(--text-muted);margin-bottom:32px;letter-spacing:.04em}
-.memo-section{margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border-light)}
+
+/* AI SYNTHESIS CARD */
+.synthesis-card{background:var(--bg-dark);color:#E8E4DC;border-radius:4px;padding:40px 48px;margin-bottom:28px}
+.synthesis-label{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-light);margin-bottom:24px;display:flex;align-items:center;gap:10px}
+.synthesis-label::before{content:'';width:20px;height:1px;background:var(--gold)}
+.synthesis-body{font-size:15px;line-height:1.85;color:#D8D4CC}
+.synthesis-body h2{font-family:var(--serif);font-size:17px;font-weight:600;color:#F0ECE4;margin:24px 0 8px}
+.synthesis-body h2:first-child{margin-top:0}
+.synthesis-body p{margin:0 0 12px}
+.synthesis-body p:last-child{margin-bottom:0}
+.synthesis-body ul{margin:6px 0 12px 18px}
+.synthesis-body li{margin-bottom:4px}
+.synthesis-body strong{color:#F0ECE4}
+.synthesis-body .fb-quote{color:#C8C4BC;border-left-color:var(--gold);background:rgba(184,137,46,.1)}
+.synthesis-loading{display:flex;align-items:center;gap:12px;color:#9A9790;font-size:14px;padding:8px 0}
+.synthesis-loading .loading-spinner{width:20px;height:20px;border-width:2px;margin:0}
+
+/* STUDENT MEMO */
+.memo-card{background:#fff;border:1px solid var(--border);border-radius:4px;padding:40px 48px;margin-bottom:28px}
+.memo-toggle{width:100%;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:0;margin-bottom:0}
+.memo-toggle-label{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
+.memo-toggle-arrow{font-size:13px;color:var(--text-muted);transition:transform .2s}
+.memo-toggle.open .memo-toggle-arrow{transform:rotate(180deg)}
+.memo-inner{margin-top:24px;display:none}
+.memo-inner.open{display:block}
+.memo-title{font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:6px}
+.memo-date{font-size:12px;color:var(--text-muted);margin-bottom:28px;letter-spacing:.04em}
+.memo-section{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
 .memo-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.memo-section-title{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:10px}
-.memo-section-body{font-size:14px;color:var(--text);line-height:1.8}
+.memo-section-title{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:8px}
+.memo-section-body{font-size:14px;color:var(--text);line-height:1.8;white-space:pre-wrap}
 .memo-actions{display:flex;gap:12px;flex-wrap:wrap}
 .memo-btn{padding:11px 28px;font-size:14px;font-weight:400;border-radius:3px;cursor:pointer;transition:all .2s}
 .memo-btn.primary{background:var(--text);color:var(--bg);border:none}
@@ -272,9 +296,23 @@ body.en [data-en]{display:revert}
     </div>
     <h2 class="completion-title" id="completionTitle"></h2>
     <p class="completion-sub" id="completionSub"></p>
+
+    <!-- AI SYNTHESIS -->
+    <div class="synthesis-card">
+      <div class="synthesis-label" id="synthesisLabel"></div>
+      <div id="synthesisContent">
+        <div class="synthesis-loading">
+          <div class="loading-spinner"></div>
+          <span id="synthesisLoadingText"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDENT ANSWERS (collapsible) -->
     <div class="memo-card" id="memoCard"></div>
+
     <div class="memo-actions">
-      <button class="memo-btn primary" onclick="copyMemo()" id="copyMemoBtn"></button>
+      <button class="memo-btn primary" onclick="copySynthesis()" id="copyMemoBtn"></button>
       <button class="memo-btn secondary" onclick="showScreen('screenSelect')" id="newCaseBtn"></button>
     </div>
     <br>
@@ -565,42 +603,101 @@ function nextRound() {
 }
 
 // ── COMPLETION ────────────────────────────────────────────
-function showCompletion() {
+let synthesisCached = '';
+
+async function showCompletion() {
   showScreen('screenComplete');
   const caseL = CASES[currentCase][lang];
 
   document.getElementById('completionTitle').textContent = lang === 'cn'
-    ? '训练完成！你的投资备忘录已生成' : 'Training Complete! Your Investment Memo is Ready';
+    ? '训练完成' : 'Training Complete';
   document.getElementById('completionSub').textContent = lang === 'cn'
-    ? `你已完成 ${caseL.name} 的全部五轮分析训练。以下是根据你的回答整理的投资分析备忘录。`
-    : `You've completed all five rounds of analysis training on ${caseL.name}. Below is your investment analysis memo.`;
+    ? `你已完成 ${caseL.name} 的全部五轮分析训练。`
+    : `You've completed all five rounds of analysis on ${caseL.name}.`;
 
-  document.getElementById('copyMemoBtn').textContent = lang === 'cn' ? '复制备忘录' : 'Copy Memo';
-  document.getElementById('newCaseBtn').textContent = lang === 'cn' ? '选择新案例' : 'Choose New Case';
+  document.getElementById('synthesisLabel').textContent = lang === 'cn' ? '导师综合分析' : 'Mentor Synthesis';
+  document.getElementById('synthesisLoadingText').textContent = lang === 'cn' ? '正在生成综合投资分析…' : 'Generating investment synthesis…';
+  document.getElementById('copyMemoBtn').textContent = lang === 'cn' ? '复制综合分析' : 'Copy Synthesis';
+  document.getElementById('newCaseBtn').textContent = lang === 'cn' ? '选择新案例' : 'New Case';
   document.getElementById('restartBtn').textContent = lang === 'cn' ? '重新训练此案例' : 'Retrain this case';
 
+  // Render student answers (collapsible)
   const roundNames = CASES[currentCase].rounds.map(r => r[lang].name);
   const date = new Date().toLocaleDateString(lang === 'cn' ? 'zh-CN' : 'en-US', {year:'numeric',month:'long',day:'numeric'});
-
+  const toggleLabel = lang === 'cn' ? '查看我的原始回答 ▾' : 'View my original answers ▾';
   document.getElementById('memoCard').innerHTML = `
-    <div class="memo-title">${lang === 'cn' ? '价值投资分析备忘录' : 'Value Investing Analysis Memo'}</div>
-    <div class="memo-date">${caseL.name} · ${date}</div>
-    ${CASES[currentCase].rounds.map((_, i) => `
-      <div class="memo-section">
-        <div class="memo-section-title">${roundNames[i]}</div>
-        <div class="memo-section-body">${answers[i] || (lang === 'cn' ? '（已跳过）' : '(Skipped)')}</div>
-      </div>`).join('')}
-  `;
+    <button class="memo-toggle" onclick="toggleMemo(this)">
+      <span class="memo-toggle-label">${toggleLabel}</span>
+      <span class="memo-toggle-arrow">▾</span>
+    </button>
+    <div class="memo-inner" id="memoInner">
+      <div class="memo-title">${lang === 'cn' ? '我的分析记录' : 'My Analysis Notes'}</div>
+      <div class="memo-date">${caseL.name} · ${date}</div>
+      ${CASES[currentCase].rounds.map((_, i) => `
+        <div class="memo-section">
+          <div class="memo-section-title">${roundNames[i]}</div>
+          <div class="memo-section-body">${answers[i] || (lang === 'cn' ? '（已跳过）' : '(Skipped)')}</div>
+        </div>`).join('')}
+    </div>`;
+
+  // Fetch AI synthesis
+  synthesisCached = '';
+  try {
+    const res = await fetch('/gym/synthesis', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        case_id: currentCase,
+        answers,
+        feedbacks: feedbacks.map(f => f.feedback || ''),
+        language: lang
+      })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    synthesisCached = data.synthesis || '';
+    document.getElementById('synthesisContent').innerHTML =
+      `<div class="synthesis-body">${renderSynthesisMd(synthesisCached)}</div>`;
+  } catch (e) {
+    document.getElementById('synthesisContent').innerHTML =
+      `<div style="color:#9A9790;font-size:14px">${lang === 'cn' ? '综合分析生成失败，请稍后重试。' : 'Synthesis failed. Please try again.'}</div>`;
+  }
 }
 
-function copyMemo() {
-  const text = CASES[currentCase].rounds.map((r, i) =>
-    `${r[lang].name}\n${answers[i] || (lang === 'cn' ? '（已跳过）' : '(Skipped)')}`
-  ).join('\n\n');
+function toggleMemo(btn) {
+  btn.classList.toggle('open');
+  document.getElementById('memoInner').classList.toggle('open');
+  const label = lang === 'cn' ? ['查看我的原始回答 ▾', '收起 ▴'] : ['View my original answers ▾', 'Collapse ▴'];
+  btn.querySelector('.memo-toggle-label').textContent =
+    btn.classList.contains('open') ? label[1] : label[0];
+}
+
+function renderSynthesisMd(text) {
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/「(.+?)」/g, '<span class="fb-quote">「$1」</span>');
+  const lines = text.split('\n');
+  const out = []; let inList = false;
+  for (const line of lines) {
+    const h2 = line.match(/^## (.+)/);
+    const li = line.match(/^[-•] (.+)/);
+    if (inList && !li) { out.push('</ul>'); inList = false; }
+    if (h2) { out.push(`<h2>${h2[1]}</h2>`); }
+    else if (li) { if (!inList) { out.push('<ul>'); inList = true; } out.push(`<li>${li[1]}</li>`); }
+    else if (line.trim()) out.push(`<p>${line}</p>`);
+    else out.push('<br>');
+  }
+  if (inList) out.push('</ul>');
+  return out.join('').replace(/(<br>\s*){2,}/g, '<br>');
+}
+
+function copySynthesis() {
+  const text = synthesisCached ||
+    CASES[currentCase].rounds.map((r, i) => `${r[lang].name}\n${answers[i] || ''}`).join('\n\n');
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copyMemoBtn');
+    const orig = btn.textContent;
     btn.textContent = lang === 'cn' ? '已复制！' : 'Copied!';
-    setTimeout(() => { btn.textContent = lang === 'cn' ? '复制备忘录' : 'Copy Memo'; }, 2000);
+    setTimeout(() => { btn.textContent = orig; }, 2000);
   });
 }
 
