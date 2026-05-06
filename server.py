@@ -57,6 +57,7 @@ class TutorRequest(BaseModel):
 class QueryRequest(BaseModel):
     question: str
     language: str = "cn"
+    history: list = []
 
 class GymFeedbackRequest(BaseModel):
     case_id: str
@@ -98,7 +99,7 @@ async def query(request: QueryRequest):
         return JSONResponse(content={"error": "ANTHROPIC_API_KEY not set"}, status_code=500)
 
     from rag import query_knowledge_base
-    result = query_knowledge_base(request.question, api_key=api_key)
+    result = query_knowledge_base(request.question, history=request.history, api_key=api_key)
 
     error = result.get("error")
     answer = result.get("answer", "")
