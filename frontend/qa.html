@@ -75,10 +75,42 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);backgrou
 .msg-bubble{padding:16px 20px;border-radius:4px;font-size:15px;line-height:1.75}
 .message.ai .msg-bubble{background:#fff;border:1px solid var(--border);color:var(--text)}
 .message.user .msg-bubble{background:var(--bg-warm);border:1px solid var(--border-light);color:var(--text)}
-.msg-sources{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.source-chip{padding:3px 10px;background:var(--gold-light);color:var(--gold-dark);font-size:11px;font-weight:500;border-radius:2px;letter-spacing:.04em}
 .msg-time{font-size:11px;color:var(--text-muted);margin-top:6px;padding:0 2px}
 .message.user .msg-time{text-align:right}
+
+/* MARKDOWN IN BUBBLE */
+.msg-bubble h3{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--text);margin:16px 0 6px;letter-spacing:.01em}
+.msg-bubble h3:first-child{margin-top:0}
+.msg-bubble h4{font-size:14px;font-weight:600;color:var(--text-mid);margin:12px 0 4px}
+.msg-bubble p{margin:0 0 10px}
+.msg-bubble p:last-child{margin-bottom:0}
+.msg-bubble ul{margin:6px 0 10px 18px;padding:0}
+.msg-bubble li{margin-bottom:4px}
+.msg-bubble blockquote{border-left:2px solid var(--gold-light);padding:6px 12px;margin:8px 0;color:var(--text-mid);font-style:italic}
+
+/* CITATION SUPERSCRIPT */
+.cite{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;background:var(--gold-light);color:var(--gold-dark);border:1px solid rgba(184,137,46,.3);font-size:9px;font-weight:700;border-radius:50%;cursor:pointer;vertical-align:super;line-height:1;margin:0 1px;transition:all .15s;text-decoration:none;font-style:normal;flex-shrink:0}
+.cite:hover{background:var(--gold);color:#fff;border-color:var(--gold)}
+.cite.active{background:var(--gold);color:#fff;border-color:var(--gold)}
+
+/* CITATION TOOLTIP */
+#citeTooltip{position:fixed;z-index:500;width:260px;background:var(--bg-dark);color:#E8E4DC;padding:12px 14px;border-radius:6px;font-size:12px;line-height:1.55;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 4px 20px rgba(0,0,0,.25)}
+#citeTooltip.visible{opacity:1}
+#citeTooltip .tt-title{font-weight:600;font-size:11px;color:var(--gold-light);margin-bottom:5px;letter-spacing:.02em}
+#citeTooltip .tt-body{color:#C8C4BC}
+
+/* SOURCE VIEWER IN SIDEBAR */
+.source-viewer{position:absolute;inset:0;background:var(--bg-warm);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .25s ease;z-index:10}
+.source-viewer.open{transform:translateX(0)}
+.sv-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sv-label{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
+.sv-close{width:28px;height:28px;border:1px solid var(--border);border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:16px;transition:all .15s}
+.sv-close:hover{background:var(--border);color:var(--text)}
+.sv-meta{padding:14px 20px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sv-source-title{font-family:var(--serif);font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px}
+.sv-author{font-size:12px;color:var(--text-muted)}
+.sv-body{flex:1;overflow-y:auto;padding:16px 20px;font-size:13px;line-height:1.75;color:var(--text-mid)}
+.sv-body .sv-highlight{background:rgba(184,137,46,.15);border-radius:2px;padding:0 2px}
 
 /* TYPING */
 .typing-dots{display:flex;gap:4px;padding:16px 20px;background:#fff;border:1px solid var(--border);border-radius:4px;width:fit-content}
@@ -138,8 +170,20 @@ body.en [data-en]{display:revert}
 </nav>
 
 <div class="app">
+  <!-- CITATION TOOLTIP (global, moved by JS) -->
+  <div id="citeTooltip"><div class="tt-title" id="ttTitle"></div><div class="tt-body" id="ttBody"></div></div>
+
   <!-- SIDEBAR -->
-  <div class="sidebar">
+  <div class="sidebar" style="position:relative">
+    <!-- SOURCE VIEWER (slides over sidebar) -->
+    <div class="source-viewer" id="sourceViewer">
+      <div class="sv-header">
+        <span class="sv-label">来源原文</span>
+        <button class="sv-close" onclick="closeSourceViewer()">×</button>
+      </div>
+      <div class="sv-meta"><div class="sv-source-title" id="svTitle"></div><div class="sv-author" id="svAuthor"></div></div>
+      <div class="sv-body" id="svBody"></div>
+    </div>
     <div class="sidebar-header">
       <div class="sidebar-title" data-cn>问答库</div>
       <div class="sidebar-title" data-en>Knowledge Library</div>
@@ -203,9 +247,6 @@ body.en [data-en]{display:revert}
 </div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────
-// Point this to your FastAPI backend endpoint.
-// Expected: POST /query → { answer: string, sources: [{title,author,text}] }
 const API_ENDPOINT = '/query';
 
 // ── LANG ────────────────────────────────────────────────
@@ -224,169 +265,197 @@ setLang('cn');
 let chatHistory = [];
 let isLoading = false;
 let historyList = JSON.parse(localStorage.getItem('qa_history') || '[]');
+// Map: msgId → sources array, so each message's citations know their own sources
+let msgSources = {};
+let msgCounter = 0;
 
+// ── HISTORY ──────────────────────────────────────────────
 function saveHistory(q) {
   historyList.unshift(q.slice(0, 50));
   if (historyList.length > 20) historyList.pop();
   localStorage.setItem('qa_history', JSON.stringify(historyList));
   renderHistory();
 }
-
 function renderHistory() {
   const el = document.getElementById('historyList');
-  if (historyList.length === 0) { el.innerHTML = ''; return; }
+  if (!historyList.length) { el.innerHTML = ''; return; }
   const label = currentLang === 'cn' ? '历史对话' : 'History';
   el.innerHTML = `<div class="sidebar-section-label">${label}</div>` +
     historyList.map(q => `<div class="history-item" title="${q}">${q}</div>`).join('');
 }
-
-function newChat() {
-  chatHistory = [];
-  document.getElementById('chatMessages').innerHTML = '';
-  document.getElementById('emptyState') && 0;
-  const empty = document.createElement('div');
-  empty.id = 'emptyState';
-  empty.className = 'chat-empty';
-  empty.innerHTML = document.querySelector('.chat-empty')?.innerHTML || '';
-  document.getElementById('chatMessages').appendChild(empty);
-  // re-render empty state
-  location.reload();
-}
+function newChat() { location.reload(); }
 
 // ── INPUT ────────────────────────────────────────────────
 const chatInput = document.getElementById('chatInput');
-const sendBtn = document.getElementById('sendBtn');
+const sendBtn   = document.getElementById('sendBtn');
+chatInput.addEventListener('input', () => { sendBtn.disabled = !chatInput.value.trim() || isLoading; });
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 140) + 'px'; }
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) sendMessage(); } }
+function askSuggested(el) { chatInput.value = el.textContent.trim(); sendBtn.disabled = false; autoResize(chatInput); sendMessage(); }
 
-chatInput.addEventListener('input', () => {
-  sendBtn.disabled = !chatInput.value.trim() || isLoading;
+// ── MARKDOWN + CITATION RENDERER ─────────────────────────
+function formatText(text, sources, msgId) {
+  // Escape HTML first (only in raw text, not in tags we'll add)
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  // 1. Replace [来源N] with citation superscripts
+  text = text.replace(/\[来源(\d+)\]/g, (_, n) => {
+    const idx = parseInt(n) - 1;
+    const src = sources && sources[idx];
+    const tipTitle = src ? esc(src.title || src.author || `来源${n}`) : `来源${n}`;
+    const tipBody  = src ? esc((src.text || '').slice(0, 120)) + (src.text && src.text.length > 120 ? '…' : '') : '';
+    return `<cite class="cite" data-msg="${msgId}" data-idx="${idx}" data-tip-title="${tipTitle}" data-tip-body="${tipBody}">${n}</cite>`;
+  });
+
+  // 2. Bold & italic
+  text = text.replace(/\*\*(.+?)\*\*/g, (_, t) => `<strong>${t}</strong>`);
+  text = text.replace(/\*(.+?)\*/g,     (_, t) => `<em>${t}</em>`);
+
+  // 3. Block-level: process line by line
+  const lines = text.split('\n');
+  const out = [];
+  let inList = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const h3 = line.match(/^### (.+)/);
+    const h2 = line.match(/^## (.+)/);
+    const h1 = line.match(/^# (.+)/);
+    const li = line.match(/^[-•] (.+)/);
+    const blank = line.trim() === '';
+
+    if (inList && !li) { out.push('</ul>'); inList = false; }
+
+    if (h2 || h3) {
+      out.push(`<h3>${(h2 || h3)[1]}</h3>`);
+    } else if (h1) {
+      out.push(`<h3>${h1[1]}</h3>`);
+    } else if (li) {
+      if (!inList) { out.push('<ul>'); inList = true; }
+      out.push(`<li>${li[1]}</li>`);
+    } else if (blank) {
+      out.push('<br>');
+    } else {
+      out.push(`<p>${line}</p>`);
+    }
+  }
+  if (inList) out.push('</ul>');
+
+  // 4. Collapse consecutive <br> tags
+  return out.join('').replace(/(<br>\s*){2,}/g, '<br>');
+}
+
+// ── CITATION TOOLTIP ─────────────────────────────────────
+const tooltip = document.getElementById('citeTooltip');
+document.addEventListener('mouseover', e => {
+  const cite = e.target.closest('.cite');
+  if (!cite) return;
+  document.getElementById('ttTitle').textContent = cite.dataset.tipTitle || '';
+  document.getElementById('ttBody').textContent  = cite.dataset.tipBody  || '';
+  tooltip.classList.add('visible');
+});
+document.addEventListener('mouseout', e => {
+  if (!e.target.closest('.cite')) tooltip.classList.remove('visible');
+});
+document.addEventListener('mousemove', e => {
+  if (!tooltip.classList.contains('visible')) return;
+  const x = e.clientX, y = e.clientY, vw = window.innerWidth, vh = window.innerHeight;
+  const tw = 268, th = 90;
+  tooltip.style.left = (x + 12 + tw > vw ? x - tw - 8 : x + 12) + 'px';
+  tooltip.style.top  = (y + 16 + th > vh ? y - th - 8 : y + 16) + 'px';
+});
+document.addEventListener('click', e => {
+  const cite = e.target.closest('.cite');
+  if (!cite) return;
+  const msgId = cite.dataset.msg;
+  const idx   = parseInt(cite.dataset.idx);
+  const src   = (msgSources[msgId] || [])[idx];
+  if (!src) return;
+  // toggle active on all cites of same source
+  document.querySelectorAll(`.cite[data-msg="${msgId}"][data-idx="${idx}"]`).forEach(c => c.classList.toggle('active'));
+  openSourceViewer(src);
 });
 
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+// ── SOURCE VIEWER ─────────────────────────────────────────
+function openSourceViewer(src) {
+  document.getElementById('svTitle').textContent  = src.title  || src.author || '来源';
+  document.getElementById('svAuthor').textContent = src.author && src.title ? src.author : '';
+  document.getElementById('svBody').innerHTML = src.text
+    ? `<p>${src.text.replace(/\n/g,'</p><p>')}</p>`
+    : '<p style="color:var(--text-muted)">原文内容不可用</p>';
+  document.getElementById('sourceViewer').classList.add('open');
 }
-
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    if (!sendBtn.disabled) sendMessage();
-  }
-}
-
-function askSuggested(el) {
-  const text = el.textContent.trim();
-  chatInput.value = text;
-  sendBtn.disabled = false;
-  autoResize(chatInput);
-  sendMessage();
+function closeSourceViewer() {
+  document.getElementById('sourceViewer').classList.remove('open');
+  document.querySelectorAll('.cite.active').forEach(c => c.classList.remove('active'));
 }
 
 // ── MESSAGES ─────────────────────────────────────────────
 function appendMessage(role, text, sources) {
-  const empty = document.getElementById('emptyState');
-  if (empty) empty.remove();
-
+  document.getElementById('emptyState')?.remove();
   const container = document.getElementById('chatMessages');
   const div = document.createElement('div');
   div.className = `message ${role}`;
-
   const now = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'});
   const avatarText = role === 'ai' ? '复' : '我';
 
-  let sourcesHtml = '';
-  if (sources && sources.length) {
-    sourcesHtml = '<div class="msg-sources">' +
-      sources.map(s => { const raw = s.title || s.author || '来源'; const label = raw.length > 40 ? raw.slice(0, 40) + '…' : raw; return `<span class="source-chip" title="${raw}">${label}</span>`; }).join('') +
-      '</div>';
+  let bodyHtml;
+  if (role === 'ai') {
+    const id = 'msg-' + (++msgCounter);
+    if (sources && sources.length) msgSources[id] = sources;
+    bodyHtml = `<div class="msg-bubble" data-msg-id="${id}">${formatText(text, sources, id)}</div>`;
+  } else {
+    bodyHtml = `<div class="msg-bubble">${text.replace(/</g,'&lt;')}</div>`;
   }
 
   div.innerHTML = `
     <div class="msg-avatar ${role}">${avatarText}</div>
-    <div class="msg-body">
-      <div class="msg-bubble">${formatText(text)}</div>
-      ${sourcesHtml}
-      <div class="msg-time">${now}</div>
-    </div>`;
+    <div class="msg-body">${bodyHtml}<div class="msg-time">${now}</div></div>`;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
   return div;
 }
 
-function formatText(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>')
-    .replace(/^/, '<p>').replace(/$/, '</p>');
-}
-
 function showTyping() {
-  const empty = document.getElementById('emptyState');
-  if (empty) empty.remove();
+  document.getElementById('emptyState')?.remove();
   const container = document.getElementById('chatMessages');
   const div = document.createElement('div');
-  div.className = 'message ai';
-  div.id = 'typingIndicator';
-  div.innerHTML = `
-    <div class="msg-avatar ai">复</div>
-    <div class="msg-body">
-      <div class="typing-dots">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
-    </div>`;
+  div.className = 'message ai'; div.id = 'typingIndicator';
+  div.innerHTML = `<div class="msg-avatar ai">复</div><div class="msg-body"><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
 }
-
-function removeTyping() {
-  const t = document.getElementById('typingIndicator');
-  if (t) t.remove();
-}
+function removeTyping() { document.getElementById('typingIndicator')?.remove(); }
 
 // ── API CALL ─────────────────────────────────────────────
 async function sendMessage() {
   const question = chatInput.value.trim();
   if (!question || isLoading) return;
-
-  isLoading = true;
-  sendBtn.disabled = true;
-  chatInput.value = '';
-  chatInput.style.height = 'auto';
-
+  isLoading = true; sendBtn.disabled = true;
+  chatInput.value = ''; chatInput.style.height = 'auto';
   appendMessage('user', question);
   saveHistory(question);
   chatHistory.push({role: 'user', content: question});
   showTyping();
-
   try {
     const res = await fetch(API_ENDPOINT, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({question, history: chatHistory, language: currentLang})
     });
-
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-
     removeTyping();
-    const answer = data.answer || data.response || data.content || JSON.stringify(data);
+    const answer  = data.answer || data.response || data.content || JSON.stringify(data);
     const sources = data.sources || data.references || [];
     appendMessage('ai', answer, sources);
     chatHistory.push({role: 'assistant', content: answer});
-
   } catch (err) {
     removeTyping();
-    const errMsg = currentLang === 'cn'
-      ? `无法连接到后端服务。请检查 API 配置。<br><small style="color:var(--text-muted)">${err.message}</small>`
-      : `Could not reach the backend. Please check API config.<br><small style="color:var(--text-muted)">${err.message}</small>`;
-    appendMessage('ai', errMsg);
+    appendMessage('ai', currentLang === 'cn'
+      ? `无法连接到后端服务。<br><small style="color:var(--text-muted)">${err.message}</small>`
+      : `Could not reach the backend.<br><small style="color:var(--text-muted)">${err.message}</small>`);
   }
-
-  isLoading = false;
-  sendBtn.disabled = !chatInput.value.trim();
+  isLoading = false; sendBtn.disabled = !chatInput.value.trim();
 }
 
 // ── INIT ─────────────────────────────────────────────────
