@@ -790,3 +790,19 @@ def query_knowledge_base(
         }
     except Exception as e:
         return {"answer": "", "sources": sources, "search_params": search_params, "error": f"API 调用失败: {e}"}
+
+
+def retrieve_context(query: str, top_k: int = 8) -> tuple[str, list]:
+    """Retrieve relevant chunks and return (context_string, sources_list).
+    No LLM call — for use by endpoints that do their own generation (e.g. gym feedback)."""
+    search_query = _translate_query(query)
+    try:
+        results = _retrieve(
+            search_query, None, top_k,
+            target_author=None,
+        )
+    except Exception:
+        return "", []
+    if not results["documents"] or not results["documents"][0]:
+        return "", []
+    return _format_context(results)

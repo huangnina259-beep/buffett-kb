@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>价值投资课 · 复利国 The Compounder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F6;--bg-warm:#F4F0E6;--bg-dark:#141412;
+  --text:#1C1C1A;--text-mid:#5A5852;--text-muted:#9A9790;
+  --gold:#B8892E;--gold-dark:#8A6520;--gold-light:#E8D5A8;
+  --border:#E0DAD0;--border-light:#ECDFD0;
+  --serif:'Playfair Display','Noto Serif SC',Georgia,serif;
+  --sans:'DM Sans',-apple-system,'PingFang SC',sans-serif;
+  --nav-h:68px;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);background:rgba(250,249,246,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:100%;margin:0 auto;padding:0 32px;height:100%;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:baseline;gap:10px;cursor:pointer;text-decoration:none;color:inherit}
+.nav-logo-cn{font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:.02em}
+.nav-logo-sep{width:1px;height:13px;background:var(--gold);opacity:.5;align-self:center}
+.nav-logo-en{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-mid)}
+.nav-center{display:flex;align-items:center;gap:4px;background:var(--bg-warm);border:1px solid var(--border);border-radius:4px;padding:3px}
+.nav-tab{padding:6px 18px;font-size:13px;font-weight:400;color:var(--text-mid);border-radius:3px;cursor:pointer;transition:all .2s;text-decoration:none;border:none;background:transparent}
+.nav-tab.active{background:var(--text);color:var(--bg);font-weight:500}
+.nav-tab:hover:not(.active){color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.lang-toggle{display:flex;align-items:center;background:var(--bg-warm);border:1px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer}
+.lang-btn{padding:5px 13px;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--text-muted);transition:all .2s;background:transparent;border:none;cursor:pointer}
+.lang-btn.active{background:var(--text);color:var(--bg)}
+
+/* LAYOUT */
+.app{display:flex;height:100vh;padding-top:var(--nav-h)}
+
+/* SIDEBAR · CHAPTER MAP */
+.sidebar{width:300px;flex-shrink:0;border-right:1px solid var(--border);background:var(--bg-warm);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-header{padding:24px 24px 18px;border-bottom:1px solid var(--border)}
+.sidebar-eyebrow{font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:6px}
+.sidebar-title{font-family:var(--serif);font-size:18px;font-weight:600;line-height:1.3;color:var(--text)}
+.sidebar-progress{font-size:12px;color:var(--text-muted);margin-top:8px}
+.chapter-list{flex:1;overflow-y:auto;padding:14px 16px}
+.chapter-item{display:flex;align-items:flex-start;gap:12px;padding:12px 12px;border-radius:4px;cursor:pointer;transition:all .15s;margin-bottom:2px;position:relative}
+.chapter-item:hover{background:rgba(184,137,46,.06)}
+.chapter-item.current{background:#fff;border:1px solid var(--gold-light);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.chapter-item.locked{opacity:.42;cursor:not-allowed}
+.chapter-item.locked:hover{background:transparent}
+.chapter-num{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .2s}
+.chapter-item.completed .chapter-num{background:var(--gold);color:#fff;border-color:var(--gold)}
+.chapter-item.current .chapter-num{background:var(--text);color:var(--bg);border-color:var(--text)}
+.chapter-body{flex:1;min-width:0}
+.chapter-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:3px}
+.chapter-item.locked .chapter-title{color:var(--text-muted)}
+.chapter-sub{font-size:11px;color:var(--text-muted);line-height:1.5}
+.sidebar-footer{padding:16px 24px;border-top:1px solid var(--border)}
+.reset-btn{width:100%;padding:8px;background:transparent;color:var(--text-muted);font-size:12px;border:1px solid var(--border);border-radius:3px;cursor:pointer;transition:all .2s}
+.reset-btn:hover{color:var(--text);border-color:var(--text-mid)}
+
+/* CHAT AREA */
+.chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.chapter-header{padding:18px 48px 14px;border-bottom:1px solid var(--border);background:var(--bg)}
+.chapter-header-eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-dark);font-weight:500;margin-bottom:4px}
+.chapter-header-title{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--text);line-height:1.3}
+.chapter-header-sub{font-size:13px;color:var(--text-mid);margin-top:4px;line-height:1.5}
+
+.chat-messages{flex:1;overflow-y:auto;padding:32px 48px 24px}
+
+/* MESSAGES */
+.message{display:flex;gap:16px;margin-bottom:28px;animation:msgIn .25s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.message.user{flex-direction:row-reverse}
+.msg-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;margin-top:2px;letter-spacing:.04em}
+.msg-avatar.ai{background:var(--bg-warm);border:1px solid var(--border);color:var(--gold-dark);font-family:var(--serif);font-size:13px}
+.msg-avatar.user{background:var(--text);color:var(--bg)}
+.msg-body{max-width:640px}
+.msg-bubble{padding:14px 18px;border-radius:4px;font-size:15px;line-height:1.75}
+.message.ai .msg-bubble{background:#fff;border:1px solid var(--border);color:var(--text)}
+.message.user .msg-bubble{background:var(--bg-warm);border:1px solid var(--border-light);color:var(--text)}
+.msg-bubble strong{color:var(--gold-dark);font-weight:600}
+.msg-bubble em{color:var(--text);font-style:italic}
+.msg-bubble blockquote{border-left:2px solid var(--gold-light);padding:4px 10px;margin:8px 0;color:var(--text-mid);font-style:italic;font-size:14px}
+
+/* CITATION SUPERSCRIPT */
+.cite{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;background:var(--gold-light);color:var(--gold-dark);border:1px solid rgba(184,137,46,.3);font-size:9px;font-weight:700;border-radius:50%;cursor:pointer;vertical-align:super;line-height:1;margin:0 1px;transition:all .15s;text-decoration:none;font-style:normal;flex-shrink:0}
+.cite:hover{background:var(--gold);color:#fff;border-color:var(--gold)}
+
+/* INSIGHT BANNER (framework_insight) */
+.insight-banner{margin:14px 0;padding:14px 18px;background:linear-gradient(135deg,#FAF6E8,#F4ECDA);border:1px solid var(--gold-light);border-radius:4px;display:flex;gap:12px;align-items:flex-start}
+.insight-icon{font-family:var(--serif);font-size:18px;color:var(--gold-dark);font-weight:700;line-height:1;margin-top:2px}
+.insight-body{flex:1}
+.insight-label{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-dark);font-weight:600;margin-bottom:4px}
+.insight-text{font-size:14px;color:var(--text);line-height:1.65;font-style:italic}
+
+/* ADVANCE NOTICE */
+.advance-banner{margin:18px 0;padding:14px 20px;background:var(--bg-dark);color:#FAF9F6;border-radius:4px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.advance-text{font-size:14px;line-height:1.5}
+.advance-text strong{color:var(--gold-light);font-weight:600}
+.advance-btn{padding:8px 18px;background:var(--gold);color:#fff;font-size:13px;font-weight:500;border:none;border-radius:3px;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+.advance-btn:hover{opacity:.85}
+
+/* TYPING DOTS */
+.typing{display:flex;gap:4px;padding:14px 18px}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.4;animation:bounce 1.4s infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+/* CHAPTER COMPLETE CARD */
+.complete-card{margin:24px 0;padding:32px;background:var(--bg-warm);border:1px solid var(--gold-light);border-radius:6px;text-align:center}
+.complete-eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-dark);font-weight:600;margin-bottom:10px}
+.complete-title{font-family:var(--serif);font-size:24px;font-weight:600;color:var(--text);margin-bottom:8px}
+.complete-sub{font-size:14px;color:var(--text-mid);margin-bottom:20px;line-height:1.6}
+.complete-btn{padding:11px 30px;background:var(--text);color:var(--bg);font-size:14px;font-weight:500;border:none;border-radius:3px;cursor:pointer;transition:opacity .2s}
+.complete-btn:hover{opacity:.85}
+
+/* INPUT */
+.input-area{border-top:1px solid var(--border);padding:18px 48px 22px;background:var(--bg)}
+.input-wrap{position:relative;max-width:780px;margin:0 auto}
+.input-textarea{width:100%;min-height:48px;max-height:140px;padding:13px 52px 13px 18px;background:#fff;border:1px solid var(--border);border-radius:4px;font-family:var(--sans);font-size:15px;line-height:1.6;color:var(--text);resize:none;outline:none;transition:border-color .2s}
+.input-textarea:focus{border-color:var(--gold-light)}
+.send-btn{position:absolute;right:8px;bottom:8px;width:34px;height:34px;background:var(--text);color:var(--bg);border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .2s}
+.send-btn:hover{opacity:.8}
+.send-btn:disabled{opacity:.3;cursor:not-allowed}
+.input-hint{font-size:11px;color:var(--text-muted);margin-top:8px;text-align:center;letter-spacing:.02em}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{width:240px}
+  .chat-messages,.chapter-header,.input-area{padding-left:24px;padding-right:24px}
+}
+@media(max-width:680px){
+  .sidebar{display:none}
+}
+
+/* HIDE/SHOW EN/CN — kept simple, no global lang here */
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <span class="nav-logo-cn">复利国</span>
+      <span class="nav-logo-sep"></span>
+      <span class="nav-logo-en">The Compounder</span>
+    </a>
+    <div class="nav-center">
+      <a class="nav-tab" href="qa.html">问答库</a>
+      <a class="nav-tab active" href="tutor.html">价值投资课</a>
+      <a class="nav-tab" href="gym.html">思维训练营</a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active">中</button>
+        <button class="lang-btn">EN</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="app">
+
+  <!-- CHAPTER MAP -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-eyebrow">理论课程</div>
+      <div class="sidebar-title">价值投资入门<br>七章对话</div>
+      <div class="sidebar-progress" id="progressLabel">未开始 · 0 / 7 章</div>
+    </div>
+    <div class="chapter-list" id="chapterList"></div>
+    <div class="sidebar-footer">
+      <button class="reset-btn" onclick="resetCourse()">重置课程进度</button>
+    </div>
+  </aside>
+
+  <!-- CHAT -->
+  <main class="chat-area">
+    <div class="chapter-header">
+      <div class="chapter-header-eyebrow" id="chapterEyebrow">第 1 章</div>
+      <div class="chapter-header-title" id="chapterTitle">股票 = 公司的一部分</div>
+      <div class="chapter-header-sub" id="chapterSub">Graham 第一原则 · 5-8 轮对话</div>
+    </div>
+
+    <div class="chat-messages" id="messages"></div>
+
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea
+          class="input-textarea"
+          id="input"
+          placeholder="把你的想法打出来——哪怕只有一句话也可以"
+          rows="1"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="发送">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7.5 2.5L12 7l-4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="input-hint">导师不会一次给答案 · 用反问帮你自己想清楚</div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ── Chapter definitions ─────────────────────────────────────────────────
+const CHAPTERS = [
+  {id:'ch1', num:1, title:'股票 = 公司的一部分', sub:'Graham 第一原则'},
+  {id:'ch2', num:2, title:'价格 ≠ 价值',         sub:'什么是内在价值'},
+  {id:'ch3', num:3, title:'市场先生',             sub:'Mr. Market — 仆人,不是老师'},
+  {id:'ch4', num:4, title:'复利的力量',           sub:'数学奇迹的真正含义'},
+  {id:'ch5', num:5, title:'能力圈',               sub:'承认无知的力量'},
+  {id:'ch6', num:6, title:'安全边际',             sub:'不只是数学,是心理空间'},
+  {id:'ch7', num:7, title:'长期主义的真实代价',   sub:'为什么大多数人付不起'},
+];
+
+// ── State ──────────────────────────────────────────────────────────────
+const STATE_KEY = 'compounder_tutor_v1';
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STATE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return {
+    currentChapter: 'ch1',
+    completedChapters: [],
+    history: [],         // {role, content}
+    insights: [],        // collected framework_insights
+  };
+}
+
+function saveState() {
+  try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+let state = loadState();
+let isStreaming = false;
+
+// ── Render chapter map ─────────────────────────────────────────────────
+function renderChapters() {
+  const list = document.getElementById('chapterList');
+  list.innerHTML = '';
+  const completed = new Set(state.completedChapters || []);
+  const current = state.currentChapter;
+
+  CHAPTERS.forEach(ch => {
+    const isCompleted = completed.has(ch.id);
+    const isCurrent = ch.id === current;
+    const currentIdx = CHAPTERS.findIndex(c => c.id === current);
+    const thisIdx = CHAPTERS.findIndex(c => c.id === ch.id);
+    const isLocked = !isCompleted && !isCurrent && thisIdx > currentIdx;
+
+    const div = document.createElement('div');
+    div.className = 'chapter-item' +
+      (isCompleted ? ' completed' : '') +
+      (isCurrent ? ' current' : '') +
+      (isLocked ? ' locked' : '');
+
+    const numContent = isCompleted ? '✓' : ch.num;
+    div.innerHTML = `
+      <div class="chapter-num">${numContent}</div>
+      <div class="chapter-body">
+        <div class="chapter-title">${ch.title}</div>
+        <div class="chapter-sub">${ch.sub}</div>
+      </div>`;
+
+    if (!isLocked) {
+      div.onclick = () => jumpToChapter(ch.id);
+    }
+    list.appendChild(div);
+  });
+
+  // Progress label
+  const completedCount = (state.completedChapters || []).length;
+  document.getElementById('progressLabel').textContent =
+    completedCount === 0 ? `进行中 · 第 ${currentIndex()+1} 章 / 共 7 章`
+                         : `已完成 ${completedCount} 章 · 共 7 章`;
+
+  // Header
+  const cur = CHAPTERS.find(c => c.id === current) || CHAPTERS[0];
+  document.getElementById('chapterEyebrow').textContent = `第 ${cur.num} 章`;
+  document.getElementById('chapterTitle').textContent = cur.title;
+  document.getElementById('chapterSub').textContent = cur.sub;
+}
+
+function currentIndex() {
+  return Math.max(0, CHAPTERS.findIndex(c => c.id === state.currentChapter));
+}
+
+function jumpToChapter(chId) {
+  if (isStreaming) return;
+  state.currentChapter = chId;
+  state.history = [];   // reset chat history when switching chapters
+  saveState();
+  renderChapters();
+  document.getElementById('messages').innerHTML = '';
+  // Auto-trigger opening question
+  triggerOpening();
+}
+
+function resetCourse() {
+  if (!confirm('确定重置全部课程进度?这会清空你的对话历史。')) return;
+  localStorage.removeItem(STATE_KEY);
+  state = loadState();
+  renderChapters();
+  document.getElementById('messages').innerHTML = '';
+  triggerOpening();
+}
+
+// ── Markdown-lite rendering ───────────────────────────────────────────
+function escapeHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderMd(text, sources) {
+  let s = escapeHtml(text);
+  // Citations [来源N]
+  s = s.replace(/\[来源(\d+)\]/g, (_, n) => {
+    const idx = parseInt(n) - 1;
+    const src = (sources || [])[idx];
+    const label = src ? `${src.label || ''} · ${src.author || ''}` : `来源 ${n}`;
+    return `<a class="cite" title="${escapeHtml(label)}" data-idx="${idx}">${n}</a>`;
+  });
+  // Bold **text**
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Italic *text* (single asterisks, not adjacent to bold)
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+  // Quote 「...」 — typographic emphasis
+  s = s.replace(/「([^」]+)」/g, '<blockquote>「$1」</blockquote>');
+  // Paragraphs
+  s = s.split(/\n\n+/).map(p => p.trim() ? `<p>${p.replace(/\n/g,'<br>')}</p>` : '').join('');
+  return s;
+}
+
+// ── Append message ─────────────────────────────────────────────────────
+function appendMessage(role, html, opts = {}) {
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  const avatarLabel = role === 'ai' ? 'B' : '你';
+  div.innerHTML = `
+    <div class="msg-avatar ${role}">${avatarLabel}</div>
+    <div class="msg-body">
+      <div class="msg-bubble">${html}</div>
+    </div>`;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+  return div.querySelector('.msg-bubble');
+}
+
+function appendTyping() {
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'message ai';
+  div.id = 'typing';
+  div.innerHTML = `
+    <div class="msg-avatar ai">B</div>
+    <div class="msg-body">
+      <div class="msg-bubble typing"><span></span><span></span><span></span></div>
+    </div>`;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+// ── Send message ───────────────────────────────────────────────────────
+async function sendMessage(forceMessage) {
+  if (isStreaming) return;
+  const input = document.getElementById('input');
+  const message = forceMessage !== undefined ? forceMessage : input.value.trim();
+  if (!message && forceMessage === undefined) return;
+
+  if (message) {
+    appendMessage('user', escapeHtml(message).replace(/\n/g, '<br>'));
+    state.history.push({role:'user', content: message});
+  }
+  input.value = '';
+  autoResize(input);
+  saveState();
+
+  await streamReply(message);
+}
+
+async function streamReply(message) {
+  isStreaming = true;
+  document.getElementById('sendBtn').disabled = true;
+  appendTyping();
+
+  let bubble = null;
+  let fullText = '';
+  let sources = [];
+  let advanceTo = null;
+  let insight = null;
+
+  try {
+    const resp = await fetch('/api/tutor/stream', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        message: message || '(开始本章)',
+        history: state.history.slice(0, -1),  // exclude the last user msg (already in this request)
+        curriculum_state: {
+          currentChapter: state.currentChapter,
+          completedChapters: state.completedChapters,
+        }
+      })
+    });
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+
+    while (true) {
+      const {value, done} = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, {stream:true});
+      const lines = buf.split('\n');
+      buf = lines.pop();
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (!data) continue;
+        let evt;
+        try { evt = JSON.parse(data); } catch(e) { continue; }
+
+        if (evt.type === 'searching') {
+          // typing dots already shown
+        } else if (evt.type === 'token') {
+          if (!bubble) {
+            removeTyping();
+            bubble = appendMessage('ai', '');
+          }
+          fullText += evt.text;
+          bubble.innerHTML = renderMd(fullText, sources);
+          document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+        } else if (evt.type === 'done') {
+          sources = evt.sources || [];
+          if (evt.final_answer) {
+            fullText = evt.final_answer;
+            if (!bubble) { removeTyping(); bubble = appendMessage('ai', ''); }
+            bubble.innerHTML = renderMd(fullText, sources);
+          }
+          if (evt.advance_to) advanceTo = evt.advance_to;
+          if (evt.framework_insight) insight = evt.framework_insight;
+        } else if (evt.type === 'error') {
+          if (!bubble) { removeTyping(); bubble = appendMessage('ai', ''); }
+          bubble.innerHTML = `<p style="color:#a33">出错了:${escapeHtml(evt.message || '未知错误')}</p>`;
+        }
+      }
+    }
+
+    if (fullText) {
+      state.history.push({role:'assistant', content: fullText});
+    }
+
+    if (insight) {
+      state.insights.push({chapter: state.currentChapter, text: insight});
+      renderInsight(insight);
+    }
+    if (advanceTo) {
+      handleAdvance(advanceTo);
+    }
+    saveState();
+  } catch (e) {
+    removeTyping();
+    appendMessage('ai', `<p style="color:#a33">连接出错:${escapeHtml(e.message)}</p>`);
+  } finally {
+    isStreaming = false;
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('input').focus();
+  }
+}
+
+function renderInsight(text) {
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'insight-banner';
+  div.innerHTML = `
+    <div class="insight-icon">"</div>
+    <div class="insight-body">
+      <div class="insight-label">值得记住的洞见</div>
+      <div class="insight-text">${escapeHtml(text)}</div>
+    </div>`;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function handleAdvance(nextChapterId) {
+  // Mark current as completed
+  if (!state.completedChapters.includes(state.currentChapter)) {
+    state.completedChapters.push(state.currentChapter);
+  }
+
+  if (nextChapterId === 'done' || !CHAPTERS.find(c => c.id === nextChapterId)) {
+    showCourseComplete();
+    return;
+  }
+
+  const cur = CHAPTERS.find(c => c.id === state.currentChapter);
+  const next = CHAPTERS.find(c => c.id === nextChapterId);
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'advance-banner';
+  div.innerHTML = `
+    <div class="advance-text">✓ 你已掌握 <strong>${cur ? cur.title : ''}</strong> · 下一章:${next.title}</div>
+    <button class="advance-btn" onclick="confirmAdvance('${nextChapterId}')">进入下一章 →</button>`;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+  saveState();
+  renderChapters();
+}
+
+function confirmAdvance(chId) {
+  state.currentChapter = chId;
+  state.history = [];
+  saveState();
+  document.getElementById('messages').innerHTML = '';
+  renderChapters();
+  triggerOpening();
+}
+
+function showCourseComplete() {
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'complete-card';
+  div.innerHTML = `
+    <div class="complete-eyebrow">恭喜完成</div>
+    <div class="complete-title">价值投资理论 · 七章已结业</div>
+    <div class="complete-sub">你已经有了 Graham → Buffett → Munger 的世界观。<br>下一步:把这套思维用到真实公司分析里。</div>
+    <button class="complete-btn" onclick="location.href='gym.html'">进入思维训练营</button>`;
+  messages.appendChild(div);
+  saveState();
+  renderChapters();
+}
+
+// ── Initial opening ───────────────────────────────────────────────────
+async function triggerOpening() {
+  // If there's already history for this chapter session, render it; else ask AI to open
+  if (state.history && state.history.length > 0) {
+    renderHistoryFromState();
+    return;
+  }
+  // Send empty user message to trigger AI opening question
+  await sendMessage('');
+}
+
+function renderHistoryFromState() {
+  const messages = document.getElementById('messages');
+  messages.innerHTML = '';
+  for (const h of state.history) {
+    if (h.role === 'user') {
+      appendMessage('user', escapeHtml(h.content).replace(/\n/g, '<br>'));
+    } else if (h.role === 'assistant') {
+      appendMessage('ai', renderMd(h.content, []));
+    }
+  }
+}
+
+// ── Input helpers ─────────────────────────────────────────────────────
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+// ── Boot ───────────────────────────────────────────────────────────────
+renderChapters();
+triggerOpening();
+document.getElementById('input').focus();
+</script>
+</body>
+</html>
