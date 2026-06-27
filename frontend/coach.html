@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投资教练 · 复利国</title>
+    <link rel="stylesheet" href="/static/style.css?v=9">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body { overflow: hidden; }
+        #coach-app {
+            display: flex;
+            height: 100vh;
+            padding-top: 44px;
+            background: #f9f9f9;
+        }
+
+        /* Sidebar */
+        #coach-sidebar {
+            width: 240px;
+            min-width: 240px;
+            background: #fff;
+            border-right: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .sidebar-hd {
+            padding: 16px 16px 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #888;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        #company-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 8px 16px;
+        }
+        .company-item {
+            padding: 10px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-bottom: 2px;
+        }
+        .company-item:hover { background: #f5f5f5; }
+        .company-item.active { background: #eff6ff; }
+        .company-name { font-size: 14px; font-weight: 500; color: #0d0d0d; }
+        .company-meta { font-size: 12px; color: #aaa; margin-top: 2px; }
+        .new-company-btn {
+            margin: 12px 8px;
+            padding: 10px;
+            border: 1.5px dashed #d0d0d0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .new-company-btn:hover { border-color: #888; color: #333; }
+
+        /* Main area */
+        #coach-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Onboarding progress */
+        #onboarding-bar {
+            background: #fff;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 10px 24px;
+            display: none;
+        }
+        .progress-modules {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .prog-step {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: #f0f0f0;
+            color: #888;
+            white-space: nowrap;
+        }
+        .prog-step.active {
+            background: #1a73e8;
+            color: #fff;
+        }
+        .prog-step.done {
+            background: #e6f4ea;
+            color: #34a853;
+        }
+
+        /* Chat messages */
+        #coach-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 10%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .msg {
+            max-width: 680px;
+            line-height: 1.65;
+        }
+        .msg-user {
+            align-self: flex-end;
+            background: #1a73e8;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 18px 18px 4px 18px;
+            font-size: 15px;
+        }
+        .msg-assistant {
+            align-self: flex-start;
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            padding: 14px 18px;
+            border-radius: 4px 18px 18px 18px;
+            font-size: 15px;
+            color: #0d0d0d;
+        }
+        .msg-assistant p { margin: 0 0 8px; }
+        .msg-assistant p:last-child { margin: 0; }
+
+        /* Record card */
+        .record-card {
+            align-self: flex-start;
+            background: #fffbf0;
+            border: 1px solid #f5e6b8;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            max-width: 680px;
+            width: 100%;
+        }
+        .record-card-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: #b08000;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
+        }
+        .record-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        .record-label {
+            font-weight: 500;
+            color: #666;
+            min-width: 90px;
+        }
+        .record-value { color: #0d0d0d; }
+
+        /* Input area */
+        #coach-input-area {
+            background: #fff;
+            border-top: 1px solid #f0f0f0;
+            padding: 14px 10%;
+        }
+        .coach-input-wrap {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            background: #f9f9f9;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 14px;
+            padding: 10px 12px;
+            transition: border-color 0.2s;
+        }
+        .coach-input-wrap:focus-within { border-color: #1a73e8; }
+        #coach-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            resize: none;
+            outline: none;
+            max-height: 120px;
+            min-height: 24px;
+            line-height: 1.5;
+        }
+        .input-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            color: #888;
+            transition: color 0.15s, background 0.15s;
+            display: flex;
+            align-items: center;
+        }
+        .input-btn:hover { color: #333; background: #f0f0f0; }
+        #send-btn {
+            background: #1a73e8;
+            color: #fff;
+            border-radius: 8px;
+            padding: 6px 10px;
+        }
+        #send-btn:hover { background: #1557b0; }
+        #send-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* Image preview */
+        #img-preview-wrap {
+            display: none;
+            padding: 8px 10% 0;
+        }
+        #img-preview {
+            max-height: 80px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        .remove-img {
+            cursor: pointer;
+            color: #888;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+        /* Welcome screen */
+        #coach-welcome {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: #888;
+            padding: 40px;
+        }
+        .welcome-icon { font-size: 40px; }
+        .welcome-title { font-size: 20px; font-weight: 600; color: #333; }
+        .welcome-desc { font-size: 15px; text-align: center; max-width: 400px; line-height: 1.6; }
+        .start-btn {
+            margin-top: 8px;
+            padding: 12px 28px;
+            background: #1a73e8;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.15s;
+        }
+        .start-btn:hover { background: #1557b0; }
+
+        /* Typing indicator */
+        .typing-dots {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+            padding: 14px 18px;
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            border-radius: 4px 18px 18px 18px;
+        }
+        .typing-dots span {
+            width: 6px; height: 6px;
+            background: #aaa;
+            border-radius: 50%;
+            animation: bounce 1.2s infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-6px); }
+        }
+
+        /* Company input modal */
+        #company-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        #company-modal.open { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 32px;
+            width: 360px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+        .modal-title { font-size: 17px; font-weight: 600; margin-bottom: 16px; }
+        .modal-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            margin-bottom: 8px;
+        }
+        .modal-input:focus { border-color: #1a73e8; }
+        .modal-actions { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
+        .modal-btn {
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+        .modal-btn.primary { background: #1a73e8; color: #fff; }
+        .modal-btn.secondary { background: #f0f0f0; color: #333; }
+
+        @media (max-width: 768px) {
+            #coach-sidebar { display: none; }
+            #coach-messages { padding: 16px 5%; }
+            #coach-input-area { padding: 12px 5%; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="/" class="top-nav-link">知识库问答</a>
+        <a href="/coach" class="top-nav-link" style="color:#1a73e8;font-weight:500;">投资教练</a>
+    </nav>
+
+    <div id="coach-app">
+        <!-- Sidebar -->
+        <div id="coach-sidebar">
+            <div class="sidebar-hd">公司档案</div>
+            <div class="new-company-btn" onclick="openNewCompany()">+ 分析新公司</div>
+            <div id="company-list"></div>
+        </div>
+
+        <!-- Main -->
+        <div id="coach-main">
+            <!-- Onboarding progress bar -->
+            <div id="onboarding-bar">
+                <div class="progress-modules" id="progress-modules"></div>
+            </div>
+
+            <!-- Messages or welcome -->
+            <div id="coach-messages">
+                <div id="coach-welcome">
+                    <div class="welcome-icon">🎯</div>
+                    <div class="welcome-title">投资教练</div>
+                    <div class="welcome-desc">选一家你感兴趣的公司，我带你用价值投资框架从头分析它。</div>
+                    <button class="start-btn" onclick="openNewCompany()">开始分析</button>
+                </div>
+            </div>
+
+            <!-- Image preview -->
+            <div id="img-preview-wrap">
+                <img id="img-preview" src="" alt="preview">
+                <span class="remove-img" onclick="clearImage()">✕ 移除</span>
+            </div>
+
+            <!-- Input area -->
+            <div id="coach-input-area">
+                <div class="coach-input-wrap">
+                    <button class="input-btn" title="上传图片" onclick="document.getElementById('coach-img-upload').click()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                    </button>
+                    <input type="file" id="coach-img-upload" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+                    <textarea id="coach-input" placeholder="输入你的想法…" rows="1"
+                        oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+                    <button class="input-btn" id="voice-btn" title="语音输入" onclick="startVoice()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                    </button>
+                    <button id="send-btn" class="input-btn" onclick="sendMessage()" disabled>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Company modal -->
+    <div id="company-modal">
+        <div class="modal-box">
+            <div class="modal-title">分析哪家公司？</div>
+            <input class="modal-input" id="modal-company" placeholder="公司名称（如：腾讯、苹果）" autofocus>
+            <input class="modal-input" id="modal-ticker" placeholder="股票代码（可选，如：0700.HK）">
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeModal()">取消</button>
+                <button class="modal-btn primary" onclick="startAnalysis()">开始分析</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ── State ────────────────────────────────────────────────────────────────
+    let state = {
+        company: "",
+        ticker: "",
+        mode: "normal",
+        onboardingModule: "模块一：商业模式",
+        onboardingStep: 0,
+        history: [],
+        pendingImageBase64: null,
+    };
+
+    const ONBOARDING_MODULES = [
+        "模块一：商业模式",
+        "模块二：护城河",
+        "模块三：财务质量",
+        "模块四：管理层",
+        "模块五：估值",
+    ];
+
+    // ── Init ─────────────────────────────────────────────────────────────────
+    async function init() {
+        await loadCompanies();
+        const userState = await fetch("/api/coach/state").then(r => r.json());
+        if (!userState.onboarding_completed) {
+            state.mode = "onboarding";
+            state.onboardingModule = userState.onboarding_module || ONBOARDING_MODULES[0];
+            state.onboardingStep = ONBOARDING_MODULES.indexOf(state.onboardingModule);
+            if (state.onboardingStep < 0) state.onboardingStep = 0;
+        }
+        document.getElementById("coach-input").addEventListener("input", () => {
+            document.getElementById("send-btn").disabled = !document.getElementById("coach-input").value.trim();
+        });
+    }
+
+    async function loadCompanies() {
+        const list = await fetch("/api/coach/companies").then(r => r.json()).catch(() => []);
+        const el = document.getElementById("company-list");
+        el.innerHTML = "";
+        list.forEach(c => {
+            const div = document.createElement("div");
+            div.className = "company-item";
+            div.innerHTML = `<div class="company-name">${c.company_name}</div>
+                <div class="company-meta">${c.ticker || ""} · ${c.session_count}次分析</div>`;
+            div.onclick = () => loadCompany(c.company_id, c.company_name, c.ticker);
+            el.appendChild(div);
+        });
+    }
+
+    async function loadCompany(id, name, ticker) {
+        document.querySelectorAll(".company-item").forEach(e => e.classList.remove("active"));
+        event && event.currentTarget && event.currentTarget.classList.add("active");
+        state.company = name;
+        state.ticker = ticker || "";
+        state.history = [];
+        clearMessages();
+        showWelcomeMessage(`继续分析 ${name}`);
+    }
+
+    // ── Modal ────────────────────────────────────────────────────────────────
+    function openNewCompany() {
+        document.getElementById("company-modal").classList.add("open");
+        setTimeout(() => document.getElementById("modal-company").focus(), 50);
+    }
+    function closeModal() {
+        document.getElementById("company-modal").classList.remove("open");
+        document.getElementById("modal-company").value = "";
+        document.getElementById("modal-ticker").value = "";
+    }
+    async function startAnalysis() {
+        const name = document.getElementById("modal-company").value.trim();
+        if (!name) return;
+        state.company = name;
+        state.ticker = document.getElementById("modal-ticker").value.trim();
+        state.history = [];
+        closeModal();
+        clearMessages();
+        await loadCompanies();
+        // Auto-send opener
+        const opener = state.mode === "onboarding"
+            ? `我想分析${name}，先从${state.onboardingModule}开始。`
+            : `我想分析${name}，帮我开始。`;
+        appendMessage("user", opener);
+        await streamCoachMessage(opener);
+    }
+
+    // ── Messages ─────────────────────────────────────────────────────────────
+    function clearMessages() {
+        const el = document.getElementById("coach-messages");
+        el.innerHTML = "";
+    }
+
+    function showWelcomeMessage(text) {
+        const el = document.getElementById("coach-messages");
+        el.innerHTML = `<div id="coach-welcome">
+            <div class="welcome-icon">🎯</div>
+            <div class="welcome-title">${text}</div>
+            <div class="welcome-desc">继续输入你的想法，或从头分析。</div>
+        </div>`;
+    }
+
+    function appendMessage(role, text) {
+        const el = document.getElementById("coach-messages");
+        // Remove welcome if present
+        const w = document.getElementById("coach-welcome");
+        if (w) w.remove();
+
+        const div = document.createElement("div");
+        div.className = role === "user" ? "msg msg-user" : "msg msg-assistant";
+        if (role === "assistant") {
+            div.innerHTML = marked.parse(text);
+        } else {
+            div.textContent = text;
+        }
+        el.appendChild(div);
+        el.scrollTop = el.scrollHeight;
+        return div;
+    }
+
+    function appendTyping() {
+        const el = document.getElementById("coach-messages");
+        const div = document.createElement("div");
+        div.id = "typing-indicator";
+        div.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div>`;
+        el.appendChild(div);
+        el.scrollTop = el.scrollHeight;
+    }
+    function removeTyping() {
+        const t = document.getElementById("typing-indicator");
+        if (t) t.remove();
+    }
+
+    function appendRecordCard(record) {
+        if (!record) return;
+        const el = document.getElementById("coach-messages");
+        const lines = record.split("\n").filter(l => l.trim());
+        const rows = lines.map(l => {
+            const idx = l.indexOf(":");
+            if (idx < 0) return `<div class="record-row"><span class="record-value">${l}</span></div>`;
+            const key = l.slice(0, idx).trim();
+            const val = l.slice(idx + 1).trim();
+            return `<div class="record-row"><span class="record-label">${key}</span><span class="record-value">${val}</span></div>`;
+        }).join("");
+        const div = document.createElement("div");
+        div.className = "record-card";
+        div.innerHTML = `<div class="record-card-title">📋 分析记录</div>${rows}`;
+        el.appendChild(div);
+        el.scrollTop = el.scrollHeight;
+    }
+
+    // ── Onboarding progress bar ──────────────────────────────────────────────
+    function updateProgressBar() {
+        if (state.mode !== "onboarding") {
+            document.getElementById("onboarding-bar").style.display = "none";
+            return;
+        }
+        document.getElementById("onboarding-bar").style.display = "block";
+        const wrap = document.getElementById("progress-modules");
+        wrap.innerHTML = ONBOARDING_MODULES.map((m, i) => {
+            let cls = "prog-step";
+            if (i < state.onboardingStep) cls += " done";
+            else if (i === state.onboardingStep) cls += " active";
+            return `<div class="${cls}">${m}</div>`;
+        }).join("");
+    }
+
+    // ── Send message ─────────────────────────────────────────────────────────
+    async function sendMessage() {
+        const input = document.getElementById("coach-input");
+        const text = input.value.trim();
+        if (!text && !state.pendingImageBase64) return;
+
+        let msgText = text;
+        if (state.pendingImageBase64) {
+            msgText = text || "你分享这个，是想了解它跟哪家公司的关系？";
+        }
+
+        input.value = "";
+        input.style.height = "auto";
+        document.getElementById("send-btn").disabled = true;
+        clearImage();
+
+        appendMessage("user", msgText);
+        state.history.push({ role: "user", content: msgText });
+        updateProgressBar();
+
+        await streamCoachMessage(msgText);
+    }
+
+    async function streamCoachMessage(message) {
+        appendTyping();
+
+        const body = {
+            message,
+            history: state.history.slice(-20),
+            company: state.company,
+            mode: state.mode,
+            onboarding_module: state.onboardingModule,
+        };
+
+        try {
+            const resp = await fetch("/api/coach/stream", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
+
+            const reader = resp.body.getReader();
+            const decoder = new TextDecoder();
+            let assistantDiv = null;
+            let fullText = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                const chunk = decoder.decode(value);
+                const lines = chunk.split("\n");
+                for (const line of lines) {
+                    if (!line.startsWith("data: ")) continue;
+                    let evt;
+                    try { evt = JSON.parse(line.slice(6)); } catch { continue; }
+
+                    if (evt.type === "token") {
+                        removeTyping();
+                        if (!assistantDiv) {
+                            assistantDiv = appendMessage("assistant", "");
+                        }
+                        fullText += evt.text;
+                        assistantDiv.innerHTML = marked.parse(fullText);
+                        document.getElementById("coach-messages").scrollTop = 9999;
+                    } else if (evt.type === "done") {
+                        removeTyping();
+                        // Strip <record> tags from visible text
+                        const clean = evt.final_answer.replace(/<record>[\s\S]*?<\/record>/g, "").trim();
+                        if (assistantDiv) assistantDiv.innerHTML = marked.parse(clean);
+                        else appendMessage("assistant", clean);
+
+                        state.history.push({ role: "assistant", content: clean });
+
+                        if (evt.record) {
+                            appendRecordCard(evt.record);
+                            if (state.company) {
+                                fetch("/api/coach/record", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        company_name: state.company,
+                                        ticker: state.ticker,
+                                        record: evt.record,
+                                        conversation: state.history.slice(-10),
+                                    }),
+                                }).then(() => loadCompanies());
+                            }
+                        }
+                    } else if (evt.type === "error") {
+                        removeTyping();
+                        appendMessage("assistant", `⚠️ 错误：${evt.message}`);
+                    }
+                }
+            }
+        } catch (e) {
+            removeTyping();
+            appendMessage("assistant", `⚠️ 网络错误：${e.message}`);
+        }
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function handleKey(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            if (!document.getElementById("send-btn").disabled) sendMessage();
+        }
+    }
+
+    function autoResize(el) {
+        el.style.height = "auto";
+        el.style.height = Math.min(el.scrollHeight, 120) + "px";
+    }
+
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            state.pendingImageBase64 = e.target.result;
+            document.getElementById("img-preview").src = e.target.result;
+            document.getElementById("img-preview-wrap").style.display = "flex";
+            document.getElementById("coach-input").placeholder = "你分享这个，是想了解什么？";
+            document.getElementById("send-btn").disabled = false;
+        };
+        reader.readAsDataURL(file);
+        event.target.value = "";
+    }
+
+    function clearImage() {
+        state.pendingImageBase64 = null;
+        document.getElementById("img-preview-wrap").style.display = "none";
+        document.getElementById("img-preview").src = "";
+        document.getElementById("coach-input").placeholder = "输入你的想法…";
+    }
+
+    function startVoice() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("当前浏览器不支持语音输入，请使用 Chrome 或 Safari（HTTPS）。");
+            return;
+        }
+        const recognition = new SpeechRecognition();
+        recognition.lang = "zh-CN";
+        recognition.onstart = () => {
+            document.getElementById("voice-btn").style.color = "#e53935";
+        };
+        recognition.onresult = (e) => {
+            const transcript = e.results[0][0].transcript;
+            document.getElementById("coach-input").value = transcript;
+            document.getElementById("send-btn").disabled = false;
+            autoResize(document.getElementById("coach-input"));
+        };
+        recognition.onend = () => {
+            document.getElementById("voice-btn").style.color = "";
+        };
+        recognition.start();
+    }
+
+    document.getElementById("company-modal").addEventListener("click", function(e) {
+        if (e.target === this) closeModal();
+    });
+    document.getElementById("modal-company").addEventListener("keydown", function(e) {
+        if (e.key === "Enter") startAnalysis();
+    });
+
+    init();
+    </script>
+</body>
+</html>

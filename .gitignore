@@ -2,8 +2,8 @@
 .env
 .env.*
 
-# ChromaDB database (293MB, too large for GitHub)
-database/
+# Streamlit secrets (contains API keys)
+.streamlit/
 
 # Python cache
 __pycache__/

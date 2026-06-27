@@ -15,6 +15,7 @@ load_dotenv(Path(__file__).parent / ".env", override=True)  # Load API keys from
 # Add src to path so we can import rag
 SRC_DIR = Path(__file__).parent / "src"
 sys.path.insert(0, str(SRC_DIR))
+from coach import stream_coach_response
 
 app = FastAPI()
 
@@ -694,6 +695,110 @@ async def tutor_stream(request: TutorRequest):
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+# ── Coach routes ─────────────────────────────────────────────────────────────
+import json as _json
+import uuid as _uuid
+from datetime import date as _date
+
+COACH_DB = Path(__file__).parent / "database" / "coach"
+COACH_DB.mkdir(parents=True, exist_ok=True)
+
+class CoachRequest(BaseModel):
+    message: str
+    history: list = []
+    company: str = ""
+    mode: str = "normal"
+    onboarding_module: str = "模块一：商业模式"
+
+class RecordRequest(BaseModel):
+    company_name: str
+    ticker: str = ""
+    record: str
+    conversation: list = []
+
+@app.get("/coach", response_class=HTMLResponse)
+async def coach_page():
+    with open(frontend_dir / "coach.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.post("/api/coach/stream")
+async def coach_stream(request: CoachRequest):
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    def generate():
+        yield from stream_coach_response(
+            request.message,
+            history=request.history,
+            company=request.company,
+            mode=request.mode,
+            onboarding_module=request.onboarding_module,
+            api_key=api_key,
+        )
+    return StreamingResponse(generate(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+@app.get("/api/coach/state")
+async def get_state():
+    state_file = COACH_DB / "user_state.json"
+    if state_file.exists():
+        return _json.loads(state_file.read_text())
+    return {"onboarding_completed": False, "onboarding_module": "模块一：商业模式"}
+
+@app.post("/api/coach/state")
+async def update_state(state: dict):
+    state_file = COACH_DB / "user_state.json"
+    state_file.write_text(_json.dumps(state, ensure_ascii=False))
+    return {"ok": True}
+
+@app.post("/api/coach/record")
+async def save_record(request: RecordRequest):
+    company_id = request.company_name.lower().replace(" ", "_")
+    file_path = COACH_DB / f"{company_id}.json"
+    if file_path.exists():
+        data = _json.loads(file_path.read_text())
+    else:
+        data = {
+            "company_id": company_id,
+            "company_name": request.company_name,
+            "ticker": request.ticker,
+            "first_analysis": str(_date.today()),
+            "last_updated": str(_date.today()),
+            "sessions": [],
+        }
+    data["last_updated"] = str(_date.today())
+    data["sessions"].append({
+        "session_id": str(_uuid.uuid4()),
+        "date": str(_date.today()),
+        "status": "completed",
+        "record": request.record,
+        "conversation": request.conversation,
+    })
+    file_path.write_text(_json.dumps(data, ensure_ascii=False, indent=2))
+    return {"ok": True, "company_id": company_id}
+
+@app.get("/api/coach/companies")
+async def get_companies():
+    companies = []
+    for f in COACH_DB.glob("*.json"):
+        if f.name == "user_state.json":
+            continue
+        data = _json.loads(f.read_text())
+        companies.append({
+            "company_id": data["company_id"],
+            "company_name": data["company_name"],
+            "ticker": data.get("ticker", ""),
+            "last_updated": data["last_updated"],
+            "session_count": len(data["sessions"]),
+        })
+    return sorted(companies, key=lambda x: x["last_updated"], reverse=True)
+
+@app.get("/api/coach/company/{company_id}")
+async def get_company(company_id: str):
+    file_path = COACH_DB / f"{company_id}.json"
+    if not file_path.exists():
+        return JSONResponse(status_code=404, content={"error": "Not found"})
+    return _json.loads(file_path.read_text())
+
 
 if __name__ == "__main__":
     import uvicorn
