@@ -3,14 +3,16 @@ import DailyDigest from './pages/DailyDigest'
 import Holdings from './pages/Holdings'
 import Tutor from './pages/Tutor'
 import Coach from './pages/Coach'
+import KnowledgeBase from './pages/KnowledgeBase'
 
-type Page = 'digest' | 'holdings' | 'tutor' | 'coach'
+type Page = 'digest' | 'holdings' | 'tutor' | 'coach' | 'kb'
 
 const NAV_ITEMS: { id: Page; label: string; en: string }[] = [
   { id: 'digest', label: '每日简报', en: 'Daily Digest' },
   { id: 'holdings', label: '持仓分析', en: 'Holdings' },
   { id: 'tutor', label: '思维训练营', en: 'Tutor' },
   { id: 'coach', label: '投资教练', en: 'Coach' },
+  { id: 'kb', label: '知识库问答', en: 'Knowledge Base' },
 ]
 
 export default function App() {
@@ -103,6 +105,7 @@ export default function App() {
         {page === 'holdings' && <Holdings />}
         {page === 'tutor' && <Tutor />}
         {page === 'coach' && <Coach />}
+        {page === 'kb' && <KnowledgeBase />}
       </main>
     </div>
   )
