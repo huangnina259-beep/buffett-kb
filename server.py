@@ -90,6 +90,15 @@ class AnalystSynthesisRequest(BaseModel):
 async def health():
     return {"status": "ok"}
 
+@app.get("/app", response_class=HTMLResponse)
+@app.get("/app/{rest:path}", response_class=HTMLResponse)
+async def react_app(rest: str = ""):
+    index = react_dist / "index.html"
+    if not index.exists():
+        return HTMLResponse("<h1>React app not built</h1>", status_code=503)
+    with open(index, "r", encoding="utf-8") as f:
+        return f.read()
+
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
     with open(frontend_dir / "index.html", "r", encoding="utf-8") as f:
