@@ -697,12 +697,11 @@ async def tutor_stream(request: TutorRequest):
     )
 
 # ── Coach routes ─────────────────────────────────────────────────────────────
-import json as _json
 import uuid as _uuid
 from datetime import date as _date
-
-COACH_DB = Path(__file__).parent / "database" / "coach"
-COACH_DB.mkdir(parents=True, exist_ok=True)
+from database import init_db, get_db, CompanyArchive, UserState
+from sqlalchemy.orm import Session
+from fastapi import Depends
 
 class CoachRequest(BaseModel):
     message: str
@@ -712,10 +711,18 @@ class CoachRequest(BaseModel):
     onboarding_module: str = "模块一：商业模式"
 
 class RecordRequest(BaseModel):
+    company_id: str = ""
     company_name: str
     ticker: str = ""
-    record: str
+    module_id: str = ""
+    module_summary: str = ""
+    skipped: bool = False
+    status: str = "in_progress"
     conversation: list = []
+
+@app.on_event("startup")
+async def startup():
+    init_db()
 
 @app.get("/coach", response_class=HTMLResponse)
 async def coach_page():
@@ -738,66 +745,102 @@ async def coach_stream(request: CoachRequest):
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 @app.get("/api/coach/state")
-async def get_state():
-    state_file = COACH_DB / "user_state.json"
-    if state_file.exists():
-        return _json.loads(state_file.read_text())
-    return {"onboarding_completed": False, "onboarding_module": "模块一：商业模式"}
+async def get_state(db: Session = Depends(get_db)):
+    state = db.query(UserState).filter_by(id="default").first()
+    if not state:
+        return {"onboarding_completed": False, "onboarding_skipped": False, "onboarding_current_module": "1.1"}
+    return {
+        "onboarding_completed": state.onboarding_completed == "true",
+        "onboarding_skipped": state.onboarding_skipped == "true",
+        "onboarding_current_module": state.onboarding_current_module,
+    }
 
 @app.post("/api/coach/state")
-async def update_state(state: dict):
-    state_file = COACH_DB / "user_state.json"
-    state_file.write_text(_json.dumps(state, ensure_ascii=False))
+async def update_state(payload: dict, db: Session = Depends(get_db)):
+    state = db.query(UserState).filter_by(id="default").first()
+    if not state:
+        state = UserState(id="default")
+        db.add(state)
+    if "onboarding_completed" in payload:
+        state.onboarding_completed = str(payload["onboarding_completed"]).lower()
+    if "onboarding_skipped" in payload:
+        state.onboarding_skipped = str(payload["onboarding_skipped"]).lower()
+    if "onboarding_current_module" in payload:
+        state.onboarding_current_module = payload["onboarding_current_module"]
+    db.commit()
     return {"ok": True}
 
 @app.post("/api/coach/record")
-async def save_record(request: RecordRequest):
-    company_id = request.company_name.lower().replace(" ", "_")
-    file_path = COACH_DB / f"{company_id}.json"
-    if file_path.exists():
-        data = _json.loads(file_path.read_text())
-    else:
-        data = {
-            "company_id": company_id,
-            "company_name": request.company_name,
-            "ticker": request.ticker,
-            "first_analysis": str(_date.today()),
-            "last_updated": str(_date.today()),
-            "sessions": [],
-        }
-    data["last_updated"] = str(_date.today())
-    data["sessions"].append({
-        "session_id": str(_uuid.uuid4()),
-        "date": str(_date.today()),
-        "status": "completed",
-        "record": request.record,
-        "conversation": request.conversation,
-    })
-    file_path.write_text(_json.dumps(data, ensure_ascii=False, indent=2))
+async def save_record(request: RecordRequest, db: Session = Depends(get_db)):
+    company_id = request.company_id or request.company_name.lower().replace(" ", "_")
+    archive = db.query(CompanyArchive).filter_by(company_id=company_id).first()
+    if not archive:
+        archive = CompanyArchive(
+            company_id=company_id,
+            company_name=request.company_name,
+            ticker=request.ticker,
+            first_analysis=str(_date.today()),
+            last_updated=str(_date.today()),
+            sessions=[],
+        )
+        db.add(archive)
+    archive.last_updated = str(_date.today())
+    sessions = list(archive.sessions or [])
+    if not sessions or sessions[-1]["status"] == "completed":
+        sessions.append({
+            "session_id": str(_uuid.uuid4()),
+            "date": str(_date.today()),
+            "status": "in_progress",
+            "modules_completed": [],
+            "skipped_modules": [],
+            "record": {},
+            "conversation": request.conversation,
+        })
+    session = sessions[-1]
+    if request.module_id:
+        if request.skipped:
+            if request.module_id not in session["skipped_modules"]:
+                session["skipped_modules"].append(request.module_id)
+        else:
+            if request.module_id not in session["modules_completed"]:
+                session["modules_completed"].append(request.module_id)
+        session["record"][request.module_id] = request.module_summary
+    session["status"] = request.status
+    session["conversation"] = request.conversation
+    archive.sessions = sessions
+    db.commit()
     return {"ok": True, "company_id": company_id}
 
 @app.get("/api/coach/companies")
-async def get_companies():
-    companies = []
-    for f in COACH_DB.glob("*.json"):
-        if f.name == "user_state.json":
-            continue
-        data = _json.loads(f.read_text())
-        companies.append({
-            "company_id": data["company_id"],
-            "company_name": data["company_name"],
-            "ticker": data.get("ticker", ""),
-            "last_updated": data["last_updated"],
-            "session_count": len(data["sessions"]),
+async def get_companies(db: Session = Depends(get_db)):
+    archives = db.query(CompanyArchive).all()
+    result = []
+    for a in archives:
+        latest = a.sessions[-1] if a.sessions else {}
+        result.append({
+            "company_id": a.company_id,
+            "company_name": a.company_name,
+            "ticker": a.ticker,
+            "last_updated": a.last_updated,
+            "session_count": len(a.sessions),
+            "modules_completed": latest.get("modules_completed", []),
+            "skipped_modules": latest.get("skipped_modules", []),
         })
-    return sorted(companies, key=lambda x: x["last_updated"], reverse=True)
+    return sorted(result, key=lambda x: x["last_updated"], reverse=True)
 
 @app.get("/api/coach/company/{company_id}")
-async def get_company(company_id: str):
-    file_path = COACH_DB / f"{company_id}.json"
-    if not file_path.exists():
+async def get_company(company_id: str, db: Session = Depends(get_db)):
+    archive = db.query(CompanyArchive).filter_by(company_id=company_id).first()
+    if not archive:
         return JSONResponse(status_code=404, content={"error": "Not found"})
-    return _json.loads(file_path.read_text())
+    return {
+        "company_id": archive.company_id,
+        "company_name": archive.company_name,
+        "ticker": archive.ticker,
+        "first_analysis": archive.first_analysis,
+        "last_updated": archive.last_updated,
+        "sessions": archive.sessions,
+    }
 
 
 if __name__ == "__main__":

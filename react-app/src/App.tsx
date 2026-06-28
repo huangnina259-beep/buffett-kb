@@ -2,13 +2,15 @@ import { useState } from 'react'
 import DailyDigest from './pages/DailyDigest'
 import Holdings from './pages/Holdings'
 import Tutor from './pages/Tutor'
+import Coach from './pages/Coach'
 
-type Page = 'digest' | 'holdings' | 'tutor'
+type Page = 'digest' | 'holdings' | 'tutor' | 'coach'
 
 const NAV_ITEMS: { id: Page; label: string; en: string }[] = [
   { id: 'digest', label: '每日简报', en: 'Daily Digest' },
   { id: 'holdings', label: '持仓分析', en: 'Holdings' },
   { id: 'tutor', label: '思维训练营', en: 'Tutor' },
+  { id: 'coach', label: '投资教练', en: 'Coach' },
 ]
 
 export default function App() {
@@ -100,6 +102,7 @@ export default function App() {
         {page === 'digest' && <DailyDigest />}
         {page === 'holdings' && <Holdings />}
         {page === 'tutor' && <Tutor />}
+        {page === 'coach' && <Coach />}
       </main>
     </div>
   )
