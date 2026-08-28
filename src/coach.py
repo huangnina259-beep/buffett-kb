@@ -1,14 +1,10 @@
-"""
-Investment Coach engine: Socratic-style guide for analyzing any company.
-Uses Anthropic Claude for dynamic, streaming conversation.
-"""
+"""Investment Coach engine with provider-neutral streaming generation."""
 import json
 import logging
-import os
 import re
 from typing import Generator
 
-import anthropic
+from ai_gateway import get_generation_gateway
 
 COACH_SYSTEM_PROMPT = """你是"复利国"的投资教练。
 
@@ -81,15 +77,8 @@ def stream_coach_response(
     company: str = "",
     mode: str = "normal",
     onboarding_module: str = "模块一：商业模式",
-    api_key: str = None,
+    api_key: str = None,  # Deprecated; configuration is resolved by the gateway.
 ) -> Generator[str, None, None]:
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-    if not key:
-        yield f"data: {json.dumps({'type': 'error', 'message': 'ANTHROPIC_API_KEY missing'})}\n\n"
-        return
-
-    client = anthropic.Anthropic(api_key=key)
-
     if mode == "onboarding":
         system = ONBOARDING_SYSTEM_PROMPT.replace("{current_module}", onboarding_module)
     else:
@@ -106,15 +95,14 @@ def stream_coach_response(
 
     try:
         full_text = ""
-        with client.messages.stream(
-            model="claude-sonnet-4-6",
+        for text in get_generation_gateway().stream(
+            "coach_dialogue",
             max_tokens=1000,
             system=system,
             messages=msgs,
-        ) as stream:
-            for text in stream.text_stream:
-                full_text += text
-                yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
+        ):
+            full_text += text
+            yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
 
         record = None
         if "<record>" in full_text and "</record>" in full_text:

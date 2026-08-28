@@ -1,0 +1,56 @@
+.page { max-width: 1180px; margin: 0 auto; padding: 42px 48px 80px; }
+.loading { padding: 64px; color: #777; font-family: monospace; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; margin-bottom: 24px; }
+.header h1 { margin: 4px 0 10px; font-size: 32px; color: #eee7d8; }
+.header p { max-width: 720px; color: #777; line-height: 1.7; }
+.eyebrow, .providerNumber { color: #8f7d57; font: 10px/1.4 monospace; letter-spacing: .18em; }
+.saveButton, .secondaryButton, .addProvider { border: 1px solid #8f7d57; background: #b69b67; color: #0b0b0b; border-radius: 5px; padding: 10px 17px; cursor: pointer; font-weight: 700; white-space: nowrap; }
+.saveButton:disabled { opacity: .45; cursor: wait; }
+.notice { border-radius: 5px; padding: 12px 15px; margin-bottom: 18px; font-size: 13px; }
+.ok { border: 1px solid #28583b; background: #102419; color: #7ed49b; }
+.error { border: 1px solid #6b2b2b; background: #291313; color: #f08b8b; }
+.warning { border: 1px solid #6a5323; background: #29210f; color: #e8c36d; }
+.securityNote { display: flex; gap: 16px; padding: 13px 16px; border: 1px solid #25231e; background: #11100d; color: #777; margin-bottom: 22px; line-height: 1.6; }
+.securityNote strong { color: #c1ab7e; white-space: nowrap; }
+.providerCard, .routesCard { border: 1px solid #242424; background: #0e0e0e; border-radius: 7px; padding: 24px; margin-bottom: 20px; }
+.cardTitle { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 22px; }
+.cardTitle h2 { color: #ded6c7; font-size: 20px; margin-top: 4px; }
+.dangerButton, .iconButton { border: 0; background: transparent; color: #7b4444; cursor: pointer; }
+.providerGrid, .routesGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 17px; }
+.providerGrid label, .routesGrid label { display: flex; flex-direction: column; gap: 7px; }
+.providerGrid label > span, .routesGrid label > span { color: #7f7b72; font: 11px monospace; }
+.providerGrid em { color: #5b8d68; font-style: normal; }
+.wideField { grid-column: span 2; }
+.page input, .page select { width: 100%; color: #d6cfc1; background: #151515; border: 1px solid #303030; border-radius: 4px; padding: 10px 11px; outline: none; font: 12px monospace; }
+.page input:focus, .page select:focus { border-color: #786947; }
+.page input:disabled { color: #383838; background: #111; }
+.modelsHeader { display: flex; justify-content: space-between; align-items: end; padding-top: 26px; margin: 26px 0 10px; border-top: 1px solid #1d1d1d; }
+.modelsHeader h3 { color: #bfb7a8; font-size: 15px; margin-bottom: 5px; }
+.modelsHeader p { color: #505050; font-size: 11px; }
+.secondaryButton { color: #ad9b77; border-color: #423b2d; background: transparent; padding: 7px 12px; }
+.modelTable { border: 1px solid #222; border-radius: 5px; overflow: hidden; }
+.modelTableHeader, .modelRow { display: grid; grid-template-columns: minmax(220px, 1.6fr) 150px 120px minmax(240px, 1.4fr) 28px; gap: 9px; align-items: center; padding: 9px 11px; }
+.modelTableHeader { color: #4e4e4e; background: #111; font: 10px monospace; }
+.modelRow { border-top: 1px solid #202020; }
+.modelRow:first-of-type { border-top: 0; }
+.testCell { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
+.testCell button { color: #a8946a; border: 1px solid #413a2c; background: #13110d; border-radius: 3px; padding: 6px 10px; cursor: pointer; }
+.testCell button:disabled { opacity: .4; }
+.toggle { display: flex; align-items: center; gap: 5px; color: #666; font: 11px monospace; }
+.toggle input { width: auto; }
+.testCell small { flex-basis: 100%; font: 10px/1.4 monospace; }
+.testOk { color: #62b47c; }
+.testError { color: #c66e6e; }
+.iconButton { font-size: 20px; }
+.addProvider { width: 100%; background: transparent; color: #877755; border-color: #393226; margin: 2px 0 20px; }
+.reindexNote { margin-top: 18px; padding: 12px; background: #15120b; color: #927d50; border-left: 2px solid #6d5b35; font-size: 12px; line-height: 1.6; }
+.routeSpacer { min-height: 1px; }
+@media (max-width: 900px) {
+  .page { padding: 28px 22px 60px; }
+  .header { flex-direction: column; }
+  .providerGrid, .routesGrid { grid-template-columns: 1fr; }
+  .wideField { grid-column: auto; }
+  .modelTableHeader { display: none; }
+  .modelRow { grid-template-columns: 1fr; padding: 14px; }
+  .iconButton { justify-self: end; }
+}

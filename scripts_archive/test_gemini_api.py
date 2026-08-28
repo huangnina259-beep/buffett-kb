@@ -2,11 +2,11 @@
 import os
 import google.generativeai as genai
 
-# DO NOT HARDCODE KEY IN FINAL VERSION
-os.environ["GOOGLE_API_KEY"] = "AIzaSyAnsO2yoVd-b3C9KQ67OCCi99RpsHjXlJA"
-
 def test_api():
-    genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
+    api_key = os.environ.get("GOOGLE_API_KEY", "")
+    if not api_key:
+        raise RuntimeError("GOOGLE_API_KEY is not configured")
+    genai.configure(api_key=api_key)
     # Testing models
     models_to_try = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-2.5-flash"]
     

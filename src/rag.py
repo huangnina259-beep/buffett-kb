@@ -1,10 +1,6 @@
-"""
-RAG query engine: ChromaDB retrieval + Claude API generation.
-Supports both blocking and streaming (SSE) response modes.
-"""
+"""RAG query engine with provider-neutral embeddings and generation."""
 import json
 import logging
-import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -12,9 +8,14 @@ from typing import Optional, Generator
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-import chromadb
-from anthropic import Anthropic
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+from ai_gateway import get_generation_gateway
+from embedding_gateway import get_embedding_gateway
+from reranker_gateway import get_reranker_gateway, RerankerError
+from vector_store import (
+    DEFAULT_COLLECTION_NAME,
+    ensure_index_compatible,
+    get_collection,
+)
 
 SRC_DIR = Path(__file__).parent
 ROOT_DIR = SRC_DIR.parent
@@ -40,11 +41,7 @@ def _clean_label(label: str) -> str:
     label = re.sub(r'_+', ' ', label)                  # underscores → spaces
     label = re.sub(r'\s{2,}', ' ', label)              # collapse spaces
     return label.strip()
-DB_DIR   = ROOT_DIR / "database"
-
-COLLECTION_NAME  = "buffett_kb"
-EMBED_MODEL      = "sentence-transformers/all-MiniLM-L6-v2"
-LLM_MODEL        = os.environ.get("LLM_MODEL", "claude-sonnet-4-6")
+COLLECTION_NAME  = DEFAULT_COLLECTION_NAME
 TOP_K            = 12    # more chunks ensures cross-source synthesis
 MAX_TOKENS       = 4000  # allow comprehensive multi-source answers
 
@@ -287,9 +284,8 @@ Howard Marks：系统严谨，层层递进，善于区分一阶思维和二阶�
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 def _get_collection():
-    ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
-    client = chromadb.PersistentClient(path=str(DB_DIR))
-    return client.get_or_create_collection(name=COLLECTION_NAME, embedding_function=ef)
+    """Compatibility wrapper used by the tutor module."""
+    return get_collection()
 
 
 TERM_TRANSLATIONS = {
@@ -570,6 +566,42 @@ def _log_chunks(results: dict, label: str):
         logging.info(f"[RAG]   [{i}] {m.get('source_file','?')} | author={m.get('author','?')} | year={m.get('year','?')} | dist={d:.4f}")
 
 
+def _apply_reranker(search_query: str, results: dict) -> dict:
+    """Reorder retrieved chunks when a page-configured reranker is available.
+
+    Reranking is deliberately best-effort: vector retrieval remains usable if a
+    third-party rerank endpoint is unavailable or uses a different contract.
+    """
+    documents = results.get("documents", [[]])[0]
+    if len(documents) < 2:
+        return results
+    gateway = get_reranker_gateway()
+    if not gateway.configured:
+        return results
+    try:
+        ranked = gateway.rerank(search_query, documents, top_n=len(documents))
+    except RerankerError as exc:
+        logging.warning("[RAG] reranker skipped: %s", exc)
+        return results
+
+    order = [item.index for item in ranked]
+    order.extend(index for index in range(len(documents)) if index not in order)
+    metas = results["metadatas"][0]
+    original_distances = results["distances"][0]
+    scores = {item.index: item.score for item in ranked}
+    distances = [
+        max(0.0, min(1.0, 1.0 - scores[index]))
+        if index in scores
+        else original_distances[index]
+        for index in order
+    ]
+    return {
+        "documents": [[documents[index] for index in order]],
+        "metadatas": [[metas[index] for index in order]],
+        "distances": [distances],
+    }
+
+
 def _retrieve(search_query: str, where_clause, top_k: int, target_author: Optional[str] = None) -> dict:
     """Priority-aware retrieval.
 
@@ -586,6 +618,9 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
     Year/doc_type filters from where_clause are preserved in both cases.
     """
     collection = _get_collection()
+    embedding_gateway = get_embedding_gateway()
+    ensure_index_compatible(collection, embedding_gateway)
+    query_embedding = embedding_gateway.embed_query(search_query)
 
     # Extract non-author filters (year, doc_type) from where_clause
     base_filters = {}
@@ -607,7 +642,7 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
 
     def _query(where=None, n=top_k):
         p = {
-            "query_texts": [search_query],
+            "query_embeddings": [query_embedding],
             "n_results": n,
             "include": ["documents", "metadatas", "distances"],
         }
@@ -615,7 +650,8 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
             p["where"] = where
         try:
             return collection.query(**p)
-        except Exception:
+        except Exception as exc:
+            logging.warning("[RAG] vector query failed where=%s: %s", where, exc)
             return {"documents": [[]], "metadatas": [[]], "distances": [[]]}
 
     def _count(r):
@@ -630,6 +666,7 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
             results = _merge_results(results, supp, top_k=top_k)
         if _count(results) == 0:
             results = _query(None)
+        results = _apply_reranker(search_query, results)
         _log_chunks(results, f"Case A (author={target_author})")
         return results
 
@@ -651,7 +688,7 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
         """Standalone query with its own collection — safe for concurrent use."""
         col = _get_collection()
         p = {
-            "query_texts": [search_query],
+            "query_embeddings": [query_embedding],
             "n_results": n,
             "include": ["documents", "metadatas", "distances"],
         }
@@ -659,7 +696,8 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
             p["where"] = where
         try:
             return col.query(**p)
-        except Exception:
+        except Exception as exc:
+            logging.warning("[RAG] isolated vector query failed where=%s: %s", where, exc)
             return {"documents": [[]], "metadatas": [[]], "distances": [[]]}
 
     with ThreadPoolExecutor(max_workers=3) as ex:
@@ -682,6 +720,7 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
         top_k=top_k,
         guaranteed={"Howard Marks": 2, "Li Lu": 2},
     )
+    results = _apply_reranker(search_query, results)
     _log_chunks(results, "Case B 3-tier merge (primary+secondary+books)")
     return results
 
@@ -691,18 +730,13 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
 def stream_query_knowledge_base(
     question: str,
     history: list = None,
-    api_key: str = None,      # Anthropic API key
+    api_key: str = None,      # Deprecated; configuration is resolved by the gateway.
     top_k: int = TOP_K,
 ) -> Generator[str, None, None]:
     """
     SSE generator. Yields newline-delimited 'data: <json>\\n\\n' strings.
     Event types: searching | token | done | error
     """
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-    if not key:
-        yield f"data: {json.dumps({'type': 'error', 'message': 'ANTHROPIC_API_KEY 未设置'})}\n\n"
-        return
-
     # 1. Extract search params (pure regex, no API call)
     yield f"data: {json.dumps({'type': 'searching'})}\n\n"
     search_query, search_params, where_clause = _extract_search_params(question, history)
@@ -722,20 +756,19 @@ def stream_query_knowledge_base(
     context, sources = _format_context(results)
     messages = _build_messages(question, context, history)
 
-    # 3. Stream answer tokens via Anthropic
-    client = Anthropic(api_key=key)
+    # 3. Stream answer tokens through the configured provider.
+    gateway = get_generation_gateway()
     full_text = ""
     try:
-        with client.messages.stream(
-            model=LLM_MODEL,
+        for text in gateway.stream(
+            "knowledge_answer",
             max_tokens=MAX_TOKENS,
             system=SYSTEM_PROMPT,
             messages=messages,
-        ) as stream:
-            for text in stream.text_stream:
-                if text:
-                    full_text += text
-                    yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
+        ):
+            if text:
+                full_text += text
+                yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
     except Exception as e:
         yield f"data: {json.dumps({'type': 'error', 'message': f'API调用失败: {e}'})}\n\n"
         return
@@ -750,13 +783,9 @@ def stream_query_knowledge_base(
 def query_knowledge_base(
     question: str,
     history: list = None,
-    api_key: str = None,      # Anthropic API key
+    api_key: str = None,      # Deprecated; configuration is resolved by the gateway.
     top_k: int = TOP_K,
 ) -> dict:
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-    if not key:
-        return {"answer": "", "sources": [], "error": "ANTHROPIC_API_KEY 未设置"}
-
     search_query, search_params, where_clause = _extract_search_params(question, history)
     target_author = search_params.get("author")
 
@@ -772,14 +801,13 @@ def query_knowledge_base(
     messages = _build_messages(question, context, history)
 
     try:
-        client = Anthropic(api_key=key)
-        response = client.messages.create(
-            model=LLM_MODEL,
+        response = get_generation_gateway().complete(
+            "knowledge_answer",
             max_tokens=MAX_TOKENS,
             system=SYSTEM_PROMPT,
             messages=messages,
         )
-        raw_answer = response.content[0].text
+        raw_answer = response.text
         clean_answer, follow_ups = _parse_follow_ups(raw_answer)
         return {
             "answer": clean_answer,

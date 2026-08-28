@@ -1,0 +1,6 @@
+-r requirements.txt
+
+# Optional offline embedding profile. Production defaults to a cloud API and
+# does not need these heavyweight local inference dependencies.
+torch==2.5.1
+sentence-transformers>=3.0.0

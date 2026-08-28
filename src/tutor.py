@@ -1,25 +1,18 @@
-"""
-Tutor engine: guides students through value-investing case analysis.
-Uses ChromaDB retrieval for knowledge-base grounding + Claude for dynamic feedback.
-"""
+"""Tutor engine with provider-neutral retrieval and generation."""
 import json
 import logging
-import os
 import re
-from typing import Generator, Optional
+from typing import Generator
 
-from anthropic import Anthropic
+from ai_gateway import get_generation_gateway
+from embedding_gateway import get_embedding_gateway
+from vector_store import ensure_index_compatible
 
 from rag import (
     _get_collection,
     _translate_query,
-    _merge_results,
-    EMBED_MODEL,
-    DB_DIR,
-    COLLECTION_NAME,
 )
 
-TUTOR_MODEL  = os.environ.get("TUTOR_MODEL", "claude-sonnet-4-6")
 MAX_TOKENS   = 2000   # tutor replies should be focused, not essays
 
 # ── System prompt ────────────────────────────────────────────────────────────
@@ -136,8 +129,11 @@ def _retrieve_for_tutor(question: str, n_results: int = 6) -> tuple:
     search_query = _translate_query(question)
     collection = _get_collection()
     try:
+        embedding_gateway = get_embedding_gateway()
+        ensure_index_compatible(collection, embedding_gateway)
+        query_embedding = embedding_gateway.embed_query(search_query)
         results = collection.query(
-            query_texts=[search_query],
+            query_embeddings=[query_embedding],
             n_results=n_results,
             include=["documents", "metadatas", "distances"],
         )
@@ -364,14 +360,9 @@ def stream_tutor_response(
     message: str,
     history: list = None,
     curriculum_state: dict = None,
-    api_key: str = None,
+    api_key: str = None,  # Deprecated; configuration is resolved by the gateway.
 ) -> Generator[str, None, None]:
     """SSE generator for tutor responses. Same event format as RAG chat."""
-
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-    if not key:
-        yield f"data: {json.dumps({'type': 'error', 'message': 'ANTHROPIC_API_KEY 未设置'})}\n\n"
-        return
 
     state = curriculum_state or {"currentChapter": "ch1", "completedChapters": []}
 
@@ -418,23 +409,20 @@ def stream_tutor_response(
 
     msgs.append({"role": "user", "content": user_content})
 
-    # 4. Stream via Anthropic
+    # 4. Stream via the configured generation provider.
     try:
-        client = Anthropic(api_key=key)
         full_text = ""
-
-        with client.messages.stream(
-            model=TUTOR_MODEL,
+        for text in get_generation_gateway().stream(
+            "tutor_dialogue",
             max_tokens=MAX_TOKENS,
             system=system,
             messages=msgs,
-        ) as stream:
-            for text in stream.text_stream:
-                if text:
-                    full_text += text
-                    # Don't stream meta tags to the user
-                    if not re.search(r"<(advance_to|framework_insight|parking_lot)>", text):
-                        yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
+        ):
+            if text:
+                full_text += text
+                # Don't stream meta tags to the user
+                if not re.search(r"<(advance_to|framework_insight|parking_lot)>", text):
+                    yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
 
         # 5. Parse meta and emit done event
         meta = _parse_tutor_meta(full_text)

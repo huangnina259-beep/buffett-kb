@@ -1,6 +1,7 @@
 # Environment variables
 .env
 .env.*
+!.env.example
 
 # Streamlit secrets (contains API keys)
 .streamlit/
@@ -17,6 +18,10 @@ __pycache__/
 venv/
 .venv/
 env/
+
+# Local runtime data
+database/
+coach.db
 
 # OS
 .DS_Store

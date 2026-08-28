@@ -5,8 +5,6 @@ sys.path.insert(0, str(Path("buffett_kb/src")))
 import google.generativeai as genai
 from rag import query_knowledge_base
 
-os.environ["GOOGLE_API_KEY"] = "AIzaSyAnsO2yoVd-b3C9KQ67OCCi99RpsHjXlJA"
-
 def test():
     q = "2008年金融危机时，巴菲特在股东信里传达了什么情绪？"
     print(f"Query: {q}\n")

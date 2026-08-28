@@ -7,14 +7,12 @@ Uses Langchain's RecursiveCharacterTextSplitter to avoid MemoryErrors.
 import argparse
 import json
 import re
-import os
-import sys
 from datetime import datetime
 from pathlib import Path
 
-import chromadb
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from embedding_gateway import get_embedding_gateway
+from vector_store import collection_name, ensure_index_compatible, get_collection, write_manifest
 
 # ── paths ─────────────────────────────────────────────────────────────────────
 SRC_DIR  = Path(__file__).parent
@@ -23,17 +21,28 @@ DB_DIR   = ROOT_DIR / "database"
 MD_DIR   = ROOT_DIR / "data" / "clean_mds"
 
 # ── constants ─────────────────────────────────────────────────────────────────
-COLLECTION_NAME = "buffett_kb"
-EMBED_MODEL     = "sentence-transformers/all-MiniLM-L6-v2"
 CHUNK_SIZE      = 2000   # chars ≈ 500-600 tokens
 CHUNK_OVERLAP   = 400    # chars ≈ 100 tokens
-
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=CHUNK_SIZE,
     chunk_overlap=CHUNK_OVERLAP,
     length_function=len,
     is_separator_regex=False,
 )
+
+
+def ingestion_summary_path() -> Path:
+    """Keep resumable progress isolated per vector collection/version."""
+    return DB_DIR / f"ingestion_summary.{collection_name()}.json"
+
+
+def write_ingestion_summary(path: Path, summary: dict) -> None:
+    """Checkpoint progress atomically so an interrupted paid job can resume."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    with open(temporary, "w", encoding="utf-8") as handle:
+        json.dump(summary, handle, indent=2, ensure_ascii=False)
+    temporary.replace(path)
 
 def chunk_text(text: str) -> list[str]:
     return text_splitter.split_text(text)
@@ -128,16 +137,20 @@ def main():
     args = parser.parse_args()
 
     print("🚀 Initialising ChromaDB...")
-    ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
-    client = chromadb.PersistentClient(path=str(DB_DIR))
-    collection = client.get_or_create_collection(name=COLLECTION_NAME, embedding_function=ef)
+    embedding_gateway = get_embedding_gateway()
+    collection = get_collection()
+    ensure_index_compatible(collection, embedding_gateway)
+    print(
+        f"Embedding profile: {embedding_gateway.profile.name} "
+        f"({embedding_gateway.profile.provider}/{embedding_gateway.profile.model})"
+    )
 
-    processed_files = set()
-    summary_path = DB_DIR / "ingestion_summary.json"
+    summary_path = ingestion_summary_path()
+    summary = {"files": {}, "total_chunks": 0}
     if summary_path.exists() and not args.force:
         with open(summary_path, "r", encoding="utf-8") as f:
             summary = json.load(f)
-            processed_files = set(summary.get("files", {}).keys())
+    processed_files = set(summary.get("files", {}).keys())
 
     if not MD_DIR.exists():
         print(f"❌ Clean Markdown directory not found: {MD_DIR}")
@@ -183,7 +196,9 @@ def main():
         if not chunks:
             continue
         
-        batch_size = 100
+        # Keep batches modest on Windows: larger upserts can crash the native
+        # Chroma HNSW extension instead of raising a Python exception.
+        batch_size = 32
         for i in range(0, len(chunks), batch_size):
             batch_chunks = chunks[i:i+batch_size]
             ids = [f"{md_path.name}_{i+j}" for j in range(len(batch_chunks))]
@@ -196,13 +211,17 @@ def main():
                 metas.append(m)
                 
             try:
+                embeddings = embedding_gateway.embed_documents(batch_chunks)
                 collection.upsert(
                     ids=ids,
                     documents=batch_chunks,
-                    metadatas=metas
+                    metadatas=metas,
+                    embeddings=embeddings,
                 )
+                write_manifest(embedding_gateway)
             except Exception as e:
                 print(f"❌ Error adding batch to ChromaDB for {md_path.name}: {e}")
+                raise
 
         print(f"✅ Ingested {len(chunks)} chunks from {md_path.name}")
         total_chunks_added += len(chunks)
@@ -211,17 +230,14 @@ def main():
             "ingested_at": datetime.now().isoformat()
         }
 
-    # Update summary
-    new_summary = {"files": file_stats, "total_chunks": total_chunks_added}
-    if summary_path.exists() and not args.force:
-        with open(summary_path, "r", encoding="utf-8") as f:
-            old_summary = json.load(f)
-            old_summary["files"].update(file_stats)
-            old_summary["total_chunks"] = old_summary.get("total_chunks", 0) + total_chunks_added
-            new_summary = old_summary
+        # Persist after every completed source file. IDs are deterministic, so
+        # retrying a partially completed file safely upserts its existing rows.
+        summary["files"][md_path.name] = file_stats[md_path.name]
+        summary["total_chunks"] = int(summary.get("total_chunks", 0)) + len(chunks)
+        write_ingestion_summary(summary_path, summary)
 
-    with open(summary_path, "w", encoding="utf-8") as f:
-        json.dump(new_summary, f, indent=2, ensure_ascii=False)
+    # Also create a summary for an empty collection/run.
+    write_ingestion_summary(summary_path, summary)
 
     print(f"\n=======================================================")
     print(f"✨ Done! {len(file_stats)} new documents | {total_chunks_added} chunks added")

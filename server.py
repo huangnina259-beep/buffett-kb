@@ -1,11 +1,11 @@
 import logging
-import os
 import sys
+import time
 from pathlib import Path
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -16,6 +16,23 @@ load_dotenv(Path(__file__).parent / ".env", override=True)  # Load API keys from
 SRC_DIR = Path(__file__).parent / "src"
 sys.path.insert(0, str(SRC_DIR))
 from coach import stream_coach_response
+from ai_gateway import get_generation_gateway, parse_json_text
+from embedding_gateway import get_embedding_gateway
+from vector_store import index_status
+from ai_settings import (
+    find_profile,
+    load_effective_settings,
+    load_saved_settings,
+    public_settings,
+    save_settings,
+)
+from reranker_gateway import (
+    RerankerGateway,
+    RerankerProfile,
+    get_reranker_gateway,
+    reset_reranker_gateway,
+)
+from starlette.concurrency import run_in_threadpool
 
 app = FastAPI()
 
@@ -86,9 +103,185 @@ class AnalystSynthesisRequest(BaseModel):
     feedbacks: list[str]   # 4 feedback summaries
     language: str = "cn"
 
+
+class AISettingsRequest(BaseModel):
+    providers: list[dict]
+    routes: dict[str, str]
+    vector_collection: str = "buffett_kb"
+
+
+class AIConnectionTestRequest(BaseModel):
+    provider_id: str
+    provider: str = "openai_compatible"
+    base_url: str = ""
+    model: str
+    capability: str
+    api_key: str = ""
+
+
+class FeedbackResponse(BaseModel):
+    feedback: str
+    key_concepts: list[str]
+
+
+def _validated_feedback(text: str):
+    try:
+        value = FeedbackResponse.model_validate(parse_json_text(text))
+        return value.model_dump()
+    except (ValueError, TypeError, ValidationError) as exc:
+        logging.warning("[AI] Invalid structured feedback response: %s", exc)
+        return JSONResponse(
+            content={
+                "error": "MODEL_OUTPUT_INVALID",
+                "message": "模型未返回有效的反馈结构，请重试或更换模型。",
+            },
+            status_code=502,
+        )
+
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "generation": get_generation_gateway().status(),
+        "embedding": get_embedding_gateway().status(),
+        "reranker": get_reranker_gateway().status(),
+        "vector_index": index_status(),
+    }
+
+
+@app.get("/api/ai/settings")
+async def get_ai_settings():
+    """Return editable settings without ever exposing stored API keys."""
+    return public_settings()
+
+
+@app.put("/api/ai/settings")
+async def put_ai_settings(request: AISettingsRequest):
+    previous = load_saved_settings()
+    previous_embedding = (previous or {}).get("routes", {}).get("embedding")
+    previous_collection = (previous or {}).get("vector_collection")
+    try:
+        saved = save_settings(request.model_dump())
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    # Settings are cached for request performance; invalidate all affected gateways.
+    from ai_gateway import reset_generation_gateway
+    from embedding_gateway import reset_embedding_gateway
+
+    reset_generation_gateway()
+    reset_embedding_gateway()
+    reset_reranker_gateway()
+    new_embedding = saved.get("routes", {}).get("embedding")
+    return {
+        "settings": public_settings(saved),
+        "reindex_required": bool(
+            previous_embedding != new_embedding
+            or previous_collection != saved.get("vector_collection")
+        ),
+        "message": "模型配置已保存。",
+    }
+
+
+def _resolve_test_key(request: AIConnectionTestRequest) -> str:
+    if request.api_key.strip():
+        return request.api_key.strip()
+    saved = load_saved_settings()
+    if saved:
+        for provider in saved.get("providers", []):
+            if provider.get("id") == request.provider_id:
+                return str(provider.get("api_key") or "")
+    return ""
+
+
+def _run_ai_connection_test(request: AIConnectionTestRequest) -> dict:
+    from ai_gateway import AnthropicAdapter, ModelProfile, OpenAICompatibleAdapter
+    from embedding_gateway import EmbeddingProfile, OpenAIEmbeddingAdapter
+
+    key = _resolve_test_key(request)
+    if not key:
+        raise ValueError("请先输入 API Key，或保存一个已配置的 Key。")
+    started = time.perf_counter()
+    provider_type = request.provider.strip().lower()
+    base_url = request.base_url.strip().rstrip("/")
+    capability = request.capability.strip().lower()
+
+    if capability == "generation":
+        profile = ModelProfile(
+            name="connection_test",
+            provider=provider_type,
+            model=request.model.strip(),
+            api_key_value=key,
+            base_url=base_url or None,
+        )
+        adapter = AnthropicAdapter() if provider_type == "anthropic" else OpenAICompatibleAdapter()
+        result = adapter.complete(
+            profile,
+            system="You are a connection test.",
+            messages=[{"role": "user", "content": "Reply with OK only."}],
+            max_tokens=128,
+            temperature=0,
+            json_mode=False,
+        )
+        detail = result.text.strip()[:100] or "模型已响应"
+        extra = {}
+    elif capability == "embedding":
+        if provider_type == "anthropic":
+            raise ValueError("Anthropic 供应商不支持 OpenAI 兼容向量接口。")
+        profile = EmbeddingProfile(
+            name="connection_test",
+            provider="openai" if provider_type == "openai" else "openai_compatible",
+            model=request.model.strip(),
+            api_key_value=key,
+            base_url=base_url or None,
+        )
+        vector = OpenAIEmbeddingAdapter().embed_query(profile, "connection test")
+        detail = "向量接口返回正常"
+        extra = {"dimension": len(vector)}
+    elif capability == "reranker":
+        profile = RerankerProfile(
+            name="connection_test",
+            provider=provider_type,
+            model=request.model.strip(),
+            base_url=base_url,
+            api_key=key,
+        )
+        ranked = RerankerGateway(profile).rerank(
+            "value investing",
+            ["A document about cooking.", "A document about durable business value."],
+            top_n=2,
+        )
+        detail = f"重排接口返回 {len(ranked)} 条结果"
+        extra = {"results": len(ranked)}
+    else:
+        raise ValueError("未知模型能力类型。")
+
+    return {
+        "ok": True,
+        "detail": detail,
+        "latency_ms": round((time.perf_counter() - started) * 1000),
+        **extra,
+    }
+
+
+@app.post("/api/ai/test")
+async def test_ai_connection(request: AIConnectionTestRequest):
+    try:
+        return await run_in_threadpool(_run_ai_connection_test, request)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        logging.warning(
+            "[AI settings] connection test failed provider=%s model=%s: %s",
+            request.provider_id,
+            request.model,
+            exc,
+        )
+        status = getattr(exc, "status_code", None)
+        message = "连接测试失败，请检查 API 地址、Key 和模型名称。"
+        if status:
+            message += f"（HTTP {status}）"
+        raise HTTPException(status_code=502, detail=message) from exc
 
 @app.get("/app", response_class=HTMLResponse)
 @app.get("/app/{rest:path}", response_class=HTMLResponse)
@@ -130,12 +323,8 @@ async def analyst_page():
 
 @app.post("/query")
 async def query(request: QueryRequest):
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not api_key:
-        return JSONResponse(content={"error": "ANTHROPIC_API_KEY not set"}, status_code=500)
-
     from rag import query_knowledge_base
-    result = query_knowledge_base(request.question, history=request.history, api_key=api_key)
+    result = query_knowledge_base(request.question, history=request.history)
 
     error = result.get("error")
     answer = result.get("answer", "")
@@ -214,12 +403,6 @@ GYM_ROUND_CONTEXT = {
 
 @app.post("/gym/feedback")
 async def gym_feedback(request: GymFeedbackRequest):
-    import json as json_lib
-    from anthropic import Anthropic
-
-    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not anthropic_key:
-        return JSONResponse(content={"error": "ANTHROPIC_API_KEY not set"}, status_code=500)
 
     lang = request.language
 
@@ -255,15 +438,15 @@ async def gym_feedback(request: GymFeedbackRequest):
             f"Give feedback based on the knowledge base above. Must quote original text."
         )
 
-    client_ant = Anthropic(api_key=anthropic_key)
-    response = client_ant.messages.create(
-        model="claude-sonnet-4-6",
+    response = get_generation_gateway().complete(
+        "structured_feedback",
         max_tokens=900,
         system=GYM_SYSTEM_CN if lang == "cn" else GYM_SYSTEM_EN,
         messages=[{"role": "user", "content": user_msg}],
+        json_mode=True,
     )
 
-    text = response.content[0].text.strip()
+    text = response.text.strip()
     # Strip markdown code fences if present
     if text.startswith("```"):
         text = text.split("```")[1]
@@ -271,10 +454,7 @@ async def gym_feedback(request: GymFeedbackRequest):
             text = text[4:]
     text = text.strip()
 
-    try:
-        return json_lib.loads(text)
-    except json_lib.JSONDecodeError:
-        return {"feedback": text, "key_concepts": []}
+    return _validated_feedback(text)
 
 
 SYNTHESIS_SYSTEM_CN = """你是复利国的价值投资导师。学员刚完成了一个完整的五轮案例分析训练。
@@ -326,13 +506,6 @@ Rules:
 
 @app.post("/gym/synthesis")
 async def gym_synthesis(request: GymSynthesisRequest):
-    import json as json_lib
-    from anthropic import Anthropic
-
-    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not anthropic_key:
-        return JSONResponse(content={"error": "ANTHROPIC_API_KEY not set"}, status_code=500)
-
     lang = request.language
 
     # Broad KB retrieval covering the full case
@@ -375,15 +548,14 @@ async def gym_synthesis(request: GymSynthesisRequest):
             f"Write the synthesis."
         )
 
-    client_ant = Anthropic(api_key=anthropic_key)
-    response = client_ant.messages.create(
-        model="claude-sonnet-4-6",
+    response = get_generation_gateway().complete(
+        "long_synthesis",
         max_tokens=1200,
         system=SYNTHESIS_SYSTEM_CN if lang == "cn" else SYNTHESIS_SYSTEM_EN,
         messages=[{"role": "user", "content": user_msg}],
     )
 
-    return {"synthesis": response.content[0].text.strip()}
+    return {"synthesis": response.text.strip()}
 
 
 # ── Analyst tool: user-selected company, 4-framework guided analysis ────────
@@ -445,12 +617,6 @@ ANALYST_FRAMEWORK_LABELS_EN = {
 
 @app.post("/analyst/feedback")
 async def analyst_feedback(request: AnalystFeedbackRequest):
-    import json as json_lib
-    from anthropic import Anthropic
-
-    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not anthropic_key:
-        return JSONResponse(content={"error": "ANTHROPIC_API_KEY not set"}, status_code=500)
 
     lang = request.language
     framework = request.framework
@@ -489,25 +655,22 @@ async def analyst_feedback(request: AnalystFeedbackRequest):
             f"Give feedback using the KB. If no direct record on this company, anchor by analogy."
         )
 
-    client_ant = Anthropic(api_key=anthropic_key)
-    response = client_ant.messages.create(
-        model="claude-sonnet-4-6",
+    response = get_generation_gateway().complete(
+        "structured_feedback",
         max_tokens=900,
         system=ANALYST_FEEDBACK_SYSTEM_CN if lang == "cn" else ANALYST_FEEDBACK_SYSTEM_EN,
         messages=[{"role": "user", "content": user_msg}],
+        json_mode=True,
     )
 
-    text = response.content[0].text.strip()
+    text = response.text.strip()
     if text.startswith("```"):
         text = text.split("```")[1]
         if text.startswith("json"):
             text = text[4:]
     text = text.strip()
 
-    try:
-        return json_lib.loads(text)
-    except json_lib.JSONDecodeError:
-        return {"feedback": text, "key_concepts": []}
+    return _validated_feedback(text)
 
 
 ANALYST_SYNTHESIS_SYSTEM_CN = """你是复利国的价值投资助手。学员刚用 4 框架完整分析了一家公司,现在你要给一份"个人投资笔记"。
@@ -564,12 +727,6 @@ Rules:
 
 @app.post("/analyst/synthesis")
 async def analyst_synthesis(request: AnalystSynthesisRequest):
-    from anthropic import Anthropic
-
-    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not anthropic_key:
-        return JSONResponse(content={"error": "ANTHROPIC_API_KEY not set"}, status_code=500)
-
     lang = request.language
 
     # Broad KB retrieval covering the company + general value investing principles
@@ -611,68 +768,46 @@ async def analyst_synthesis(request: AnalystSynthesisRequest):
             f"Write the student's personal investment memo."
         )
 
-    client_ant = Anthropic(api_key=anthropic_key)
-    response = client_ant.messages.create(
-        model="claude-sonnet-4-6",
+    response = get_generation_gateway().complete(
+        "long_synthesis",
         max_tokens=1400,
         system=ANALYST_SYNTHESIS_SYSTEM_CN if lang == "cn" else ANALYST_SYNTHESIS_SYSTEM_EN,
         messages=[{"role": "user", "content": user_msg}],
     )
 
-    return {"synthesis": response.content[0].text.strip(), "company": request.company}
+    return {"synthesis": response.text.strip(), "company": request.company}
 
 
 @app.post("/api/digest")
 async def digest(request: DigestRequest):
     """LLM call for daily business briefing — no RAG, just generation."""
-    import os
-    from openai import OpenAI
-
-    api_key = os.environ.get("MINIMAX_API_KEY", "")
-    if not api_key:
-        return JSONResponse(content={"error": "MINIMAX_API_KEY not set"}, status_code=500)
-
-    llm_model    = os.environ.get("LLM_MODEL", "MiniMax-Text-01")
-    llm_base_url = os.environ.get("LLM_BASE_URL", "https://api.minimax.io/v1")
-
     try:
-        client = OpenAI(api_key=api_key, base_url=llm_base_url)
-        response = client.chat.completions.create(
-            model=llm_model,
+        response = get_generation_gateway().complete(
+            "daily_digest",
             max_tokens=2000,
+            system=request.system,
             messages=[
-                {"role": "system", "content": request.system},
                 {"role": "user",   "content": request.prompt},
             ],
         )
-        return {"content": response.choices[0].message.content}
+        return {"content": response.text}
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not api_key:
-        return JSONResponse(content={"error": "ANTHROPIC_API_KEY environment variable is missing."}, status_code=500)
-
     from rag import query_knowledge_base
-    result = query_knowledge_base(request.query, history=request.history, api_key=api_key)
+    result = query_knowledge_base(request.query, history=request.history)
     return result
 
 @app.post("/api/chat/stream")
 async def chat_stream(request: ChatRequest):
     logging.info(f"[RAG] Request received: {request.query[:80]!r}")
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not api_key:
-        import json
-        error_event = f"data: {json.dumps({'type': 'error', 'message': 'ANTHROPIC_API_KEY environment variable is missing.'})}\n\n"
-        return StreamingResponse(iter([error_event]), media_type="text/event-stream")
-
     from rag import stream_query_knowledge_base
 
     def generate():
-        yield from stream_query_knowledge_base(request.query, history=request.history, api_key=api_key)
+        yield from stream_query_knowledge_base(request.query, history=request.history)
 
     return StreamingResponse(
         generate(),
@@ -683,12 +818,6 @@ async def chat_stream(request: ChatRequest):
 @app.post("/api/tutor/stream")
 async def tutor_stream(request: TutorRequest):
     logging.info(f"[Tutor] Request received: {request.message[:80]!r}")
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not api_key:
-        import json
-        error_event = f"data: {json.dumps({'type': 'error', 'message': 'ANTHROPIC_API_KEY environment variable is missing.'})}\n\n"
-        return StreamingResponse(iter([error_event]), media_type="text/event-stream")
-
     from tutor import stream_tutor_response
 
     def generate():
@@ -696,7 +825,6 @@ async def tutor_stream(request: TutorRequest):
             request.message,
             history=request.history,
             curriculum_state=request.curriculum_state,
-            api_key=api_key,
         )
 
     return StreamingResponse(
@@ -740,7 +868,6 @@ async def coach_page():
 
 @app.post("/api/coach/stream")
 async def coach_stream(request: CoachRequest):
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     def generate():
         yield from stream_coach_response(
             request.message,
@@ -748,7 +875,6 @@ async def coach_stream(request: CoachRequest):
             company=request.company,
             mode=request.mode,
             onboarding_module=request.onboarding_module,
-            api_key=api_key,
         )
     return StreamingResponse(generate(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})

@@ -6,15 +6,12 @@ This version handles large PDFs by processing page-by-page to avoid MemoryError.
 import argparse
 import json
 import re
-import os
-import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 import pdfplumber
-import chromadb
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+from embedding_gateway import get_embedding_gateway
+from vector_store import ensure_index_compatible, get_collection, write_manifest
 
 # ── paths ─────────────────────────────────────────────────────────────────────
 SRC_DIR  = Path(__file__).parent
@@ -23,8 +20,6 @@ DB_DIR   = ROOT_DIR / "database"
 DATA_DIR = ROOT_DIR / "data" / "pdfs"
 
 # ── constants ─────────────────────────────────────────────────────────────────
-COLLECTION_NAME = "buffett_kb"
-EMBED_MODEL     = "sentence-transformers/all-MiniLM-L6-v2"
 CHUNK_SIZE      = 2000   # chars ≈ 500-600 tokens
 CHUNK_OVERLAP   = 400    # chars ≈ 100 tokens
 
@@ -92,9 +87,13 @@ def main():
     args = parser.parse_args()
 
     print("🚀 Initialising ChromaDB...")
-    ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
-    client = chromadb.PersistentClient(path=str(DB_DIR))
-    collection = client.get_or_create_collection(name=COLLECTION_NAME, embedding_function=ef)
+    embedding_gateway = get_embedding_gateway()
+    collection = get_collection()
+    ensure_index_compatible(collection, embedding_gateway)
+    print(
+        f"Embedding profile: {embedding_gateway.profile.name} "
+        f"({embedding_gateway.profile.provider}/{embedding_gateway.profile.model})"
+    )
 
     # Check already processed files
     processed_files = set()
@@ -143,11 +142,14 @@ def main():
                         m["chunk_index"] = file_chunks_count + j
                         metas.append(m)
 
+                    embeddings = embedding_gateway.embed_documents(chunks)
                     collection.add(
                         ids=ids,
                         documents=chunks,
-                        metadatas=metas
+                        metadatas=metas,
+                        embeddings=embeddings,
                     )
+                    write_manifest(embedding_gateway)
                     file_chunks_count += len(chunks)
                     
                     if (i + 1) % 50 == 0:
@@ -162,6 +164,7 @@ def main():
 
         except Exception as e:
             print(f"❌ Error processing {pdf_path.name}: {e}")
+            raise
 
     # Update summary
     new_summary = {"files": file_stats, "total_chunks": total_chunks_added}
