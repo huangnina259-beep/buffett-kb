@@ -264,7 +264,8 @@ body.en [data-en]{display:revert}
 
       <div class="answer-section">
         <div class="answer-label" id="answerLabel"></div>
-        <textarea class="answer-textarea" id="answerInput" rows="5" id="answerInput"></textarea>
+        <textarea class="answer-textarea" id="answerInput" rows="5"></textarea>
+        <p id="answerError" role="alert" style="color:#9c3328;margin-top:12px" hidden></p>
         <div class="submit-row">
           <button class="skip-btn" onclick="skipRound()" id="skipBtn"></button>
           <button class="submit-btn" onclick="submitAnswer()" id="submitBtn"></button>
@@ -421,24 +422,6 @@ const CASES = {
   }
 };
 
-// ── FALLBACK FEEDBACK ─────────────────────────────────────
-const FALLBACK_FEEDBACK = {
-  cn: [
-    '很好的思考起点！可口可乐的核心在于它卖的是"品牌许可"而非饮料本身——浓缩液业务让它以极低的资产占用换来极高的利润率。这种轻资产模式是它能持续产生自由现金流的根本原因。',
-    '你触及了关键。可口可乐的护城河本质上是"情感护城河"——不是配方秘密，而是百年情感积累形成的消费习惯。这解释了为什么百事可乐在盲测中常常胜出，却始终无法取代可口可乐的市场地位。',
-    '戈伊苏埃塔的伟大之处在于他是真正的"资本分配师"——他理解可口可乐的高ROE意味着保留在公司内部的每一分钱都应该为股东创造超额回报，否则就应该回购股票或分红。这种资本纪律是巴菲特最看重的管理层品质。',
-    '财务分析的关键不在于记住指标，而在于理解"为什么"。可口可乐持续的高ROE（30%+）背后，是品牌带来的定价权加上轻资产模式——不需要大量资本投入就能维持竞争优势，这才是好生意的本质。',
-    '估值是价值投资最困难也最关键的部分。1988年的可口可乐看起来"贵"，但巴菲特看到的是：一家拥有定价权的消费品企业，未来几十年每年都能以10%+增长自由现金流。安全边际不仅来自低价格，也来自对企业质量的高确信度。'
-  ],
-  en: [
-    "Good starting point. Coca-Cola's core insight is that it sells 'brand licensing,' not beverages — its concentrate model captures enormous margins with minimal capital. This asset-light structure is the fundamental reason it generates such consistent free cash flow.",
-    "You're touching on something crucial. Coca-Cola's moat is essentially an 'emotional moat' — not a secret formula, but a century of accumulated habit and trust. This explains why Pepsi often wins blind taste tests yet can never displace Coke's market position.",
-    "Goizueta's greatness lay in being a genuine capital allocator. He understood that Coca-Cola's high ROE meant every dollar retained should earn exceptional returns for shareholders — otherwise, return it via buybacks or dividends. This capital discipline is what Buffett prizes most in management.",
-    "The key isn't memorizing metrics but understanding the 'why.' Coca-Cola's consistently high ROE (30%+) reflects pricing power from the brand plus an asset-light model — no need for heavy capital investment to sustain competitive advantage. That's the essence of a great business.",
-    "Valuation is the hardest and most critical part of value investing. 1988 Coke looked 'expensive' at 5x book, but Buffett saw a consumer brand with pricing power that could grow free cash flow 10%+ annually for decades. Margin of safety comes not just from price, but from high conviction in business quality."
-  ]
-};
-
 // ── STATE ─────────────────────────────────────────────────
 let currentCase = null;
 let currentRound = 0;
@@ -502,6 +485,7 @@ function renderRound() {
 
   const answerInput = document.getElementById('answerInput');
   answerInput.placeholder = L.placeholder;
+  document.getElementById('answerError').hidden = true;
   answerInput.value = '';
 
   document.getElementById('answerLabel').textContent = lang === 'cn' ? '你的回答' : 'Your Answer';
@@ -520,7 +504,7 @@ async function submitAnswer() {
   submitBtn.disabled = true;
 
   showLoading(lang === 'cn' ? '正在分析你的回答…' : 'Analyzing your answer…');
-  answers.push(answer);
+  document.getElementById('answerError').hidden = true;
 
   let feedback = '';
   let concepts = [];
@@ -540,23 +524,32 @@ async function submitAnswer() {
     if (res.ok) {
       const data = await res.json();
       feedback = data.feedback || data.response || '';
+      if (typeof feedback !== 'string' || !feedback.trim()) throw new Error('Empty feedback');
       concepts = data.key_concepts || data.concepts || [];
     } else { throw new Error('API error'); }
   } catch {
-    feedback = FALLBACK_FEEDBACK[lang][currentRound];
-    concepts = CASES[currentCase].rounds[currentRound].concepts[lang];
+    hideLoading();
+    const error = document.getElementById('answerError');
+    error.textContent = lang === 'cn'
+      ? '反馈暂时无法生成，你的回答仍在输入框中，请稍后重新提交。'
+      : 'Feedback is unavailable. Your answer is still here; please try again.';
+    error.hidden = false;
+    submitBtn.disabled = false;
+    return;
   }
 
-  feedbacks.push({ feedback, concepts });
+  answers[currentRound] = answer;
+  feedbacks[currentRound] = { feedback, concepts };
   hideLoading();
   showFeedback(feedback, concepts);
   submitBtn.disabled = false;
 }
 
 function skipRound() {
-  answers.push('');
-  feedbacks.push({ feedback: FALLBACK_FEEDBACK[lang][currentRound], concepts: CASES[currentCase].rounds[currentRound].concepts[lang] });
-  showFeedback(FALLBACK_FEEDBACK[lang][currentRound], CASES[currentCase].rounds[currentRound].concepts[lang]);
+  answers[currentRound] = '';
+  feedbacks[currentRound] = { feedback: '', concepts: [] };
+  document.getElementById('answerError').hidden = true;
+  nextRound();
 }
 
 function renderFeedbackMd(text) {
@@ -612,8 +605,8 @@ async function showCompletion() {
   document.getElementById('completionTitle').textContent = lang === 'cn'
     ? '训练完成' : 'Training Complete';
   document.getElementById('completionSub').textContent = lang === 'cn'
-    ? `你已完成 ${caseL.name} 的全部五轮分析训练。`
-    : `You've completed all five rounds of analysis on ${caseL.name}.`;
+    ? `你已作答 ${answers.filter(a => a.trim()).length} 轮，共五轮。`
+    : `You answered ${answers.filter(a => a.trim()).length} of five rounds.`;
 
   document.getElementById('synthesisLabel').textContent = lang === 'cn' ? '导师综合分析' : 'Mentor Synthesis';
   document.getElementById('synthesisLoadingText').textContent = lang === 'cn' ? '正在生成综合投资分析…' : 'Generating investment synthesis…';

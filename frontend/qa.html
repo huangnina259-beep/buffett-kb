@@ -461,7 +461,7 @@ async function sendMessage() {
       method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({question, history: chatHistory, language: currentLang})
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) throw new Error(currentLang === 'cn' ? '知识库暂时不可用，请稍后重试。' : 'The knowledge library is temporarily unavailable. Please try again.');
     const data = await res.json();
     removeTyping();
     const answer    = data.answer || data.response || data.content || JSON.stringify(data);
