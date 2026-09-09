@@ -211,6 +211,14 @@ def main():
                 metas.append(m)
                 
             try:
+                if not args.force:
+                    existing = set(collection.get(ids=ids, include=[])["ids"])
+                    missing = [j for j, identifier in enumerate(ids) if identifier not in existing]
+                    if not missing:
+                        continue
+                    ids = [ids[j] for j in missing]
+                    metas = [metas[j] for j in missing]
+                    batch_chunks = [batch_chunks[j] for j in missing]
                 embeddings = embedding_gateway.embed_documents(batch_chunks)
                 collection.upsert(
                     ids=ids,
