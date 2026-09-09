@@ -1,8 +1,10 @@
 import logging
+import os
+import secrets
 import sys
 import time
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel, ValidationError
@@ -35,6 +37,43 @@ from reranker_gateway import (
 from starlette.concurrency import run_in_threadpool
 
 app = FastAPI()
+
+
+@app.middleware("http")
+async def protect_deployed_model_settings(request, call_next):
+    # Public deployments are configured through Railway, not anonymous visitors.
+    protected = request.url.path == "/api/ai/test" or (
+        request.url.path == "/api/ai/settings" and request.method != "GET"
+    )
+    if protected and os.environ.get("RAILWAY_ENVIRONMENT_ID"):
+        token = os.environ.get("API_ADMIN_TOKEN", "")
+        supplied = request.headers.get("Authorization", "")
+        if not token or not secrets.compare_digest(supplied, f"Bearer {token}"):
+            return JSONResponse(status_code=403, content={
+                "message": "线上模型设置仅允许管理员修改。"
+            })
+    return await call_next(request)
+
+@app.middleware("http")
+async def identify_coach_visitor(request, call_next):
+    if request.url.path != "/coach" and not request.url.path.startswith("/api/coach/"):
+        return await call_next(request)
+    visitor = request.cookies.get("fuliguo_visitor", "")
+    try:
+        visitor = str(_uuid.UUID(visitor))
+    except (ValueError, AttributeError):
+        visitor = str(_uuid.uuid4())
+    request.state.visitor_id = visitor
+    response = await call_next(request)
+    response.set_cookie("fuliguo_visitor", visitor, max_age=31536000,
+                        httponly=True, samesite="lax",
+                        secure=bool(os.environ.get("RAILWAY_ENVIRONMENT_ID")))
+    return response
+
+
+def coach_visitor(request: Request):
+    return request.state.visitor_id
+
 
 # CORS — needed when React dev server (port 5173) talks to FastAPI (port 8000)
 from fastapi.middleware.cors import CORSMiddleware
@@ -309,6 +348,7 @@ async def react_app(rest: str = ""):
         return f.read()
 
 @app.get("/", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
 async def read_root():
     with open(frontend_dir / "index.html", "r", encoding="utf-8") as f:
         return f.read()
@@ -467,7 +507,7 @@ async def gym_feedback(request: GymFeedbackRequest):
 
     response = get_generation_gateway().complete(
         "structured_feedback",
-        max_tokens=900,
+        max_tokens=4096,
         system=GYM_SYSTEM_CN if lang == "cn" else GYM_SYSTEM_EN,
         messages=[{"role": "user", "content": user_msg}],
         json_mode=True,
@@ -583,7 +623,7 @@ async def gym_synthesis(request: GymSynthesisRequest):
 
     response = get_generation_gateway().complete(
         "long_synthesis",
-        max_tokens=1200,
+        max_tokens=4096,
         system=SYNTHESIS_SYSTEM_CN if lang == "cn" else SYNTHESIS_SYSTEM_EN,
         messages=[{"role": "user", "content": user_msg}],
     )
@@ -690,7 +730,7 @@ async def analyst_feedback(request: AnalystFeedbackRequest):
 
     response = get_generation_gateway().complete(
         "structured_feedback",
-        max_tokens=900,
+        max_tokens=4096,
         system=ANALYST_FEEDBACK_SYSTEM_CN if lang == "cn" else ANALYST_FEEDBACK_SYSTEM_EN,
         messages=[{"role": "user", "content": user_msg}],
         json_mode=True,
@@ -803,7 +843,7 @@ async def analyst_synthesis(request: AnalystSynthesisRequest):
 
     response = get_generation_gateway().complete(
         "long_synthesis",
-        max_tokens=1400,
+        max_tokens=4096,
         system=ANALYST_SYNTHESIS_SYSTEM_CN if lang == "cn" else ANALYST_SYNTHESIS_SYSTEM_EN,
         messages=[{"role": "user", "content": user_msg}],
     )
@@ -913,8 +953,8 @@ async def coach_stream(request: CoachRequest):
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 @app.get("/api/coach/state")
-async def get_state(db: Session = Depends(get_db)):
-    state = db.query(UserState).filter_by(id="default").first()
+async def get_state(db: Session = Depends(get_db), visitor: str = Depends(coach_visitor)):
+    state = db.query(UserState).filter_by(id=visitor).first()
     if not state:
         return {"onboarding_completed": False, "onboarding_skipped": False, "onboarding_current_module": "1.1"}
     return {
@@ -924,10 +964,10 @@ async def get_state(db: Session = Depends(get_db)):
     }
 
 @app.post("/api/coach/state")
-async def update_state(payload: dict, db: Session = Depends(get_db)):
-    state = db.query(UserState).filter_by(id="default").first()
+async def update_state(payload: dict, db: Session = Depends(get_db), visitor: str = Depends(coach_visitor)):
+    state = db.query(UserState).filter_by(id=visitor).first()
     if not state:
-        state = UserState(id="default")
+        state = UserState(id=visitor)
         db.add(state)
     if "onboarding_completed" in payload:
         state.onboarding_completed = str(payload["onboarding_completed"]).lower()
@@ -939,12 +979,12 @@ async def update_state(payload: dict, db: Session = Depends(get_db)):
     return {"ok": True}
 
 @app.post("/api/coach/record")
-async def save_record(request: RecordRequest, db: Session = Depends(get_db)):
+async def save_record(request: RecordRequest, db: Session = Depends(get_db), visitor: str = Depends(coach_visitor)):
     company_id = request.company_id or request.company_name.lower().replace(" ", "_")
-    archive = db.query(CompanyArchive).filter_by(company_id=company_id).first()
+    archive = db.query(CompanyArchive).filter_by(company_id=f"{visitor}:{company_id}").first()
     if not archive:
         archive = CompanyArchive(
-            company_id=company_id,
+            company_id=f"{visitor}:{company_id}",
             company_name=request.company_name,
             ticker=request.ticker,
             first_analysis=str(_date.today()),
@@ -980,13 +1020,13 @@ async def save_record(request: RecordRequest, db: Session = Depends(get_db)):
     return {"ok": True, "company_id": company_id}
 
 @app.get("/api/coach/companies")
-async def get_companies(db: Session = Depends(get_db)):
-    archives = db.query(CompanyArchive).all()
+async def get_companies(db: Session = Depends(get_db), visitor: str = Depends(coach_visitor)):
+    archives = db.query(CompanyArchive).filter(CompanyArchive.company_id.startswith(f"{visitor}:")).all()
     result = []
     for a in archives:
         latest = a.sessions[-1] if a.sessions else {}
         result.append({
-            "company_id": a.company_id,
+            "company_id": a.company_id.split(":", 1)[1],
             "company_name": a.company_name,
             "ticker": a.ticker,
             "last_updated": a.last_updated,
@@ -997,12 +1037,12 @@ async def get_companies(db: Session = Depends(get_db)):
     return sorted(result, key=lambda x: x["last_updated"], reverse=True)
 
 @app.get("/api/coach/company/{company_id}")
-async def get_company(company_id: str, db: Session = Depends(get_db)):
-    archive = db.query(CompanyArchive).filter_by(company_id=company_id).first()
+async def get_company(company_id: str, db: Session = Depends(get_db), visitor: str = Depends(coach_visitor)):
+    archive = db.query(CompanyArchive).filter_by(company_id=f"{visitor}:{company_id}").first()
     if not archive:
         return JSONResponse(status_code=404, content={"error": "Not found"})
     return {
-        "company_id": archive.company_id,
+        "company_id": company_id,
         "company_name": archive.company_name,
         "ticker": archive.ticker,
         "first_analysis": archive.first_analysis,

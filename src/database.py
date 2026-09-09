@@ -3,7 +3,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./coach.db")
+from pathlib import Path
+
+_storage_dir = Path(os.environ.get("RAILWAY_VOLUME_MOUNT_PATH") or Path(__file__).resolve().parents[1] / "database")
+_storage_dir.mkdir(parents=True, exist_ok=True)
+DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{_storage_dir / 'coach.db'}")
 # Railway's DATABASE_URL starts with postgres://, SQLAlchemy needs postgresql://
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
