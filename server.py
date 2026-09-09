@@ -140,12 +140,28 @@ def _validated_feedback(text: str):
 
 @app.get("/health")
 async def health():
+    embedding = get_embedding_gateway().status()
+    vector_index = index_status()
+    knowledge_status = "ready"
+    if vector_index.get("status") == "unavailable":
+        knowledge_status = "index_unavailable"
+    elif not vector_index.get("count"):
+        knowledge_status = "index_empty"
+    elif not embedding.get("configured"):
+        knowledge_status = "embedding_not_configured"
+    else:
+        try:
+            from vector_store import ensure_index_compatible
+            ensure_index_compatible()
+        except Exception:
+            knowledge_status = "index_incompatible"
     return {
         "status": "ok",
+        "knowledge_status": knowledge_status,
         "generation": get_generation_gateway().status(),
-        "embedding": get_embedding_gateway().status(),
+        "embedding": embedding,
         "reranker": get_reranker_gateway().status(),
-        "vector_index": index_status(),
+        "vector_index": vector_index,
     }
 
 
@@ -329,10 +345,15 @@ async def query(request: QueryRequest):
     error = result.get("error")
     answer = result.get("answer", "")
     if not answer and error:
-        answer = f"[系统错误] {error}"
+        return JSONResponse(status_code=503, content={
+            "error": result.get("error_code", "KNOWLEDGE_UNAVAILABLE"),
+            "message": "知识库暂时不可用，请稍后重试。",
+            "answer": "知识库暂时不可用，请稍后重试。",
+            "sources": [], "follow_ups": [],
+        })
 
     sources = [
-        {"title": s.get("label", ""), "author": s.get("author", ""), "text": s.get("text", "")}
+        {**s, "title": s.get("label", "")}
         for s in result.get("sources", [])
     ]
     return {"answer": answer, "sources": sources, "follow_ups": result.get("follow_ups", [])}
@@ -415,6 +436,12 @@ async def gym_feedback(request: GymFeedbackRequest):
         kb_context, _ = retrieve_context(query, top_k=8)
     except Exception as e:
         logging.warning(f"[Gym] KB retrieval failed: {e}")
+
+    if not kb_context.strip():
+        return JSONResponse(status_code=503, content={
+            "error": "KNOWLEDGE_CONTEXT_UNAVAILABLE",
+            "message": "暂时无法取得本案例的参考资料，请稍后重试。",
+        })
 
     round_ctx = (GYM_ROUND_CONTEXT.get(request.case_id, {}).get(lang, []) or [])[request.round] \
         if request.round < len(GYM_ROUND_CONTEXT.get(request.case_id, {}).get(lang, [])) else ""
@@ -519,6 +546,12 @@ async def gym_synthesis(request: GymSynthesisRequest):
         kb_context, _ = retrieve_context(query, top_k=10)
     except Exception as e:
         logging.warning(f"[Gym synthesis] KB retrieval failed: {e}")
+
+    if not kb_context.strip():
+        return JSONResponse(status_code=503, content={
+            "error": "KNOWLEDGE_CONTEXT_UNAVAILABLE",
+            "message": "暂时无法取得本案例的参考资料，请稍后重试。",
+        })
 
     round_names_cn = ["商业模式", "经济护城河", "管理层评估", "财务分析", "估值与安全边际"]
     round_names_en = ["Business Model", "Economic Moat", "Management", "Financial Analysis", "Valuation"]

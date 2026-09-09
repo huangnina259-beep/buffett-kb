@@ -11,6 +11,8 @@ from vector_store import ensure_index_compatible
 from rag import (
     _get_collection,
     _translate_query,
+    KnowledgeUnavailable,
+    retrieval_failure,
 )
 
 MAX_TOKENS   = 2000   # tutor replies should be focused, not essays
@@ -128,17 +130,16 @@ def _retrieve_for_tutor(question: str, n_results: int = 6) -> tuple:
     """Retrieve relevant chunks from the knowledge base for tutor grounding."""
     search_query = _translate_query(question)
     collection = _get_collection()
-    try:
-        embedding_gateway = get_embedding_gateway()
-        ensure_index_compatible(collection, embedding_gateway)
-        query_embedding = embedding_gateway.embed_query(search_query)
-        results = collection.query(
-            query_embeddings=[query_embedding],
-            n_results=n_results,
-            include=["documents", "metadatas", "distances"],
-        )
-    except Exception:
-        return "", []
+    if collection.count() == 0:
+        raise KnowledgeUnavailable("KNOWLEDGE_NOT_READY", "课程参考资料尚未准备好，请稍后再来。")
+    embedding_gateway = get_embedding_gateway()
+    ensure_index_compatible(collection, embedding_gateway)
+    query_embedding = embedding_gateway.embed_query(search_query)
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=n_results,
+        include=["documents", "metadatas", "distances"],
+    )
 
     docs  = results["documents"][0] if results["documents"] and results["documents"][0] else []
     metas = results["metadatas"][0] if results["metadatas"] and results["metadatas"][0] else []
@@ -375,7 +376,13 @@ def stream_tutor_response(
     chapter_lesson = CHAPTER_LESSONS.get(chapter_id, {})
     retrieval_query = message.strip() if message and message.strip() else chapter_lesson.get("kb_query", "value investing")
 
-    context, sources = _retrieve_for_tutor(retrieval_query)
+    try:
+        context, sources = _retrieve_for_tutor(retrieval_query)
+        if not context.strip():
+            raise KnowledgeUnavailable("KNOWLEDGE_CONTEXT_UNAVAILABLE", "暂时没有找到本课的参考资料，请稍后重试。")
+    except Exception as exc:
+        yield f"data: {json.dumps({'type': 'error', **retrieval_failure(exc)})}\n\n"
+        return
 
     # 2. Build system prompt with current position + per-chapter lesson plan
     position = _build_position(state)

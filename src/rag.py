@@ -9,13 +9,28 @@ from typing import Optional, Generator
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 from ai_gateway import get_generation_gateway
-from embedding_gateway import get_embedding_gateway
+from embedding_gateway import get_embedding_gateway, EmbeddingConfigError
 from reranker_gateway import get_reranker_gateway, RerankerError
 from vector_store import (
     DEFAULT_COLLECTION_NAME,
     ensure_index_compatible,
     get_collection,
 )
+
+class KnowledgeUnavailable(RuntimeError):
+    def __init__(self, code: str, message: str):
+        super().__init__(message)
+        self.code = code
+
+
+def retrieval_failure(exc: Exception) -> dict:
+    if isinstance(exc, KnowledgeUnavailable):
+        return {"code": exc.code, "message": str(exc)}
+    logging.error("Knowledge retrieval failed (%s)", type(exc).__name__)
+    message = ("知识库配置暂不可用，请联系维护者。" if isinstance(exc, EmbeddingConfigError)
+               else "知识库暂时无法检索，请稍后重试。")
+    return {"code": "KNOWLEDGE_UNAVAILABLE", "message": message}
+
 
 SRC_DIR = Path(__file__).parent
 ROOT_DIR = SRC_DIR.parent
@@ -618,6 +633,8 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
     Year/doc_type filters from where_clause are preserved in both cases.
     """
     collection = _get_collection()
+    if collection.count() == 0:
+        raise KnowledgeUnavailable("KNOWLEDGE_NOT_READY", "知识库尚未准备好，请稍后再来。")
     embedding_gateway = get_embedding_gateway()
     ensure_index_compatible(collection, embedding_gateway)
     query_embedding = embedding_gateway.embed_query(search_query)
@@ -652,7 +669,7 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
             return collection.query(**p)
         except Exception as exc:
             logging.warning("[RAG] vector query failed where=%s: %s", where, exc)
-            return {"documents": [[]], "metadatas": [[]], "distances": [[]]}
+            raise
 
     def _count(r):
         return len(r["documents"][0]) if r["documents"] and r["documents"][0] else 0
@@ -698,7 +715,7 @@ def _retrieve(search_query: str, where_clause, top_k: int, target_author: Option
             return col.query(**p)
         except Exception as exc:
             logging.warning("[RAG] isolated vector query failed where=%s: %s", where, exc)
-            return {"documents": [[]], "metadatas": [[]], "distances": [[]]}
+            raise
 
     with ThreadPoolExecutor(max_workers=3) as ex:
         f_primary   = ex.submit(_query_isolated, primary_where,   primary_k)
@@ -746,11 +763,11 @@ def stream_query_knowledge_base(
     try:
         results = _retrieve(search_query, where_clause, top_k, target_author=target_author)
     except Exception as e:
-        yield f"data: {json.dumps({'type': 'error', 'message': f'检索失败: {e}'})}\n\n"
+        yield f"data: {json.dumps({'type': 'error', **retrieval_failure(e)})}\n\n"
         return
 
     if not results["documents"] or not results["documents"][0]:
-        yield f"data: {json.dumps({'type': 'error', 'message': '知识库为空，请先运行 ingest.py'})}\n\n"
+        yield f"data: {json.dumps({'type': 'error', 'message': '当前资料未找到相关内容，请换一种问法。'})}\n\n"
         return
 
     context, sources = _format_context(results)
@@ -792,10 +809,11 @@ def query_knowledge_base(
     try:
         results = _retrieve(search_query, where_clause, top_k, target_author=target_author)
     except Exception as e:
-        return {"answer": "", "sources": [], "error": f"数据库初始化失败\n({e})"}
+        failure = retrieval_failure(e)
+        return {"answer": "", "sources": [], "error": failure["message"], "error_code": failure["code"]}
 
     if not results["documents"] or not results["documents"][0]:
-        return {"answer": "知识库为空，请先运行 ingest.py", "sources": [], "search_params": search_params, "error": None}
+        return {"answer": "当前资料未找到相关内容，请换一种问法。", "sources": [], "search_params": search_params, "error": None}
 
     context, sources = _format_context(results)
     messages = _build_messages(question, context, history)
