@@ -253,7 +253,7 @@ body.en [data-en]{display:revert}
 </div>
 
 <script>
-const API_ENDPOINT = '/query';
+const API_ENDPOINT = '/api/chat/stream';
 
 // ── LANG ────────────────────────────────────────────────
 let currentLang = 'cn';
@@ -302,7 +302,8 @@ function askSuggested(el) { chatInput.value = el.textContent.trim(); sendBtn.dis
 // ── MARKDOWN + CITATION RENDERER ─────────────────────────
 function formatText(text, sources, msgId) {
   // Escape HTML first (only in raw text, not in tags we'll add)
-  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  text = esc(text);
 
   // 1. Replace [来源N] with citation superscripts
   text = text.replace(/\[来源(\d+)\]/g, (_, n) => {
@@ -386,9 +387,8 @@ document.addEventListener('click', e => {
 function openSourceViewer(src) {
   document.getElementById('svTitle').textContent  = src.title  || src.author || '来源';
   document.getElementById('svAuthor').textContent = src.author && src.title ? src.author : '';
-  document.getElementById('svBody').innerHTML = src.text
-    ? `<p>${src.text.replace(/\n/g,'</p><p>')}</p>`
-    : '<p style="color:var(--text-muted)">原文内容不可用</p>';
+  document.getElementById('svBody').textContent = src.full_context || src.text || '原文内容不可用';
+  document.getElementById('svBody').style.whiteSpace = 'pre-wrap';
   document.getElementById('sourceViewer').classList.add('open');
 }
 function closeSourceViewer() {
@@ -447,6 +447,28 @@ function showTyping() {
 function removeTyping() { document.getElementById('typingIndicator')?.remove(); }
 
 // ── API CALL ─────────────────────────────────────────────
+async function* readAnswerEvents(body) {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let pending = '';
+  try {
+    while (true) {
+      const {value, done} = await reader.read();
+      pending += done ? decoder.decode() : decoder.decode(value, {stream: true});
+      let boundary;
+      while ((boundary = pending.indexOf('\n')) >= 0) {
+        const line = pending.slice(0, boundary).trimEnd();
+        pending = pending.slice(boundary + 1);
+        if (line.startsWith('data: ')) yield JSON.parse(line.slice(6));
+      }
+      if (done) {
+        if (pending.startsWith('data: ')) yield JSON.parse(pending.slice(6));
+        break;
+      }
+    }
+  } finally { reader.releaseLock(); }
+}
+
 async function sendMessage() {
   const question = chatInput.value.trim();
   if (!question || isLoading) return;
@@ -454,28 +476,51 @@ async function sendMessage() {
   chatInput.value = ''; chatInput.style.height = 'auto';
   appendMessage('user', question);
   saveHistory(question);
+  const priorHistory = chatHistory.slice(-12);
   chatHistory.push({role: 'user', content: question});
   showTyping();
+  let partial = null;
+  let fullText = '';
+  let sources = [];
+  let finished = false;
   try {
     const res = await fetch(API_ENDPOINT, {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({question, history: chatHistory, language: currentLang})
+      body: JSON.stringify({query: question, history: priorHistory})
     });
-    if (!res.ok) throw new Error(currentLang === 'cn' ? '知识库暂时不可用，请稍后重试。' : 'The knowledge library is temporarily unavailable. Please try again.');
-    const data = await res.json();
-    removeTyping();
-    const answer    = data.answer || data.response || data.content || JSON.stringify(data);
-    const sources   = data.sources || data.references || [];
-    const followUps = data.follow_ups || [];
-    appendMessage('ai', answer, sources, followUps);
-    chatHistory.push({role: 'assistant', content: answer});
+    if (!res.ok || !res.body) throw new Error(currentLang === 'cn' ? '知识库暂时不可用，请稍后重试。' : 'Please try again shortly.');
+    for await (const event of readAnswerEvents(res.body)) {
+      if (event.type === 'error') throw new Error(event.message || '回答暂时中断，请重试。');
+      if (event.type === 'sources') sources = event.sources || [];
+      if (event.type === 'token') {
+        fullText += event.text || '';
+        removeTyping();
+        if (!partial) partial = appendMessage('ai', '', sources);
+        const bubble = partial.querySelector('.msg-bubble');
+        const id = bubble.dataset.msgId;
+        msgSources[id] = sources;
+        bubble.innerHTML = formatText(fullText.split('<follow')[0], sources, id);
+        const container = document.getElementById('chatMessages');
+        if (container.scrollHeight - container.scrollTop - container.clientHeight < 240) container.scrollTop = container.scrollHeight;
+      }
+      if (event.type === 'done') {
+        if (!event.final_answer?.trim()) throw new Error('未能生成完整回答，请重试。');
+        removeTyping();
+        partial?.remove();
+        appendMessage('ai', event.final_answer, event.sources || sources, event.follow_ups || []);
+        chatHistory.push({role: 'assistant', content: event.final_answer});
+        finished = true;
+      }
+    }
+    if (!finished) throw new Error(currentLang === 'cn' ? '回答中断，请重试。' : 'The response was interrupted. Please retry.');
   } catch (err) {
     removeTyping();
-    appendMessage('ai', currentLang === 'cn'
-      ? `无法连接到后端服务。<br><small style="color:var(--text-muted)">${err.message}</small>`
-      : `Could not reach the backend.<br><small style="color:var(--text-muted)">${err.message}</small>`);
+    appendMessage('ai', `${currentLang === 'cn' ? '本次回答未完成：' : 'Response incomplete: '}${err.message}`);
+    chatInput.value = question;
+    chatHistory.pop();
+  } finally {
+    isLoading = false; sendBtn.disabled = !chatInput.value.trim();
   }
-  isLoading = false; sendBtn.disabled = !chatInput.value.trim();
 }
 
 // ── INIT ─────────────────────────────────────────────────
