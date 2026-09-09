@@ -150,13 +150,18 @@ def ensure_index_compatible(
 
 
 def index_status() -> dict[str, Any]:
+    name = collection_name()
     try:
         collection = get_collection(create=False)
         count = collection.count()
+        manifest = read_manifest()
     except Exception:
-        count = 0
+        # A failed read is unknown, not evidence that an index is empty.
+        return {"collection": name, "count": None, "manifest": None,
+                "status": "unavailable", "error": "INDEX_UNAVAILABLE"}
     return {
-        "collection": collection_name(),
+        "collection": name,
         "count": count,
-        "manifest": read_manifest(),
+        "manifest": manifest,
+        "status": "populated" if count else "empty",
     }
