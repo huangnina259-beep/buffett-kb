@@ -30,6 +30,16 @@ class ApiContractTests(unittest.TestCase):
     def setUpClass(cls):
         cls.client = TestClient(server.app)
 
+    def test_home_link_resolves(self):
+        self.assertEqual(self.client.get("/index.html").status_code, 200)
+
+    def test_deployed_settings_require_admin(self):
+        with patch.dict("os.environ", {"RAILWAY_ENVIRONMENT_ID": "production", "API_ADMIN_TOKEN": ""}):
+            for path in ["/api/ai/test", "/api/ai/settings"]:
+                method = self.client.post if path.endswith("test") else self.client.put
+                response = method(path, json={})
+                self.assertEqual(response.status_code, 403)
+
     def test_query_contract_is_preserved(self):
         result = {
             "answer": "answer",

@@ -29,3 +29,28 @@ class IngestionProgressTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_resume_partial_source_only_embeds_missing_chunks(tmp_path):
+    from types import SimpleNamespace
+    from unittest.mock import MagicMock
+    (tmp_path / 'source.md').write_text('source text')
+    collection = MagicMock()
+    collection.get.return_value = {'ids': ['source.md_0']}
+    gateway = MagicMock()
+    gateway.profile = SimpleNamespace(name='test', provider='test', model='test')
+    gateway.embed_documents.return_value = [[0.1]]
+    with (
+        patch.object(ingest_md, 'MD_DIR', tmp_path),
+        patch.object(ingest_md, 'DB_DIR', tmp_path / 'db'),
+        patch.object(ingest_md, 'get_collection', return_value=collection),
+        patch.object(ingest_md, 'get_embedding_gateway', return_value=gateway),
+        patch.object(ingest_md, 'ensure_index_compatible'),
+        patch.object(ingest_md, 'write_manifest'),
+        patch.object(ingest_md, 'chunk_text', return_value=['already indexed', 'new chunk']),
+        patch('sys.argv', ['ingest_md.py']),
+    ):
+        ingest_md.main()
+        gateway.embed_documents.assert_called_once_with(['new chunk'])
+        assert collection.upsert.call_args.kwargs['ids'] == ['source.md_1']
+        assert json.loads(ingest_md.ingestion_summary_path().read_text())['total_chunks'] == 2
