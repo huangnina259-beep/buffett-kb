@@ -8,7 +8,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, Field
 from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -112,6 +112,24 @@ class TutorRequest(BaseModel):
     message: str
     history: list = []
     curriculum_state: dict = {}
+
+class SourceReadingRequest(BaseModel):
+    source_file: str = Field(min_length=1, max_length=200)
+    excerpt: str = Field(min_length=1, max_length=6000)
+    target_language: str = "cn"
+
+
+@app.post("/api/source-reading")
+async def read_source(request: SourceReadingRequest):
+    from source_reading import source_reading
+    try:
+        return await run_in_threadpool(source_reading, request.source_file, request.excerpt, request.target_language)
+    except (ValueError, FileNotFoundError):
+        raise HTTPException(status_code=422, detail="无法匹配原始资料，请查看原文 / Source could not be verified")
+    except Exception as exc:
+        logging.warning("Source translation unavailable (%s)", type(exc).__name__)
+        raise HTTPException(status_code=503, detail="译文暂不可用，原文仍可阅读 / Translation unavailable; original remains available")
+
 
 class QueryRequest(BaseModel):
     question: str
