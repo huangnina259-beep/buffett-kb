@@ -1,0 +1,642 @@
+{
+  "cocacola": {
+    "cn": {
+      "name": "可口可乐",
+      "label": "案例训练",
+      "description": "从浓缩液、品牌和渠道，理解消费者生意的长期优势。"
+    },
+    "en": {
+      "name": "Coca-Cola Company",
+      "label": "Case Study",
+      "description": "Understand the economics of concentrate, brands and distribution."
+    },
+    "rounds": [
+      {
+        "cn": {
+          "name": "理解商业模式",
+          "question": "可口可乐公司真正在卖什么？它的收入来源是什么，为什么这个商业模式能持续产生现金流？",
+          "hint": "思考一下：消费者付钱给谁？装瓶商扮演什么角色？可口可乐公司如何从整个供应链中获利？",
+          "placeholder": "用自己的话描述可口可乐的商业模式，包括收入来源、成本结构和现金流特点……"
+        },
+        "en": {
+          "name": "Business Model",
+          "question": "What does Coca-Cola actually sell? Where does its revenue come from, and why does this business model consistently generate cash flow?",
+          "hint": "Think about: Who pays whom? What role do bottlers play? How does the company capture value across the chain?",
+          "placeholder": "Describe Coca-Cola's business model in your own words — revenue sources, cost structure, and cash flow characteristics…"
+        },
+        "concepts": {
+          "cn": [
+            "浓缩液业务",
+            "轻资产模式",
+            "品牌授权",
+            "装瓶商网络",
+            "高毛利率"
+          ],
+          "en": [
+            "Concentrate model",
+            "Asset-light",
+            "Brand licensing",
+            "Bottler network",
+            "High margins"
+          ]
+        },
+        "retrieval_query": "Coca-Cola concentrate model bottler asset-light cash flow"
+      },
+      {
+        "cn": {
+          "name": "经济护城河",
+          "question": "可口可乐拥有哪些让竞争对手难以复制的优势？这些优势的根源是什么？它们是否会消失？",
+          "hint": "列出你会验证的品牌、渠道或成本证据，再想竞争者怎样可能绕过这些优势。",
+          "placeholder": "分析可口可乐的护城河来源，并评估其可持续性……"
+        },
+        "en": {
+          "name": "Economic Moat",
+          "question": "What advantages does Coca-Cola have that competitors can't easily replicate? What are the sources of these advantages, and are they durable?",
+          "hint": "Does the moat come from brand, scale, switching costs, or network effects? Why hasn't Pepsi displaced Coke in decades?",
+          "placeholder": "Analyze the sources of Coca-Cola's moat and assess their durability…"
+        },
+        "concepts": {
+          "cn": [
+            "品牌溢价",
+            "情感连接",
+            "全球分销网络",
+            "定价权",
+            "规模经济"
+          ],
+          "en": [
+            "Brand premium",
+            "Emotional connection",
+            "Global distribution",
+            "Pricing power",
+            "Scale economics"
+          ]
+        },
+        "retrieval_query": "Coca-Cola brand moat consumer franchise pricing power"
+      },
+      {
+        "cn": {
+          "name": "管理层评估",
+          "question": "你会如何判断管理层在品牌投入、回购和扩张之间做出了好选择？需要看哪些证据？",
+          "hint": "巴菲特认为好的管理层要像\"资本分配师\"。戈伊苏埃塔如何处理资本？他如何对待股东？",
+          "placeholder": "评估戈伊苏埃塔的管理质量，重点关注资本分配、股东利益和长期思维……"
+        },
+        "en": {
+          "name": "Management Quality",
+          "question": "How would you assess management’s choices among brand investment, buybacks and expansion? What evidence would you need?",
+          "hint": "Buffett believes great managers think like 'capital allocators.' How did Goizueta deploy capital? How did he treat shareholders?",
+          "placeholder": "Evaluate Goizueta's management quality — focus on capital allocation, shareholder treatment, and long-term thinking…"
+        },
+        "concepts": {
+          "cn": [
+            "资本分配",
+            "股份回购",
+            "品牌投资",
+            "股东导向",
+            "长期思维"
+          ],
+          "en": [
+            "Capital allocation",
+            "Share buybacks",
+            "Brand investment",
+            "Shareholder orientation",
+            "Long-term thinking"
+          ]
+        },
+        "retrieval_query": "Coca-Cola Goizueta capital allocation buybacks"
+      },
+      {
+        "cn": {
+          "name": "财务健康分析",
+          "question": "你会用哪些财务指标检验对可口可乐商业模式的判断？什么样的变化会让你产生怀疑？",
+          "hint": "不要只背指标名称。想想：高 ROE 意味着什么？自由现金流代表什么能力？利润率说明什么？",
+          "placeholder": "选择2-3个你认为最重要的财务指标，解释为什么它们能证明可口可乐是好生意……"
+        },
+        "en": {
+          "name": "Financial Analysis",
+          "question": "Which financial measures would you use to test your view of Coca-Cola’s business? What changes would make you question it?",
+          "hint": "Don't just name metrics. Think: what does high ROE mean? What does free cash flow represent? What does the margin tell you?",
+          "placeholder": "Pick 2-3 metrics you consider most important and explain why they prove Coca-Cola is a great business…"
+        },
+        "concepts": {
+          "cn": [
+            "高ROE",
+            "自由现金流",
+            "净利润率",
+            "资产周转率",
+            "资本回报率"
+          ],
+          "en": [
+            "High ROE",
+            "Free cash flow",
+            "Net margin",
+            "Asset turnover",
+            "Return on invested capital"
+          ]
+        },
+        "retrieval_query": "Coca-Cola return capital earnings cash flow"
+      },
+      {
+        "cn": {
+          "name": "估值与安全边际",
+          "question": "即使认可可口可乐的商业质量，你会如何判断买入价格是否合理？哪些假设需要保守估计？",
+          "hint": "说清楚未来现金、再投资和增长的假设，并指出什么证据会让你下调估值。",
+          "placeholder": "写下你评估价格的方法、关键假设和需要验证的信息……"
+        },
+        "en": {
+          "name": "Valuation & Margin of Safety",
+          "question": "Even if you admire Coca-Cola’s business, how would you judge the purchase price? Which assumptions need conservative estimates?",
+          "hint": "Explain assumptions about cash generation, reinvestment and growth, and what evidence would lower your valuation.",
+          "placeholder": "Explain how you would evaluate Coca-Cola's 1988 valuation — what method would you use and what variables matter most…"
+        },
+        "concepts": {
+          "cn": [
+            "内在价值",
+            "安全边际",
+            "未来现金流",
+            "合理估值",
+            "长期复利"
+          ],
+          "en": [
+            "Intrinsic value",
+            "Margin of safety",
+            "Future cash flows",
+            "Fair valuation",
+            "Long-term compounding"
+          ]
+        },
+        "retrieval_query": "Coca-Cola intrinsic value margin safety purchase price"
+      }
+    ],
+    "reading": {
+      "title": "巴菲特 2007 年股东信",
+      "file": "Buffett_2007_Shareholder_Letter.md",
+      "summary": "2007年股东信以可口可乐等品牌举例，讨论持久竞争优势。练习从顾客选择、竞争者和资本需求三个角度分析，不把品牌知名度直接当作投资结论。",
+      "excerpt": "A truly great business must have an enduring “moat” that protects excellent returns on invested \ncapital.  The dynamics of capitalism guarantee that competitors will repeatedly assault any business \n“castle” that is earning high returns.  Therefore a formidable barrier such as a company’s being the low-\ncost producer (GEICO, Costco) or possessing a powerful world-wide brand (Coca-Cola, Gillette, American \nExpress) is essential for sustained success.  Business history is filled with “Roman Candles,” companies \nwhose moats proved illusory and were soon crossed. \n \n \nOur criterion of “enduring” causes us to rule out companies in industries prone to rapid and \ncontinuous change.  Though capitalism’s “creative destruction” is highly beneficial for society, it precludes \ninvestment certainty.  A moat that must be continuously rebuilt will eventually be no moat at all. \n \n \nAdditionally, this criterion eliminates the business whose success depends on having a great \nmanager.  Of course, a terrific CEO is a huge asset for any enterprise, and at Berkshire we have an \nabundance of these managers.  Their abilities have created billions of dollars of value that would never \nhave materialized if typical CEOs had been running their businesses.  \n \n \nBut if a business requires a superstar to produce great results, the business itself cannot be deemed \ngreat.  A medical partnership led by your area’s premier brain surgeon may enjoy outsized and growing \nearnings, but that tells little about"
+    },
+    "synthesis_query": "Coca-Cola Buffett consumer franchise capital allocation intrinsic value"
+  },
+  "sees": {
+    "cn": {
+      "name": "喜诗糖果",
+      "label": "品牌与资本回报",
+      "description": "销量增长不快，为什么仍能持续贡献现金？"
+    },
+    "en": {
+      "name": "See's Candies",
+      "label": "Case study",
+      "description": "Pricing power, modest growth and cash generation."
+    },
+    "rounds": [
+      {
+        "cn": {
+          "name": "顾客为什么多付钱",
+          "question": "消费者为什么愿意为喜诗糖果支付更高价格？你会用什么证据区分品牌知名度与真正的定价权？",
+          "hint": "从购买场景、替代品和提价后的顾客行为入手。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Why customers pay more",
+          "question": "Why might customers pay more for See’s? How would you distinguish fame from pricing power?",
+          "hint": "Consider occasions, substitutes and customer behavior after price increases.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "See's Candies pricing power brand boxed chocolates customer goodwill"
+      },
+      {
+        "cn": {
+          "name": "利润与投入资本",
+          "question": "根据背景材料，为什么分析喜诗时不能只看销量增速？还要把利润与什么投入放在一起比较？",
+          "hint": "区分利润总额、销量增长、维持业务所需资本，避免把三个概念混为一谈。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Earnings and capital",
+          "question": "Why is sales-volume growth insufficient to evaluate See’s? What capital commitment should be compared with earnings?",
+          "hint": "Separate earnings, volume growth and required operating capital.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "See's 2007 earnings 1.35 billion additional capital 32 million"
+      },
+      {
+        "cn": {
+          "name": "赚到的钱去哪里",
+          "question": "如果喜诗内部没有足够多的高回报扩张机会，管理层应该如何处理多余现金？",
+          "hint": "比较继续开店、分配现金，以及由母公司投资其他业务的机会成本。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Deploying surplus cash",
+          "question": "What should management do with cash when See’s has limited attractive reinvestment opportunities?",
+          "hint": "Compare more stores, distributions and investments elsewhere.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "See's earnings used buy other attractive businesses no rule invest money where earned"
+      },
+      {
+        "cn": {
+          "name": "品牌也有边界",
+          "question": "为什么不能因为喜诗在某些地区成功，就断定它能在任何地方快速复制？",
+          "hint": "提出两条需要验证的地区、习惯或分销限制，不要编造现成数据。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Limits to expansion",
+          "question": "Why does regional success not guarantee rapid expansion everywhere?",
+          "hint": "Identify geographic, habit or distribution assumptions that need testing.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "See's Candies geographic expansion California brand growth"
+      },
+      {
+        "cn": {
+          "name": "好生意与好价格",
+          "question": "即使你认可喜诗是好生意，买入时仍有哪些假设可能让估值出错？",
+          "hint": "区分定价权、增长空间、再投资需求与买入价格；列出你最保守的假设。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Business quality and price",
+          "question": "Even for a good business like See’s, which valuation assumptions could fail?",
+          "hint": "Separate pricing power, growth, reinvestment needs and purchase price.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "See's purchase price value future cash flow margin of safety"
+      }
+    ],
+    "reading": {
+      "title": "巴菲特 2007 年股东信",
+      "file": "Buffett_2007_Shareholder_Letter.md",
+      "summary": "2007年股东信回顾：1972年喜诗需要800万美元经营资本，到2007年增至4000万美元；这期间累计税前利润约13.5亿美元。注意：经营资本不等于收购价格，税前利润不等于自由现金流。",
+      "excerpt": "At See’s, annual sales were 16 million pounds of candy when Blue Chip Stamps purchased the \ncompany in 1972.  (Charlie and I controlled Blue Chip at the time and later merged it into Berkshire.)  Last \nyear See’s sold 31 million pounds, a growth rate of only 2% annually.  Yet its durable competitive \nadvantage, built by the See’s family over a 50-year period, and strengthened subsequently by Chuck \nHuggins and Brad Kinstler, has produced extraordinary results for Berkshire. \n \n \nWe bought See’s for $25 million when its sales were $30 million and pre-tax earnings were less \nthan $5 million.  The capital then required to conduct the business was $8 million.  (Modest seasonal debt \nwas also needed for a few months each year.)  Consequently, the company was earning 60% pre-tax on \ninvested capital.  Two factors helped to minimize the funds required for operations.  First, the product was \nsold for cash, and that eliminated accounts receivable.  Second, the production and distribution cycle was \nshort, which minimized inventories. \n \n \nLast year See’s sales were $383 million, and pre-tax profits were $82 million.  The capital now \nrequired to run the business is $40 million.  This means we have had to reinvest only $32 million since \n1972 to handle the modest physical growth – and somewhat immodest financial growth – of the business.  \nIn the meantime pre-tax earnings have totaled $1.35 billion.  All of that, except for the $32 million, has \nbeen sent to Berkshire (or, in the earl"
+    },
+    "synthesis_query": "See's Candies Buffett 品牌与资本回报"
+  },
+  "geico": {
+    "cn": {
+      "name": "GEICO 保险",
+      "label": "成本优势与风险",
+      "description": "低成本优势与浮存金：资金便宜，也可能有代价。"
+    },
+    "en": {
+      "name": "GEICO",
+      "label": "Case study",
+      "description": "Low costs, underwriting discipline and the cost of float."
+    },
+    "rounds": [
+      {
+        "cn": {
+          "name": "低价从哪里来",
+          "question": "GEICO能以较低成本经营，与你看到一家保险公司“报价更低”是一回事吗？",
+          "hint": "解释结构性成本优势与暂时亏本抢客户的区别。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Low price versus low cost",
+          "question": "Is GEICO’s cost advantage the same as simply offering a cheaper policy?",
+          "hint": "Distinguish structural costs from loss-making customer acquisition.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "GEICO direct distribution low cost expense ratio competitive advantage"
+      },
+      {
+        "cn": {
+          "name": "保费不是利润",
+          "question": "保险公司保费收入增长很快，你还需要什么信息才能判断业务是否变好？",
+          "hint": "关注未来赔款估计、费用、承保结果，而不是把收到的钱都当利润。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Premiums are not profit",
+          "question": "What else would you need before calling rapid premium growth an improvement?",
+          "hint": "Consider claims estimates, expenses and underwriting results.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "GEICO underwriting profit losses premium growth combined ratio"
+      },
+      {
+        "cn": {
+          "name": "浮存金的成本",
+          "question": "为什么浮存金不能简单理解为保险公司拥有的“免费本金”？",
+          "hint": "分别考虑承保盈亏、索赔支付和投资回报。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "The cost of float",
+          "question": "Why is insurance float not automatically free capital owned by the insurer?",
+          "hint": "Separate underwriting results, claim payments and investment returns.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "Buffett insurance float cost underwriting loss not free money"
+      },
+      {
+        "cn": {
+          "name": "增长与纪律",
+          "question": "假如竞争者大幅降价，你会要求GEICO跟着抢规模，还是接受一段时间增长放缓？",
+          "hint": "说明在什么条件下你会做出不同选择，以及需要哪些证据。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Growth and discipline",
+          "question": "If rivals slash prices, should GEICO chase growth or accept slower expansion?",
+          "hint": "Explain what evidence would change your decision.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "GEICO underwriting discipline pricing growth profitability insurance"
+      },
+      {
+        "cn": {
+          "name": "风险检查单",
+          "question": "评估这类保险业务，你最想核查哪三项风险？每项风险怎样影响长期价值？",
+          "hint": "考虑赔付估计、成本差距是否缩小、投资资产与负债的匹配。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Risk checklist",
+          "question": "Which three risks would you check, and how could each affect long-term value?",
+          "hint": "Consider claims estimates, narrowing cost advantages and assets versus liabilities.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "GEICO reserves underwriting risk insurance float investment liabilities"
+      }
+    ],
+    "reading": {
+      "title": "巴菲特 1986 年股东信",
+      "file": "Buffett_1986_Shareholder_Letter.md",
+      "summary": "1986年股东信把GEICO与竞争者的成本差距比作护城河。保险公司先收保费、后支付赔款，但能暂时持有这笔钱，不代表它没有成本或风险。",
+      "excerpt": "The difference between GEICO’s costs and those of its  \ncompetitors is a kind of moat that protects a valuable and much- \nsought-after business castle.  No one understands this moat- \naround-the-castle concept better than Bill Snyder, Chairman of  \nGEICO.  He continually widens the moat by driving down costs  \nstill more, thereby defending and strengthening the economic  \nfranchise.  Between 1985 and 1986, GEICO’s total expense ratio  \ndropped from 24.1% to the 23.5% mentioned earlier and, under  \nBill’s leadership, the ratio is almost certain to drop further.   \nIf it does - and if GEICO maintains its service and underwriting  \nstandards - the company’s future will be brilliant indeed. \n \n     The second stage of the GEICO rocket is fueled by Lou  \nSimpson, Vice Chairman, who has run the company’s investments  \nsince late 1979.  Indeed, it’s a little embarrassing for me, the  \nfellow responsible for investments at Berkshire, to chronicle  \nLou’s performance at GEICO.  Only my ownership of a controlling  \nblock of Berkshire stock makes me secure enough to give you the  \nfollowing figures, comparing the overall return of the equity  \nportfolio at GEICO to that of the Standard & Poor’s 500: \n \n     Year                   GEICO’s Equities      S&P 500 \n     ----                   ----------------      ------- \n     1980 ..................       23.7%           32.3% \n     1981 ..................        5.4            (5.0) \n     1982 ..................       45.8            21.4"
+    },
+    "synthesis_query": "GEICO Buffett 成本优势与风险"
+  },
+  "textiles": {
+    "cn": {
+      "name": "伯克希尔纺织业务",
+      "label": "失败案例与资本陷阱",
+      "description": "账面上很便宜，为什么仍可能是糟糕的投资？"
+    },
+    "en": {
+      "name": "Berkshire textile business",
+      "label": "Case study",
+      "description": "A low price can hide a business that continually consumes capital."
+    },
+    "rounds": [
+      {
+        "cn": {
+          "name": "资产便宜等于价值吗",
+          "question": "如果一家纺织企业的价格低于账面净资产，你还需要回答什么问题才能判断它是否便宜？",
+          "hint": "账面资产、可变现价值和持续经营创造的现金不是同一件事。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Cheap assets versus value",
+          "question": "If a textile company trades below book value, what must you still establish?",
+          "hint": "Separate book assets, realizable value and cash from continuing operations.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "Berkshire textile book value assets intrinsic value 1985"
+      },
+      {
+        "cn": {
+          "name": "设备更新的悖论",
+          "question": "一台新设备能降低本厂成本。如果行业里所有竞争者都更新设备，行业利润一定会提高吗？",
+          "hint": "沿着成本下降、竞争降价、客户受益的链条思考。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "The equipment paradox",
+          "question": "If new machinery lowers costs at every competing mill, must industry profits rise?",
+          "hint": "Trace lower costs through competition and selling prices.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "textile capital expenditures competitive advantage customers price 1985"
+      },
+      {
+        "cn": {
+          "name": "努力与行业结构",
+          "question": "为什么敬业的管理层和工人，也可能无法让这个业务获得满意回报？",
+          "hint": "区分能改善的经营问题和不由单家公司决定的行业条件。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Effort and industry economics",
+          "question": "Why might dedicated managers and workers still struggle to earn satisfactory returns?",
+          "hint": "Separate operational improvements from industry-level constraints.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "textile management Ken Chace industry commodity economics 1985"
+      },
+      {
+        "cn": {
+          "name": "继续投入还是退出",
+          "question": "你已经投入了很多钱，这应该成为继续投入的理由吗？接下来应比较哪两种未来？",
+          "hint": "忽略无法收回的历史成本，比较继续经营与退出的增量结果，也考虑对人的影响。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Reinvest or exit",
+          "question": "Should a large past investment justify spending more? Which future alternatives should be compared?",
+          "hint": "Focus on incremental outcomes, while considering the people affected.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "Berkshire textile closure capital allocation employment shutdown 1985"
+      },
+      {
+        "cn": {
+          "name": "带走一条判断规则",
+          "question": "如果下次遇到另一家资产便宜、不断更新设备的企业，你会先问哪三个问题？",
+          "hint": "把这次教训变成检查方法，不要简单得出“重资产都不好”。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "A reusable decision rule",
+          "question": "What three questions would you ask about another cheap, equipment-intensive business?",
+          "hint": "Build a checklist without concluding that all capital-intensive businesses are bad.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "textile business capital intensive returns competitive advantage FlightSafety"
+      }
+    ],
+    "reading": {
+      "title": "巴菲特 1985 年股东信",
+      "file": "Buffett_1985_Shareholder_Letter.md",
+      "summary": "1985年股东信回顾关闭纺织业务的决定。这是一个区分“单个项目看起来划算”和“整个行业能否留住回报”的案例，不是事后责怪经营者。",
+      "excerpt": "In July we decided to close our textile operation, and by  \nyearend this unpleasant job was largely completed.  The history  \nof this business is instructive. \n \n     When Buffett Partnership, Ltd., an investment partnership of  \nwhich I was general partner, bought control of Berkshire Hathaway  \n21 years ago, it had an accounting net worth of $22 million, all  \ndevoted to the textile business.  The company’s intrinsic  \nbusiness value, however, was considerably less because the  \n\n\ntextile assets were unable to earn returns commensurate with  \ntheir accounting value.  Indeed, during the previous nine years  \n(the period in which Berkshire and Hathaway operated as a merged  \ncompany) aggregate sales of $530 million had produced an  \naggregate loss of $10 million.  Profits had been reported from  \ntime to time but the net effect was always one step forward, two  \nsteps back. \n \n     At the time we made our purchase, southern textile plants -  \nlargely non-union - were believed to have an important  \ncompetitive advantage.  Most northern textile operations had  \nclosed and many people thought we would liquidate our business as  \nwell. \n \n     We felt, however, that the business would be run much better  \nby a long-time employee whom. we immediately selected to be  \npresident, Ken Chace.  In this respect we were 100% correct: Ken  \nand his recent successor, Garry Morrison, have been excellent  \nmanagers, every bit the equal of managers at our more profitable  \nbusinesses."
+    },
+    "synthesis_query": "Berkshire textile business Buffett 失败案例与资本陷阱"
+  },
+  "flightsafety": {
+    "cn": {
+      "name": "FlightSafety 飞行培训",
+      "label": "护城河与再投资",
+      "description": "有护城河但需要持续投入：如何理解增长的成本？"
+    },
+    "en": {
+      "name": "FlightSafety",
+      "label": "Case study",
+      "description": "A durable advantage can coexist with substantial reinvestment needs."
+    },
+    "rounds": [
+      {
+        "cn": {
+          "name": "客户真正购买什么",
+          "question": "航空公司或飞行员选择培训机构时，为什么最低报价未必是最重要的因素？",
+          "hint": "从可靠性、训练质量与失败代价出发，不要只回答“品牌好”。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "What the customer buys",
+          "question": "Why might the lowest price not decide the choice of a flight-training provider?",
+          "hint": "Consider reliability, training quality and the consequences of failure.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "FlightSafety competitive advantage best training surgery low bid 2007"
+      },
+      {
+        "cn": {
+          "name": "增长需要先付什么",
+          "question": "如果培训需求增长，公司扩大能力之前可能需要哪些投入？利润增长是否等于可分配现金同步增长？",
+          "hint": "想清楚设备、场地和运营投入，再区分利润与现金。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "What growth costs",
+          "question": "What might the company need to invest before expanding capacity? Must distributable cash grow with profit?",
+          "hint": "Consider equipment and facilities, and distinguish earnings from cash.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "FlightSafety simulators reinvestment earnings growth capital requirements"
+      },
+      {
+        "cn": {
+          "name": "与喜诗对照",
+          "question": "同样增加一元利润，FlightSafety与喜诗需要投入的资本可能不同，这会怎样影响股东价值？",
+          "hint": "不要比较收入规模，比较新增投入与新增回报之间的关系。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Compare with See’s",
+          "question": "How can different capital needs for an extra dollar of earnings affect shareholder value?",
+          "hint": "Compare incremental investment and return, rather than revenue size.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "FlightSafety See's growth incremental capital earnings 2007"
+      },
+      {
+        "cn": {
+          "name": "什么增长值得追求",
+          "question": "假设一项新训练设施能扩大收入，你还需要哪些证据才能批准投资？",
+          "hint": "说明需求持续性、利用率、投入成本和预期回报怎样影响决策。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Which growth is worthwhile",
+          "question": "What evidence would you require before approving a new training facility?",
+          "hint": "Consider durable demand, utilization, investment cost and expected return.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "FlightSafety capital expenditure simulators training return investment"
+      },
+      {
+        "cn": {
+          "name": "估值时留出什么",
+          "question": "给这类业务估值时，为什么不能把全部会计利润当作股东能拿走的现金？",
+          "hint": "区分维持现有能力的投入与增长投入，并说明估算不确定性。",
+          "placeholder": "写下你的判断、依据，以及还需要验证的信息……"
+        },
+        "en": {
+          "name": "Cash available to owners",
+          "question": "Why should an investor not treat all accounting earnings as cash available to shareholders?",
+          "hint": "Distinguish maintenance from growth investment and acknowledge estimation uncertainty.",
+          "placeholder": "State your judgment, evidence, and what you still need to verify…"
+        },
+        "concepts": {
+          "cn": [],
+          "en": []
+        },
+        "retrieval_query": "owner earnings maintenance capital expenditures FlightSafety cash flow"
+      }
+    ],
+    "reading": {
+      "title": "巴菲特 2007 年股东信",
+      "file": "Buffett_2007_Shareholder_Letter.md",
+      "summary": "2007年股东信认为FlightSafety具有持久竞争优势，同时指出它的增长需要持续再投资。对照喜诗，练习区分“业务很好”和“增长几乎不需要新增资本”。",
+      "excerpt": "One example of good, but far from sensational, business economics is our own FlightSafety.  This \ncompany delivers benefits to its customers that are the equal of those delivered by any business that I know \nof.  It also possesses a durable competitive advantage: Going to any other flight-training provider than the \nbest is like taking the low bid on a surgical procedure. \n \n7\n\n\n \nNevertheless, this business requires a significant reinvestment of earnings if it is to grow.  When \nwe purchased FlightSafety in 1996, its pre-tax operating earnings were $111 million, and its net investment \nin fixed assets was $570 million.  Since our purchase, depreciation charges have totaled $923 million.  But \ncapital expenditures have totaled $1.635 billion, most of that for simulators to match the new airplane \nmodels that are constantly being introduced.  (A simulator can cost us more than $12 million, and we have \n273 of them.)  Our fixed assets, after depreciation, now amount to $1.079 billion.  Pre-tax operating \nearnings in 2007 were $270 million, a gain of $159 million since 1996.  That gain gave us a good, but far \nfrom See’s-like, return on our incremental investment of $509 million. \n \n \nConsequently, if measured only by economic returns, FlightSafety is an excellent but not \nextraordinary business.  Its put-up-more-to-earn-more experience is that faced by most corporations.  For \nexample, our large investment in regulated utilities falls squarely in this category.  We will earn \nc"
+    },
+    "synthesis_query": "FlightSafety Buffett 护城河与再投资"
+  }
+}
