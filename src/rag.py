@@ -11,6 +11,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 from ai_gateway import get_generation_gateway
 from embedding_gateway import get_embedding_gateway, EmbeddingConfigError
 from reranker_gateway import get_reranker_gateway, RerankerError
+from learning_guides import find_guide
 from lexical_search import search_evidence, useful_passage, fuse_evidence
 from vector_store import (
     DEFAULT_COLLECTION_NAME,
@@ -555,6 +556,13 @@ def stream_query_knowledge_base(
     SSE generator. Yields newline-delimited 'data: <json>\\n\\n' strings.
     Event types: searching | token | done | error
     """
+    guide = find_guide(question, history)
+    if guide:
+        yield f"data: {json.dumps({'type': 'sources', 'sources': guide['sources']})}\n\n"
+        yield f"data: {json.dumps({'type': 'token', 'text': guide['answer']})}\n\n"
+        yield f"data: {json.dumps({'type': 'done', 'final_answer': guide['answer'], 'sources': guide['sources'], 'follow_ups': guide['follow_ups'], 'search_params': guide['search_params']})}\n\n"
+        return
+
     # 1. Extract search params (pure regex, no API call)
     yield f"data: {json.dumps({'type': 'searching'})}\n\n"
     search_query, search_params, where_clause = _extract_search_params(question, history)
@@ -606,6 +614,10 @@ def query_knowledge_base(
     api_key: str = None,      # Deprecated; configuration is resolved by the gateway.
     top_k: int = TOP_K,
 ) -> dict:
+    guide = find_guide(question, history)
+    if guide:
+        return guide
+
     search_query, search_params, where_clause = _extract_search_params(question, history)
     target_author = search_params.get("author")
 
