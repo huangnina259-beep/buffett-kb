@@ -224,7 +224,7 @@ body.en [data-en]{display:revert}
       <summary style="cursor:pointer;font-weight:600"><span data-cn>先读一段背景材料</span><span data-en>Read the case background</span></summary>
       <p id="caseBrief" style="line-height:1.8;margin-top:14px"></p>
       <div id="caseSourceTitle" style="font-size:12px;color:var(--text-muted)"></div>
-      <details style="margin-top:10px"><summary style="cursor:pointer;font-size:12px"><span data-cn>展开英文原文节选</span><span data-en>Read the original excerpt</span></summary><blockquote id="caseExcerpt" style="white-space:pre-wrap;font-size:13px;line-height:1.6;margin:12px 0;max-height:150px;overflow:auto"></blockquote></details>
+      <details id="caseReading" style="margin-top:10px" ontoggle="if(this.open) showCaseReading()"><summary style="cursor:pointer;font-size:12px"><span data-cn>阅读引用原文与译文</span><span data-en>Read source & translation</span></summary><div id="caseExcerpt" style="font-size:14px;line-height:1.8;margin:14px 0"></div></details>
     </details>
     <div id="questionArea">
       <div class="question-card" id="questionCard">
@@ -303,6 +303,7 @@ body.en [data-en]{display:revert}
   </div>
 </div>
 
+<script src="/static/source-reader.js"></script>
 <script>
 // ── CONFIG ────────────────────────────────────────────────
 // Expects: POST /gym/feedback
@@ -333,6 +334,12 @@ let currentRound = 0;
 let answers = [];
 let feedbacks = [];
 let lang = 'cn';
+
+function showCaseReading() {
+  if (!currentCase || !window.SourceReader) return;
+  const reading = CASES[currentCase].reading;
+  window.SourceReader.show(document.getElementById('caseExcerpt'), {source_file:reading.file,text:reading.excerpt}, lang);
+}
 
 function setLang(l) {
   lang = l;
@@ -368,8 +375,8 @@ function renderRound() {
   const L = round[lang];
   const caseL = caseData[lang];
   document.getElementById('caseBrief').textContent = lang === 'cn' ? caseData.reading.summary : caseData.en.description;
-  document.getElementById('caseSourceTitle').textContent = caseData.reading.title;
-  document.getElementById('caseExcerpt').textContent = caseData.reading.excerpt;
+  document.getElementById('caseSourceTitle').textContent = lang === 'en' ? `Warren Buffett · ${(caseData.reading.file.match(/\d{4}/) || [''])[0]} Shareholder Letter` : caseData.reading.title;
+  if (document.getElementById('caseReading').open) showCaseReading();
 
   document.getElementById('caseLabel').textContent = caseL.label;
   document.getElementById('caseName').textContent = caseL.name;
