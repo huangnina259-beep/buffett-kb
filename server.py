@@ -114,16 +114,17 @@ class TutorRequest(BaseModel):
     curriculum_state: dict = {}
 
 class SourceReadingRequest(BaseModel):
-    source_file: str = Field(min_length=1, max_length=200)
+    source_file: str = Field(default="", max_length=200)
     excerpt: str = Field(min_length=1, max_length=6000)
     target_language: str = "cn"
+    focus: str = Field(default="", max_length=1200)
 
 
 @app.post("/api/source-reading")
 async def read_source(request: SourceReadingRequest):
     from source_reading import source_reading
     try:
-        return await run_in_threadpool(source_reading, request.source_file, request.excerpt, request.target_language)
+        return await run_in_threadpool(source_reading, request.source_file, request.excerpt, request.target_language, request.focus)
     except (ValueError, FileNotFoundError):
         raise HTTPException(status_code=422, detail="无法匹配原始资料，请查看原文 / Source could not be verified")
     except Exception as exc:
