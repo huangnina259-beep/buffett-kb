@@ -254,7 +254,13 @@ def _build_messages(question: str, context: str, history: list) -> list:
         f"{context}\n\n"
         "---\n\n"
         f"【当前用户提问】：{question}\n\n"
-        f"{lang_instruction}"
+        f"{lang_instruction}\n\n"
+        "【交付前核对】概念解释控制在600–900字、最多两个案例（用户另有长度要求则遵从）。"
+        "删除无依据的确定性断言，尤其不能从竞争压力推出企业注定失败。"
+        "省略不必要的人名、年份及物品细节，收购或接手年份不能写成创立年份。"
+        "每段事实标注来源；自己的检查方法明确标为建议。"
+        "涉及企业质量时提醒它不能单独决定投资回报，买入价格及未来变化仍需评估。"
+        "只输出核对后的回答与延伸问题，不输出核对过程。"
     )
     return chat_history + [{"role": "user", "content": user_msg}]
 
@@ -578,6 +584,7 @@ def stream_query_knowledge_base(
             max_tokens=MAX_TOKENS,
             system=SYSTEM_PROMPT,
             messages=messages,
+            temperature=0.2,
         ):
             if text:
                 full_text += text
@@ -620,6 +627,7 @@ def query_knowledge_base(
             max_tokens=MAX_TOKENS,
             system=SYSTEM_PROMPT,
             messages=messages,
+            temperature=0.2,
         )
         raw_answer = response.text
         clean_answer, follow_ups = _parse_follow_ups(raw_answer)
