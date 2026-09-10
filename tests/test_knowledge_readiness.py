@@ -22,8 +22,8 @@ class KnowledgeReadinessTests(unittest.TestCase):
         collection = Mock()
         collection.count.return_value = 0
         with patch.object(rag, '_get_collection', return_value=collection), patch.object(rag, 'get_embedding_gateway') as embed, patch.object(rag, 'get_generation_gateway') as generate:
-            result = rag.query_knowledge_base('能力圈')
-            events = [json.loads(e.removeprefix('data: ')) for e in rag.stream_query_knowledge_base('能力圈')]
+            result = rag.query_knowledge_base('如何扩大能力圈？')
+            events = [json.loads(e.removeprefix('data: ')) for e in rag.stream_query_knowledge_base('如何扩大能力圈？')]
         self.assertEqual(result['error_code'], 'KNOWLEDGE_NOT_READY')
         self.assertEqual(events[-1]['code'], 'KNOWLEDGE_NOT_READY')
         embed.assert_not_called()
@@ -66,7 +66,7 @@ class RealIndexTests(unittest.TestCase):
                  patch.object(vector_store, 'read_manifest', return_value=None), \
                  patch.object(rag, '_extract_search_params', return_value=('competence', {'author': 'Warren Buffett'}, {'author': 'Warren Buffett'})), \
                  patch.object(rag, 'get_generation_gateway', return_value=generation):
-                result = rag.query_knowledge_base('能力圈', top_k=1)
+                result = rag.query_knowledge_base('如何扩大能力圈？', top_k=1)
             self.assertIsNone(result['error'])
             self.assertEqual(result['sources'][0]['year'], 1988)
             self.assertIn('Fixture:', result['sources'][0]['text'])
