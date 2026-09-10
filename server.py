@@ -1,4 +1,5 @@
 import logging
+import json
 import os
 import secrets
 import sys
@@ -91,6 +92,7 @@ app.add_middleware(
 
 frontend_dir = Path(__file__).parent / "frontend"
 react_dist   = Path(__file__).parent / "react-app" / "dist"
+CASE_LIBRARY = json.loads((frontend_dir / "cases.json").read_text(encoding="utf-8"))
 
 # Old Q&A frontend assets at /static
 app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
@@ -363,7 +365,8 @@ async def qa_page():
 @app.get("/gym.html", response_class=HTMLResponse)
 async def gym_page():
     with open(frontend_dir / "gym.html", "r", encoding="utf-8") as f:
-        return f.read()
+        data = json.dumps(CASE_LIBRARY, ensure_ascii=False).replace("<", "\\u003c")
+        return f.read().replace("__CASE_LIBRARY__", data)
 
 @app.get("/tutor", response_class=HTMLResponse)
 @app.get("/tutor.html", response_class=HTMLResponse)
@@ -405,11 +408,11 @@ GYM_SYSTEM_CN = """你是复利国的价值投资导师。风格：像芒格一�
 
 反馈要求：
 - 200-280字，聚焦最重要的1-2个概念
-- 先肯定学员答对的部分（具体指出为什么对，不要空洞夸奖）
+- 若学员答对了，具体指出为什么对；若没有答对，坦诚指出关键误区，不要空洞夸奖
 - 再指出遗漏或需要深化的地方
 - **必须引用知识库原文**支撑你的每一个核心观点，格式：「原文」——作者/来源
 - 如果知识库里没有直接相关原文，直接说"知识库里没有关于这点的直接记录"
-- 不给分数
+- 不给分数，不把历史案例写成当下买卖建议；只能评价学员实际写出的内容，跳过不代表掌握
 - key_concepts 列出3-5个本轮核心概念（中文词语）
 
 返回严格JSON（不要代码块）：
@@ -431,40 +434,24 @@ Feedback requirements:
 Return strict JSON (no code blocks):
 {"feedback": "feedback text (can use **bold** for key terms)", "key_concepts": ["concept 1", "concept 2"]}"""
 
-# Per-round search queries for RAG retrieval — maps case_id → list of queries (one per round)
-GYM_ROUND_QUERIES = {
-    "cocacola": [
-        "Coca-Cola concentrate model bottler asset-light business free cash flow margins",
-        "Coca-Cola brand moat consumer franchise competitive advantage durable",
-        "capital allocation management Goizueta share buyback ROE shareholder returns",
-        "Coca-Cola ROE return on equity free cash flow net margin financial metrics",
-        "Coca-Cola intrinsic value margin of safety consumer brand valuation 1988",
-    ]
-}
+# The page and feedback engine share one reviewed case catalog.
+GYM_ROUND_QUERIES = {key: [r["retrieval_query"] for r in case["rounds"]]
+                     for key, case in CASE_LIBRARY.items()}
+GYM_ROUND_CONTEXT = {key: {lang: [r[lang]["name"] + "：" + r[lang]["hint"]
+                                 for r in case["rounds"]] for lang in ("cn", "en")}
+                     for key, case in CASE_LIBRARY.items()}
 
-GYM_ROUND_CONTEXT = {
-    "cocacola": {
-        "cn": [
-            "第一轮：理解商业模式。重点概念：浓缩液模式、轻资产、装瓶商网络、高毛利率",
-            "第二轮：经济护城河。重点概念：品牌溢价、情感护城河、分销网络、定价权、持久性",
-            "第三轮：管理层评估。重点概念：资本分配、戈伊苏埃塔改革、股份回购、ROE提升",
-            "第四轮：财务健康分析。重点概念：高ROE、自由现金流、净利润率、轻资产回报率",
-            "第五轮：估值与安全边际。重点概念：内在价值、DCF思维、安全边际、长期复利",
-        ],
-        "en": [
-            "Round 1: Understanding the business model. Key concepts: concentrate model, asset-light, bottler network, high margins",
-            "Round 2: Economic moat. Key concepts: brand premium, emotional moat, distribution network, pricing power, durability",
-            "Round 3: Management quality. Key concepts: capital allocation, Goizueta's reforms, share buybacks, ROE improvement",
-            "Round 4: Financial analysis. Key concepts: high ROE, free cash flow, net margin, asset-light returns",
-            "Round 5: Valuation & margin of safety. Key concepts: intrinsic value, DCF thinking, margin of safety, long-term compounding",
-        ]
-    }
-}
+
+def require_case(case_id, round_index=None):
+    case = CASE_LIBRARY.get(case_id)
+    if case is None or (round_index is not None and not 0 <= round_index < len(case["rounds"])):
+        raise HTTPException(status_code=422, detail="案例或训练轮次无效")
+    return case
 
 
 @app.post("/gym/feedback")
 async def gym_feedback(request: GymFeedbackRequest):
-
+    case = require_case(request.case_id, request.round)
     lang = request.language
 
     # Retrieve knowledge base context for this round
@@ -529,8 +516,8 @@ SYNTHESIS_SYSTEM_CN = """你是复利国的价值投资导师。学员刚完成�
 你的任务：基于知识库原文和学员的全部回答+反馈，写一份有深度的综合投资分析。
 
 格式要求：
-## 投资结论
-用2-3句话给出这家公司作为投资标的的核心判断，必须引用知识库原文支撑。
+## 本案例的核心判断
+用2-3句话解释这份历史案例的商业机制与局限，必须引用知识库原文支撑。不要将历史案例写成当前买入或持有建议。
 
 ## 学员思维优势
 具体指出学员在哪1-2个维度上展现了正确的价值投资思维，引用其原话印证。
@@ -552,8 +539,8 @@ SYNTHESIS_SYSTEM_EN = """You are a value investing mentor at The Compounder. The
 Your task: Write a substantive synthesis based on the knowledge base and the student's complete answers and feedback.
 
 Format:
-## Investment Verdict
-2-3 sentences on this company as an investment. Must cite knowledge base.
+## Core lesson
+Explain the historical business mechanism and its limitations in 2-3 sentences. Cite the evidence. Do not turn a historical case into a current investment recommendation.
 
 ## Student's Strengths
 Identify 1-2 dimensions where the student showed correct value investing thinking. Quote their own words to confirm.
@@ -573,16 +560,14 @@ Rules:
 
 @app.post("/gym/synthesis")
 async def gym_synthesis(request: GymSynthesisRequest):
+    case = require_case(request.case_id)
     lang = request.language
 
     # Broad KB retrieval covering the full case
     kb_context = ""
     try:
         from rag import retrieve_context
-        case_queries = {
-            "cocacola": "Coca-Cola Buffett 1988 investment brand moat capital allocation intrinsic value consumer franchise",
-        }
-        query = case_queries.get(request.case_id, request.case_id)
+        query = case["synthesis_query"]
         kb_context, _ = retrieve_context(query, top_k=10)
     except Exception as e:
         logging.warning(f"[Gym synthesis] KB retrieval failed: {e}")
@@ -593,9 +578,7 @@ async def gym_synthesis(request: GymSynthesisRequest):
             "message": "暂时无法取得本案例的参考资料，请稍后重试。",
         })
 
-    round_names_cn = ["商业模式", "经济护城河", "管理层评估", "财务分析", "估值与安全边际"]
-    round_names_en = ["Business Model", "Economic Moat", "Management", "Financial Analysis", "Valuation"]
-    round_names = round_names_cn if lang == "cn" else round_names_en
+    round_names = [r["cn" if lang == "cn" else "en"]["name"] for r in case["rounds"]]
 
     answers_block = "\n\n".join(
         f"【{round_names[i]}】\n{request.answers[i] or ('（已跳过）' if lang == 'cn' else '(Skipped)')}"

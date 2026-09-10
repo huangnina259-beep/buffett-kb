@@ -202,39 +202,7 @@ body.en [data-en]{display:revert}
       <span data-cn>每个案例包含五轮苏格拉底式提问。不要背答案——要训练思维方式。</span>
       <span data-en>Each case contains five rounds of Socratic questioning. Don't memorize answers — train your thinking process.</span>
     </p>
-    <div class="case-grid">
-      <div class="case-card" onclick="startCase('cocacola')">
-        <div class="case-badge available"><span data-cn>可训练</span><span data-en>Available</span></div>
-        <div class="case-name">可口可乐</div>
-        <div class="case-en">The Coca-Cola Company · KO</div>
-        <p class="case-desc"><span data-cn>巴菲特在1988年以12亿美元买入，持有至今。经典消费品护城河案例。</span><span data-en>Buffett's classic 1988 investment. The definitive consumer brand moat case study.</span></p>
-        <div class="case-meta">
-          <div class="case-meta-item"><span data-cn>5 轮训练</span><span data-en>5 rounds</span></div>
-          <div class="case-meta-item"><span data-cn>约 30 分钟</span><span data-en>~30 minutes</span></div>
-        </div>
-        <div class="case-card-arrow">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6.5 2.5L10 6l-3.5 3.5" stroke="#1C1C1A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-      </div>
-      <div class="case-card locked">
-        <div class="case-badge coming"><span data-cn>即将推出</span><span data-en>Coming Soon</span></div>
-        <div class="case-name">喜诗糖果</div>
-        <div class="case-en">See's Candies · Private</div>
-        <p class="case-desc"><span data-cn>芒格口中"改变了巴菲特投资哲学"的关键收购。品牌溢价与资本回报率的绝佳教材。</span><span data-en>The acquisition Munger says "changed Buffett's investment philosophy." A masterclass in brand pricing power.</span></p>
-        <div class="case-meta">
-          <div class="case-meta-item"><span data-cn>5 轮训练</span><span data-en>5 rounds</span></div>
-        </div>
-      </div>
-      <div class="case-card locked">
-        <div class="case-badge coming"><span data-cn>即将推出</span><span data-en>Coming Soon</span></div>
-        <div class="case-name">GEICO 保险</div>
-        <div class="case-en">GEICO · BRK Subsidiary</div>
-        <p class="case-desc"><span data-cn>低成本运营优势与保险浮存金，巴菲特最爱的资本积累机器。</span><span data-en>Low-cost operations and insurance float — Buffett's favorite capital compounding machine.</span></p>
-        <div class="case-meta">
-          <div class="case-meta-item"><span data-cn>5 轮训练</span><span data-en>5 rounds</span></div>
-        </div>
-      </div>
-    </div>
+    <div class="case-grid" id="caseGrid"></div>
   </div>
 </div>
 
@@ -252,6 +220,12 @@ body.en [data-en]{display:revert}
       <div class="round-labels" id="roundLabels"></div>
     </div>
 
+    <details class="question-card" style="margin-bottom:20px" open>
+      <summary style="cursor:pointer;font-weight:600"><span data-cn>先读一段背景材料</span><span data-en>Read the case background</span></summary>
+      <p id="caseBrief" style="line-height:1.8;margin-top:14px"></p>
+      <div id="caseSourceTitle" style="font-size:12px;color:var(--text-muted)"></div>
+      <details style="margin-top:10px"><summary style="cursor:pointer;font-size:12px"><span data-cn>展开英文原文节选</span><span data-en>Read the original excerpt</span></summary><blockquote id="caseExcerpt" style="white-space:pre-wrap;font-size:13px;line-height:1.6;margin:12px 0;max-height:150px;overflow:auto"></blockquote></details>
+    </details>
     <div id="questionArea">
       <div class="question-card" id="questionCard">
         <div class="round-tag">
@@ -317,7 +291,7 @@ body.en [data-en]{display:revert}
       <button class="memo-btn secondary" onclick="showScreen('screenSelect')" id="newCaseBtn"></button>
     </div>
     <br>
-    <button class="restart-btn" onclick="startCase('cocacola')" id="restartBtn"></button>
+    <button class="restart-btn" onclick="startCase(currentCase)" id="restartBtn"></button>
   </div>
 </div>
 
@@ -338,89 +312,20 @@ body.en [data-en]{display:revert}
 const GYM_ENDPOINT = '/gym/feedback';
 
 // ── TRAINING DATA ────────────────────────────────────────
-const CASES = {
-  cocacola: {
-    cn: { name: '可口可乐', label: '案例训练' },
-    en: { name: 'Coca-Cola Company', label: 'Case Study' },
-    rounds: [
-      {
-        cn: {
-          name: '理解商业模式',
-          question: '可口可乐公司真正在卖什么？它的收入来源是什么，为什么这个商业模式能持续产生现金流？',
-          hint: '思考一下：消费者付钱给谁？装瓶商扮演什么角色？可口可乐公司如何从整个供应链中获利？',
-          placeholder: '用自己的话描述可口可乐的商业模式，包括收入来源、成本结构和现金流特点……'
-        },
-        en: {
-          name: 'Business Model',
-          question: "What does Coca-Cola actually sell? Where does its revenue come from, and why does this business model consistently generate cash flow?",
-          hint: 'Think about: Who pays whom? What role do bottlers play? How does the company capture value across the chain?',
-          placeholder: 'Describe Coca-Cola\'s business model in your own words — revenue sources, cost structure, and cash flow characteristics…'
-        },
-        concepts: { cn: ['浓缩液业务', '轻资产模式', '品牌授权', '装瓶商网络', '高毛利率'], en: ['Concentrate model', 'Asset-light', 'Brand licensing', 'Bottler network', 'High margins'] }
-      },
-      {
-        cn: {
-          name: '经济护城河',
-          question: '可口可乐拥有哪些让竞争对手难以复制的优势？这些优势的根源是什么？它们是否会消失？',
-          hint: '护城河来自品牌、规模、转换成本还是网络效应？想想百事可乐为什么几十年都没有取代可口可乐。',
-          placeholder: '分析可口可乐的护城河来源，并评估其可持续性……'
-        },
-        en: {
-          name: 'Economic Moat',
-          question: "What advantages does Coca-Cola have that competitors can't easily replicate? What are the sources of these advantages, and are they durable?",
-          hint: 'Does the moat come from brand, scale, switching costs, or network effects? Why hasn\'t Pepsi displaced Coke in decades?',
-          placeholder: 'Analyze the sources of Coca-Cola\'s moat and assess their durability…'
-        },
-        concepts: { cn: ['品牌溢价', '情感连接', '全球分销网络', '定价权', '规模经济'], en: ['Brand premium', 'Emotional connection', 'Global distribution', 'Pricing power', 'Scale economics'] }
-      },
-      {
-        cn: {
-          name: '管理层评估',
-          question: '罗伯托·戈伊苏埃塔在1980年代如何改变了可口可乐？他的资本分配决策说明了什么样的管理层品质？',
-          hint: '巴菲特认为好的管理层要像"资本分配师"。戈伊苏埃塔如何处理资本？他如何对待股东？',
-          placeholder: '评估戈伊苏埃塔的管理质量，重点关注资本分配、股东利益和长期思维……'
-        },
-        en: {
-          name: 'Management Quality',
-          question: "How did Roberto Goizueta transform Coca-Cola in the 1980s? What do his capital allocation decisions reveal about his qualities as a manager?",
-          hint: "Buffett believes great managers think like 'capital allocators.' How did Goizueta deploy capital? How did he treat shareholders?",
-          placeholder: 'Evaluate Goizueta\'s management quality — focus on capital allocation, shareholder treatment, and long-term thinking…'
-        },
-        concepts: { cn: ['资本分配', '股份回购', '品牌投资', '股东导向', '长期思维'], en: ['Capital allocation', 'Share buybacks', 'Brand investment', 'Shareholder orientation', 'Long-term thinking'] }
-      },
-      {
-        cn: {
-          name: '财务健康分析',
-          question: '如果你看可口可乐的财务报表，哪几个指标最能体现这是一家优秀的企业？为什么这些数字重要？',
-          hint: '不要只背指标名称。想想：高 ROE 意味着什么？自由现金流代表什么能力？利润率说明什么？',
-          placeholder: '选择2-3个你认为最重要的财务指标，解释为什么它们能证明可口可乐是好生意……'
-        },
-        en: {
-          name: 'Financial Analysis',
-          question: "Looking at Coca-Cola's financials, which metrics best demonstrate that this is an exceptional business? Why do these numbers matter?",
-          hint: "Don't just name metrics. Think: what does high ROE mean? What does free cash flow represent? What does the margin tell you?",
-          placeholder: 'Pick 2-3 metrics you consider most important and explain why they prove Coca-Cola is a great business…'
-        },
-        concepts: { cn: ['高ROE', '自由现金流', '净利润率', '资产周转率', '资本回报率'], en: ['High ROE', 'Free cash flow', 'Net margin', 'Asset turnover', 'Return on invested capital'] }
-      },
-      {
-        cn: {
-          name: '估值与安全边际',
-          question: '假设是1988年，巴菲特以5倍市账率买入可口可乐。你会怎么判断这个价格是否合理？你的安全边际在哪里？',
-          hint: '价值投资不是买便宜的股票，而是以合理价格买优质企业。估值的本质是：这家企业未来能产生多少现金？',
-          placeholder: '解释你如何评估1988年可口可乐的估值，包括你会用什么方法和关注什么变量……'
-        },
-        en: {
-          name: 'Valuation & Margin of Safety',
-          question: "It's 1988. Buffett paid ~5x book value for Coca-Cola. How would you judge whether this price was reasonable? Where is the margin of safety?",
-          hint: 'Value investing isn\'t about buying cheap stocks — it\'s buying great businesses at fair prices. Valuation boils down to: how much cash will this business produce?',
-          placeholder: 'Explain how you would evaluate Coca-Cola\'s 1988 valuation — what method would you use and what variables matter most…'
-        },
-        concepts: { cn: ['内在价值', '安全边际', '未来现金流', '合理估值', '长期复利'], en: ['Intrinsic value', 'Margin of safety', 'Future cash flows', 'Fair valuation', 'Long-term compounding'] }
-      }
-    ]
-  }
-};
+const CASES = __CASE_LIBRARY__;
+
+function escapeText(value) {
+  return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function renderCases() {
+  document.getElementById('caseGrid').innerHTML = Object.entries(CASES).map(([id, item], i) => `
+    <button class="case-card" style="text-align:left;font:inherit;color:inherit" onclick="startCase('${id}')">
+      <div class="case-badge available">${lang === 'cn' ? (i === 0 ? '从这里开始' : item.cn.label) : 'Available'}</div>
+      <div class="case-name">${escapeText(item[lang].name)}</div>
+      <p class="case-desc">${escapeText(item[lang].description)}</p>
+      <div class="case-meta">${lang === 'cn' ? '5 轮练习 · 含原典材料 · 约 20–30 分钟' : '5 rounds · Source readings · 20–30 min'}</div>
+    </button>`).join('');
+}
 
 // ── STATE ─────────────────────────────────────────────────
 let currentCase = null;
@@ -434,6 +339,7 @@ function setLang(l) {
   document.body.classList.toggle('en', l === 'en');
   document.getElementById('btn-cn').classList.toggle('active', l === 'cn');
   document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  renderCases();
   if (currentCase && document.getElementById('screenTraining').classList.contains('active')) {
     renderRound();
   }
@@ -447,6 +353,7 @@ function showScreen(id) {
 
 // ── TRAINING ──────────────────────────────────────────────
 function startCase(caseId) {
+  if (!CASES[caseId]) return;
   currentCase = caseId;
   currentRound = 0;
   answers = [];
@@ -460,6 +367,9 @@ function renderRound() {
   const round = caseData.rounds[currentRound];
   const L = round[lang];
   const caseL = caseData[lang];
+  document.getElementById('caseBrief').textContent = lang === 'cn' ? caseData.reading.summary : caseData.en.description;
+  document.getElementById('caseSourceTitle').textContent = caseData.reading.title;
+  document.getElementById('caseExcerpt').textContent = caseData.reading.excerpt;
 
   document.getElementById('caseLabel').textContent = caseL.label;
   document.getElementById('caseName').textContent = caseL.name;
@@ -553,6 +463,7 @@ function skipRound() {
 }
 
 function renderFeedbackMd(text) {
+  text = escapeText(text);
   // bold
   text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   // blockquote lines starting with 「...」
@@ -577,7 +488,7 @@ function showFeedback(feedback, concepts) {
   document.getElementById('feedbackLabel').textContent = lang === 'cn' ? '反馈与分析' : 'Feedback & Analysis';
   document.getElementById('feedbackText').innerHTML = renderFeedbackMd(feedback);
   document.getElementById('feedbackConcepts').innerHTML = concepts.map(c =>
-    `<span class="concept-chip">${c}</span>`).join('');
+    `<span class="concept-chip">${escapeText(c)}</span>`).join('');
 
   const isLast = currentRound === CASES[currentCase].rounds.length - 1;
   document.getElementById('nextBtnText').textContent = isLast
@@ -666,6 +577,7 @@ function toggleMemo(btn) {
 }
 
 function renderSynthesisMd(text) {
+  text = escapeText(text);
   text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   text = text.replace(/「(.+?)」/g, '<span class="fb-quote">「$1」</span>');
   const lines = text.split('\n');
@@ -704,7 +616,9 @@ function hideLoading() {
 }
 
 // ── INIT ──────────────────────────────────────────────────
-document.getElementById('chatInput') && 0;
+renderCases();
+const requestedCase = new URLSearchParams(window.location.search).get('case');
+if (requestedCase && CASES[requestedCase]) startCase(requestedCase);
 </script>
 </body>
 </html>

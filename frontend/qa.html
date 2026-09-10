@@ -526,6 +526,12 @@ async function sendMessage() {
 // ── INIT ─────────────────────────────────────────────────
 renderHistory();
 chatInput.placeholder = chatInput.dataset.placeholderCn;
+const initialQuestion = new URLSearchParams(window.location.search).get('question');
+if (initialQuestion?.trim()) {
+  chatInput.value = initialQuestion.slice(0, 2000);
+  window.history.replaceState({}, '', window.location.pathname);
+  sendMessage();
+}
 </script>
 </body>
 </html>
