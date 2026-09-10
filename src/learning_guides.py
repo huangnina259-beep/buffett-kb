@@ -93,7 +93,7 @@ def _source(year, anchor, length):
     text = (ROOT/'data'/'clean_mds'/f'Buffett_{year}_Shareholder_Letter.md').read_text()
     start = text.index(anchor)
     excerpt = text[start:start+length]
-    return {'label':f'巴菲特{year}年股东信','title':f'巴菲特{year}年股东信','author':'Warren Buffett','year':year,'doc_type':'shareholder_letter','section':'','text':excerpt,'full_context':excerpt,'relevance':1.0}
+    return {'source_file':f'Buffett_{year}_Shareholder_Letter.md','label':f'巴菲特{year}年股东信','title':f'巴菲特{year}年股东信','author':'Warren Buffett','year':year,'doc_type':'shareholder_letter','section':'','text':excerpt,'full_context':excerpt,'relevance':1.0}
 
 def find_guide(question, history=None):
     if history:

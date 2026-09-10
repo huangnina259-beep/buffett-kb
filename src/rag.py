@@ -213,6 +213,7 @@ def _format_context(results: dict) -> tuple:
         context_parts.append(f"{header}\n{body}")
 
         source = {
+            "source_file":  meta.get("source_file", ""),
             "label":        display_label,
             "author":       meta.get("author", ""),
             "year":         meta.get("year", 0),
