@@ -167,6 +167,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);backgrou
 body.en [data-cn]{display:none}
 body.en [data-en]{display:revert}
 </style>
+<link rel="stylesheet" href="/static/source-reader.css?v=2">
 </head>
 <body>
 
@@ -181,7 +182,7 @@ body.en [data-en]{display:revert}
       <a class="nav-tab" href="qa.html"><span data-cn>问答库</span><span data-en>Library</span></a>
       <a class="nav-tab active" href="gym.html"><span data-cn>思维训练营</span><span data-en>Thinking Gym</span></a>
     </div>
-    <div class="nav-right">
+    <div class="nav-right"><a href="/static/notes.html" style="font-size:12px;color:inherit;margin-right:12px"><span data-cn>我的摘录</span><span data-en>My excerpts</span></a>
       <div class="lang-toggle">
         <button class="lang-btn active" id="btn-cn" onclick="setLang('cn')">中</button>
         <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
@@ -303,7 +304,7 @@ body.en [data-en]{display:revert}
   </div>
 </div>
 
-<script src="/static/source-reader.js"></script>
+<script src="/static/source-reader.js?v=2"></script>
 <script>
 // ── CONFIG ────────────────────────────────────────────────
 // Expects: POST /gym/feedback
@@ -338,7 +339,7 @@ let lang = 'cn';
 function showCaseReading() {
   if (!currentCase || !window.SourceReader) return;
   const reading = CASES[currentCase].reading;
-  window.SourceReader.show(document.getElementById('caseExcerpt'), {source_file:reading.file,text:reading.excerpt}, lang);
+  window.SourceReader.show(document.getElementById('caseExcerpt'), {source_file:reading.file,text:reading.excerpt,title:reading.title,author:'Warren Buffett',focus:CASES[currentCase].rounds[currentRound]?.[lang]?.question || reading.summary}, lang);
 }
 
 function setLang(l) {
