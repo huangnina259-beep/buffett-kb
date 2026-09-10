@@ -1,3 +1,6 @@
+import sys
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"src"))
 from types import SimpleNamespace
 from unittest.mock import patch
 import pytest
@@ -44,3 +47,43 @@ def test_formatting_joins_hard_wraps_and_preserves_table_rows():
     assert 'with a hard wrap' in cleaned
     assert '\n7\n' not in cleaned
     assert '1980      23.7%\n1981      (5.0)' in cleaned
+
+
+def test_real_chinese_mid_sentence_pdf_page_break_is_recovered():
+    file='LiLu_2015_Prospect_of_Value_Investing_in_China_CN.md'
+    text=reader._document(file)
+    start=text.index('其他人看来');end=text.index('到更多。',start)
+    result=reader.source_reading(file,text[start:end],'original','投资股票是公司所有权')
+    assert result['original'].startswith('可持续的东西都具有一个共同的特点')
+    assert result['original'].endswith('在正确的时候会得到更多。')
+    assert '不保 留' not in result['original'] and '\n13\n' not in result['original']
+    assert result['boundary_repaired'] and result['original_language']=='cn'
+    focus=next(s for s in result['segments'] if s['highlight'])
+    assert '所有权' in focus['original']
+    assert focus['core'] in focus['original']
+
+
+def test_english_boundaries_do_not_cut_decimals_or_negations():
+    text='An introduction ends here. Mr. Buffett paid $1.35 billion, but this does not guarantee future returns. Another sentence follows.'
+    with patch.object(reader,'_clean_document',return_value=text):
+        result=reader.source_reading('test.md','paid $1.35 billion, but this does not guarantee','original')
+    assert result['original']=='Mr. Buffett paid $1.35 billion, but this does not guarantee future returns.'
+
+
+def test_wrong_language_translation_is_rejected_and_not_cached(tmp_path):
+    text='This source contains enough English to be translated.'
+    model=SimpleNamespace(complete=lambda *a,**k:SimpleNamespace(text=text))
+    with patch.object(reader,'_clean_document',return_value=text),patch.object(reader,'bundled',return_value={}),patch.dict('os.environ',{'SOURCE_TRANSLATION_CACHE':str(tmp_path/'wrong.db')}),patch('ai_gateway.get_generation_gateway',return_value=model):
+        with pytest.raises(RuntimeError,match='language mismatch'):
+            reader.source_reading('wrong.md',text,'cn')
+        with reader._cache() as db: assert db.execute('SELECT count(*) FROM translations').fetchone()[0]==0
+
+
+def test_legacy_source_resolution_requires_unique_document(tmp_path):
+    folder=tmp_path/'data'/'clean_mds';folder.mkdir(parents=True)
+    text='This is a distinctive historical excerpt with enough words.'
+    (folder/'old.md').write_text(text)
+    with patch.object(reader,'ROOT',tmp_path),patch.object(reader,'_clean_document',return_value=text):
+        assert reader.source_reading('',text,'original')['source_file']=='old.md'
+        (folder/'duplicate.md').write_text(text)
+        with pytest.raises(ValueError,match='多个来源'):reader.source_reading('',text,'original')

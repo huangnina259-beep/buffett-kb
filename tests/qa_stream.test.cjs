@@ -21,3 +21,8 @@ test('source or model HTML is escaped before markdown is rendered',()=>{
  const output=ctx.formatText('<img src=x onerror=alert(1)> [来源1]',[{text:'" onmouseover="alert(1)',title:'<bad>'}],'msg-1');
  assert.ok(!output.includes('<img'));assert.ok(output.includes('&lt;img'));assert.ok(!output.includes('data-tip-body="" onmouseover='));
 });
+test('multiline PDF citation attributes are not corrupted by Markdown paragraph formatting',()=>{
+ const output=ctx.formatText('核心观点。[来源1]',[{title:'文档',text:'first PDF line\nsecond PDF line\n\nthird line'}],'msg-2');
+ const attr=output.match(/data-tip-body="([^"]*)"/)[1];
+ assert.ok(!attr.includes('<p>')&&!attr.includes('</p>'));assert.ok(attr.includes('first PDF line second PDF line'));assert.ok(output.includes('tabindex="0"'));
+});
