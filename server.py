@@ -409,8 +409,8 @@ GYM_SYSTEM_CN = """你是复利国的价值投资导师。风格：像芒格一�
 反馈要求：
 - 200-280字，聚焦最重要的1-2个概念
 - 若学员答对了，具体指出为什么对；若没有答对，坦诚指出关键误区，不要空洞夸奖
-- 再指出遗漏或需要深化的地方
-- **必须引用知识库原文**支撑你的每一个核心观点，格式：「原文」——作者/来源
+- 最多指出一个与本轮问题直接相关、学员确实遗漏的深化点；答得完整时可提出可选反问，不必硬找错误。不要把其他轮次内容判为本轮遗漏，不要求初学者背原文或给引用。
+- 由你引用一处相关证据支撑反馈。中文优先用简短译意并标注“译意”与年份/来源；不要堆砌英文原文。事实与推断分开，不把客户训练天数等同于留存率证据。
 - 如果知识库里没有直接相关原文，直接说"知识库里没有关于这点的直接记录"
 - 不给分数，不把历史案例写成当下买卖建议；只能评价学员实际写出的内容，跳过不代表掌握
 - key_concepts 列出3-5个本轮核心概念（中文词语）
@@ -425,7 +425,7 @@ Your task: Evaluate the student's case analysis using the knowledge base excerpt
 Feedback requirements:
 - 200-280 words, focused on 1-2 key concepts
 - First: acknowledge what the student got right (be specific, no hollow praise)
-- Then: point out what's missing or needs deepening
+- Identify at most one genuine gap relevant to this round. If the answer is complete, offer an optional question; do not invent omissions or require learners to quote sources.
 - **Must quote the knowledge base** to support every core point. Format: "quote" — Author/Source
 - If there's no directly relevant excerpt, say "The knowledge base has no direct record on this point"
 - No scores
@@ -470,6 +470,9 @@ async def gym_feedback(request: GymFeedbackRequest):
             "message": "暂时无法取得本案例的参考资料，请稍后重试。",
         })
 
+    reading = case["reading"]
+    kb_context = f"【本案例直接原典：{reading['title']}】\n{reading['excerpt']}\n\n" + kb_context
+
     round_ctx = (GYM_ROUND_CONTEXT.get(request.case_id, {}).get(lang, []) or [])[request.round] \
         if request.round < len(GYM_ROUND_CONTEXT.get(request.case_id, {}).get(lang, [])) else ""
 
@@ -480,7 +483,7 @@ async def gym_feedback(request: GymFeedbackRequest):
             f"【本轮主题】{round_ctx}\n\n"
             f"【学员问题】{request.question}\n"
             f"【学员回答】{request.answer}\n\n"
-            f"请基于以上知识库内容给出反馈，必须引用原文。"
+            f"请只评估本轮问题，给出一条相关证据的中文译意及来源；不要要求学员补原文引用，不要硬找遗漏。"
         )
     else:
         user_msg = (
@@ -517,7 +520,7 @@ SYNTHESIS_SYSTEM_CN = """你是复利国的价值投资导师。学员刚完成�
 
 格式要求：
 ## 本案例的核心判断
-用2-3句话解释这份历史案例的商业机制与局限，必须引用知识库原文支撑。不要将历史案例写成当前买入或持有建议。
+优先依据本案例直接原典，用2-3句话解释商业机制与局限。不要把资本需求多少等同于护城河真假，不要编造引文或给作者安上自己的概括。短引用用中文译意并标记来源。不要将历史案例写成当前买入或持有建议。
 
 ## 学员思维优势
 具体指出学员在哪1-2个维度上展现了正确的价值投资思维，引用其原话印证。
@@ -567,7 +570,7 @@ async def gym_synthesis(request: GymSynthesisRequest):
     kb_context = ""
     try:
         from rag import retrieve_context
-        query = case["synthesis_query"]
+        query = " ".join(r["retrieval_query"] for r in case["rounds"][:3])
         kb_context, _ = retrieve_context(query, top_k=10)
     except Exception as e:
         logging.warning(f"[Gym synthesis] KB retrieval failed: {e}")
@@ -588,6 +591,9 @@ async def gym_synthesis(request: GymSynthesisRequest):
         f"【{round_names[i]} 反馈摘要】\n{request.feedbacks[i][:200] if i < len(request.feedbacks) else ''}"
         for i in range(min(len(request.answers), len(round_names)))
     )
+
+    reading = case["reading"]
+    kb_context = f"【本案例直接原典：{reading['title']}】\n{reading['excerpt']}\n\n" + kb_context
 
     if lang == "cn":
         user_msg = (
