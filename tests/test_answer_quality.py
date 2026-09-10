@@ -21,8 +21,8 @@ def test_year_filters_work_next_to_chinese_and_munger_is_not_doc_type():
     assert params['doc_type'] is None
 
 def test_global_ranking_precedes_author_cap():
-    merged=rag._merge_results(result(['weak1','weak2'],[0.9,0.8]),result(['best'],[0.1]),top_k=1,max_per_author=1)
-    assert merged['documents'][0]==['best']
+    merged=rag._merge_results(result(['weak1 '*30,'weak2 '*30],[0.9,0.8]),result(['best '*30],[0.1]),top_k=1,max_per_author=1)
+    assert merged['documents'][0]==['best '*30]
 
 def test_matched_passage_not_document_start_is_sent_to_model(tmp_path):
     folder=tmp_path/'data'/'clean_mds'; folder.mkdir(parents=True)

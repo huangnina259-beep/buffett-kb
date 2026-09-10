@@ -4,13 +4,14 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const html = fs.readFileSync(path.join(__dirname, '../frontend/gym.html'), 'utf8');
-const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
+const catalog = JSON.parse(fs.readFileSync(path.join(__dirname, '../frontend/cases.json'), 'utf8'));
+const script = html.match(/<script>([\s\S]*?)<\/script>/)[1].replace('__CASE_LIBRARY__', JSON.stringify(catalog));
 function harness(fetch) {
   const elements = {};
   const document = {
     getElementById(id) { return elements[id] ||= {value: '', style: {}, hidden: true, disabled: false}; },
   };
-  const context = vm.createContext({document, fetch, navigator: {}, setTimeout});
+  const context = vm.createContext({document, fetch, navigator: {}, setTimeout, URLSearchParams, window: {location: {search: ''}}});
   vm.runInContext(script, context);
   vm.runInContext("currentCase = 'cocacola'; lang = 'cn';", context);
   document.getElementById('answerInput').value = '我还不知道，需要查阅资料。';
@@ -43,4 +44,13 @@ test('skip stores no synthetic feedback', () => {
   assert.equal(h.run('answers[0]'), '');
   assert.equal(h.run('feedbacks[0].feedback'), '');
   assert.equal(h.run('currentRound'), 1);
+});
+test('feedback and synthesis display model HTML as text', () => {
+  const h = harness(async () => {});
+  for (const fn of ['renderFeedbackMd', 'renderSynthesisMd']) {
+    const output = h.run(`${fn}('<img src=x onerror=alert(1)> **evidence**')`);
+    assert.ok(!output.includes('<img'));
+    assert.ok(output.includes('&lt;img'));
+    assert.ok(output.includes('<strong>evidence</strong>'));
+  }
 });
