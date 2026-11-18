@@ -8,20 +8,22 @@ import re
 import threading
 import time
 from pathlib import Path
+from typing import Literal
 from uuid import UUID
-from urllib.parse import urlparse
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from ai_gateway import get_generation_gateway
+from english_feedback import require_same_origin, router as feedback_router
 from evidence_retrieval import retrieve, ready_index
-from evidence_runtime import claim, finish, reserve, settle
+from evidence_runtime import claim, finish, record_exit, record_first_token, record_sources, reserve, settle
 from source_contexts import expand_context, format_contexts, load_contexts
 from source_reading_notes import format_notes
 
 router = APIRouter()
+router.include_router(feedback_router)
 BUSY = threading.BoundedSemaphore(1)
 PROMPT_VERSION = "english-originals-3-qualified-synthesis"
 SYSTEM = """You explain the supplied original Berkshire/Buffett archive in clear English.
@@ -77,6 +79,13 @@ class Ask(BaseModel):
     question: str = Field(min_length=3, max_length=2000)
     request_id: UUID
     history: list[Turn] = Field(default_factory=list, max_length=6)
+    entrypoint: Literal["english_form"] | None = None
+
+
+class ExitSignal(BaseModel):
+    request_id: UUID
+    event: Literal["stop", "pagehide"]
+    elapsed_ms: int = Field(strict=True, ge=0, le=2147483647)
 
 
 def event(kind, **fields):
@@ -132,6 +141,14 @@ def status():
         return {"ready": False, "contexts": len(load_contexts()), "message": "The pilot source index is not ready."}
 
 
+@router.post("/api/english/left")
+def left(payload: ExitSignal, request: Request):
+    require_same_origin(request)
+    if not record_exit(str(payload.request_id), payload.event, payload.elapsed_ms):
+        raise HTTPException(404, "Request not found.")
+    return {"saved": True}
+
+
 def stream_answer(payload: Ask):
     request_id = str(payload.request_id)
     start = time.monotonic()
@@ -154,6 +171,7 @@ def stream_answer(payload: Ask):
         for i, (source, match) in enumerate(zip(sources, selected), 1):
             source["id"] = i
             source["matched_paragraph_ids"] = match["matched_paragraph_ids"]
+        record_sources(request_id, sources)
         yield event("sources", sources=sources)
         yield event("status", message="Writing from the original passages…")
         gateway = get_generation_gateway()
@@ -180,6 +198,7 @@ def stream_answer(payload: Ask):
                 raise TimeoutError("The answer exceeded the request deadline.")
             if first_token_ms is None:
                 first_token_ms = round((time.monotonic() - start) * 1000)
+                record_first_token(request_id, first_token_ms)
             pieces.append(token)
             yield event("token", text=token)
         answer = "".join(pieces).strip()
@@ -219,7 +238,7 @@ def stream_answer(payload: Ask):
         if verify:
             usage_by_stage["grounding_review"] = review_observations.get("usage")
         result = {"answer": answer, "sources": sources, "validation": checks, "timings": {"retrieval_ms": retrieval_ms, "first_token_ms": first_token_ms, "writer_ms": writer_ms, "reviewer_start_ms": reviewer_start_ms, "reviewer_ms": reviewer_ms, "total_ms": round((time.monotonic() - start) * 1000)}, "model": profile.model, "retrieval": retrieval_info, "usage": combined_usage(list(usage_by_stage.values())), "usage_by_stage": usage_by_stage, "prompt_version": active_prompt_version(verify)}
-        finish(request_id, "completed", result)
+        finish(request_id, "completed", result, elapsed_ms=result["timings"]["total_ms"])
         completed = True
         yield event("done", **{k: v for k, v in result.items() if k != "sources"})
     except GeneratorExit:
@@ -244,23 +263,21 @@ def stream_answer(payload: Ask):
                             if review_call is not None and not review_settled:
                                 settle(review_call, "failed_or_interrupted", review_observations.get("usage"))
                         finally:
-                            finish(request_id, "failed_or_interrupted")
+                            finish(request_id, "failed_or_interrupted", elapsed_ms=round((time.monotonic() - start) * 1000))
             finally:
                 BUSY.release()
 
 
 @router.post("/api/english/ask")
 def ask(payload: Ask, request: Request):
-    origin = request.headers.get("origin")
-    if origin and urlparse(origin).netloc != request.headers.get("host"):
-        raise HTTPException(403, "This pilot accepts same-origin requests only.")
+    require_same_origin(request)
     if not payload.question.strip():
         raise HTTPException(422, "Please enter a question.")
     digest = hashlib.sha256(json.dumps({"q": payload.question, "h": [t.model_dump() for t in payload.history]}, sort_keys=True).encode()).hexdigest()
     if not BUSY.acquire(blocking=False):
         raise HTTPException(429, "One answer is already running. Wait for it to finish.")
     try:
-        prior = claim(str(payload.request_id), digest)
+        prior = claim(str(payload.request_id), digest, payload.question, payload.entrypoint)
     except ValueError as exc:
         BUSY.release()
         raise HTTPException(409, str(exc))

@@ -1,5 +1,7 @@
 # English original-source pilot
 
+For the invited hosted beta and its feedback workflow, see the [English beta release guide](../deploy/english/README.md). The instructions below also describe the earlier local, single-user launcher.
+
 This opt-in path reuses the existing English router and model gateways in a minimal FastAPI app, `src/english_app.py`. Its separate collection contains **14 complete original-source contexts**, split into 61 discovery windows. It is a bounded experiment, not the complete Buffett archive or an accepted production release. Read the recorded answer-quality results separately; a running server and working citations do not establish semantic accuracy.
 
 The launcher does not call `start.py`, `ingest_md.py`, or the legacy corpus ingestion flow. `serve` requires a compatible existing pilot index and fails before opening a port if it is missing. Only the explicit `index` action builds that index.
