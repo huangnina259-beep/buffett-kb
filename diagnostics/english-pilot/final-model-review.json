@@ -1,0 +1,415 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-11-18",
+  "status": "complete_six_final_outputs_reviewed",
+  "scope": "Bounded source-based review of final GLM high and max prompt-v3 outputs. No API calls or edits to sources, caveats or prompts.",
+  "source_packet_sha256": "34aecaaf607ddcf2532a382e7f6955aeae1892f1f43541eb27c9dd89dcf9b53f",
+  "reading_notes_sha256": "226c1294f1702ae68c975e4b52e4aaf29415cb2687923e4f8703e2aa7da9cb90",
+  "cases": [
+    {
+      "candidate": "high",
+      "id": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "result_file": "work/buffett-kb-integration/final-candidate-results/V1.json",
+      "result_sha256": "5ade6911173d91707d26409e85f43bac346524a1e208c5ce461b7898a4d6d003",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis",
+      "client_first_token_ms": 7376,
+      "client_total_ms": 18814,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 18545,
+        "output_tokens": 1107
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "truthful_attribution": "No material unverified named-speaker assertion found in inspected answer. Unlabelled meeting continuations are described as a discussion/reply; explicit named quotations map to labelled paragraphs.",
+      "verdict": "Useful but material correction required; not accepted as a source-faithful final answer.",
+      "strengths": [
+        "Defines subjective discounted lifetime distributable cash correctly.",
+        "Keeps numerical assumptions historical and attributed to the questioner.",
+        "Preserves necessarily and the finance-company funding condition.",
+        "Does not universalize the farm no-downside judgment.",
+        "Acknowledges unlabeled 2004 turns."
+      ],
+      "issues": [
+        {
+          "severity": "material_unsupported_instruction",
+          "claim": "The task is not to inspect the balance sheet but to estimate future cash generation.",
+          "anchors": [
+            "berkshire-letter-1994:u0020",
+            "berkshire-letter-1994:u0021",
+            "berkshire-letter-1994:u0022",
+            "berkshire-letter-1994:u0023"
+          ],
+          "finding": "The source distinguishes book and intrinsic value; it does not tell readers to disregard balance-sheet inspection. A cash-flow valuation can still require understanding assets, obligations and financing. The either/or instruction is an unsupported expansion."
+        },
+        {
+          "severity": "material_scope_loss",
+          "claim": "Book value is meaningless as an indicator, useful only as a rough often-understated tracking measure.",
+          "anchors": [
+            "berkshire-letter-1994:u0022",
+            "berkshire-letter-1994:u0024",
+            "berkshire-letter-1994:u0026"
+          ],
+          "finding": "Meaningless concludes an education-cost example, while the rough significantly understated tracking measure specifically describes Berkshire then. Both scopes are flattened into a general rule."
+        },
+        {
+          "severity": "moderate_ambiguity",
+          "claim": "Lists audience liabilities/minority/share-count steps and then says the reply endorsed the general line of thinking.",
+          "anchors": [
+            "cnbc-meeting-2004-afternoon-ch28-p011",
+            "cnbc-meeting-2004-afternoon-ch28-p014",
+            "cnbc-meeting-2004-afternoon-ch28-p015",
+            "cnbc-meeting-2004-afternoon-ch28-p019"
+          ],
+          "finding": "The answer usefully specifies the general distributable-cash principle, but could more clearly say the reply does not verify each modelling adjustment. Unlike max, it does not explicitly make subtraction of all liabilities a universal rule."
+        }
+      ]
+    },
+    {
+      "candidate": "high",
+      "id": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "result_file": "work/buffett-kb-integration/final-candidate-results/O1.json",
+      "result_sha256": "fa9a771eaee7738cc4d9bb4f5fb1596522e64b46bf3a9b849cefd6f8a9bf9aff",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis",
+      "client_first_token_ms": 5477,
+      "client_total_ms": 16863,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 17878,
+        "output_tokens": 1067
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "truthful_attribution": "No material unverified named-speaker assertion found in inspected answer. Unlabelled meeting continuations are described as a discussion/reply; explicit named quotations map to labelled paragraphs.",
+      "verdict": "Most of the explanation is correct and useful, but its lead gives the wrong account of the gap. Targeted correction required.",
+      "strengths": [
+        "Full a+b-c definition and required working-capital sign correct.",
+        "Correctly explains equal a+b and equal c across the Scott Fetzer columns.",
+        "Correctly compares full c with full b.",
+        "Cash-flow shorthand exception remains separate from EBITDA.",
+        "Speaker attribution is appropriately restrained."
+      ],
+      "issues": [
+        {
+          "severity": "material_formula_explanation",
+          "claim": "The gap between reported and owner earnings comes almost entirely from c, which GAAP earnings never subtract.",
+          "anchors": [
+            "berkshire-letter-1986:u0286",
+            "berkshire-letter-1986:u0288",
+            "berkshire-letter-1986:u0289",
+            "berkshire-letter-1986:u0290"
+          ],
+          "finding": "Owner earnings minus reported earnings equals b-c. The source does not establish that c almost entirely explains the gap; purchase accounting is its central demonstration of why b matters. Accounting also includes depreciation charges, so saying GAAP never makes the capital deduction needs the distinction between capital outlay and expense allocation. Later correct formulas do not make this lead accurate."
+        },
+        {
+          "severity": "minor_temporal_scope",
+          "claim": "Oil industry cited as a recent example.",
+          "anchors": [
+            "berkshire-letter-1986:u0290"
+          ],
+          "finding": "Recent refers to the 1986 letter. The answer generally gives that date, but this sentence would be clearer as then-recent; not independently a rejection reason."
+        }
+      ]
+    },
+    {
+      "candidate": "high",
+      "id": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "result_file": "work/buffett-kb-integration/final-candidate-results/C1.json",
+      "result_sha256": "e7dc851337a282c195eaea074082065506c2cf1cb957d66d9ff361a8bd5a69e6",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis",
+      "client_first_token_ms": 13923,
+      "client_total_ms": 26852,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 16712,
+        "output_tokens": 1699
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "truthful_attribution": "No material unverified named-speaker assertion found in inspected answer. Unlabelled meeting continuations are described as a discussion/reply; explicit named quotations map to labelled paragraphs.",
+      "verdict": "Useful, with one material scope error; safer than earlier answers on confidence and attribution.",
+      "strengths": [
+        "Explicitly says no doubt is not proof.",
+        "Finance example keeps necessarily and Berkshire-credit detail.",
+        "Self-assessment fallibility and friends’ challenges preserved.",
+        "No innate claim or wrong date.",
+        "1998 passage is correctly described as an exchange with unlabelled response paragraphs."
+      ],
+      "issues": [
+        {
+          "severity": "material_scope_loss",
+          "claim": "If a business is complex or constantly changing, future cash flows cannot be predicted.",
+          "anchors": [
+            "berkshire-letter-1992:u0084"
+          ],
+          "finding": "The original says at Berkshire we attempt and we are not smart enough to predict, describing their own limitations. The answer changes this to an objective universal impossibility."
+        },
+        {
+          "severity": "moderate_internal_tension",
+          "claim": "Understanding shows up as the ability to evaluate, and the closing summary lists feeling no doubt as a marker.",
+          "anchors": [
+            "cnbc-meeting-2002-afternoon-ch18-p005",
+            "cnbc-meeting-2002-afternoon-ch18-p006",
+            "cnbc-meeting-2014-afternoon-ch07-p008"
+          ],
+          "finding": "The answer elsewhere correctly distinguishes general understanding from ability to value and explicitly rejects absence of doubt as proof. Read the closing as an imperfect investment-competence synthesis, not the earlier false standalone sufficient condition; tighten it without treating the whole answer as incoherent."
+        }
+      ]
+    },
+    {
+      "candidate": "max",
+      "id": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "result_file": "work/buffett-kb-integration/glm-max-results/V1.json",
+      "result_sha256": "b95cd802e8e9a6e0f0e36a1b539e12c2f10b34ca92a16df341cc8a0d3645050a",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis",
+      "client_first_token_ms": 86242,
+      "client_total_ms": 97085,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 18545,
+        "output_tokens": 6925
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "truthful_attribution": "No material unverified named-speaker assertion found in inspected answer. Unlabelled meeting continuations are described as a discussion/reply; explicit named quotations map to labelled paragraphs.",
+      "verdict": "Useful structure but a material valuation rule error; not an improvement sufficient to justify the much greater delay.",
+      "strengths": [
+        "Correct intrinsic-value definition and estimation-before-price sequence.",
+        "Treats audience rates/growth as historical assumptions.",
+        "Handles named versus unnamed speakers appropriately.",
+        "Makes business-versus-share units explicit, although its conversion rule is wrong."
+      ],
+      "issues": [
+        {
+          "severity": "material_valuation_rule",
+          "claim": "Subtracting liabilities and dividing by shares gets you from the discounted cash stream to equity per share.",
+          "anchors": [
+            "cnbc-meeting-2004-afternoon-ch28-p011",
+            "cnbc-meeting-2004-afternoon-ch28-p014",
+            "cnbc-meeting-2004-afternoon-ch28-p015",
+            "cnbc-meeting-2004-afternoon-ch28-p019"
+          ],
+          "finding": "The subtraction comes from the questioner, and the reply does not validate every adjustment. It cannot be made a general rule for a cash stream described as distributable to owners: obligations already reflected in cash flows could be counted again. The valuation and cash-flow basis must be consistent; the supplied passage does not license this universal equity bridge."
+        },
+        {
+          "severity": "material_scope_loss",
+          "claim": "The 1994 letter states flatly that book value is meaningless as an intrinsic-value indicator.",
+          "anchors": [
+            "berkshire-letter-1994:u0022",
+            "berkshire-letter-1994:u0024",
+            "berkshire-letter-1994:u0026"
+          ],
+          "finding": "The answer mentions Berkshire’s tracking measure but still strips the education-example scope from the quoted conclusion."
+        },
+        {
+          "severity": "moderate_qualification_loss",
+          "claim": "Did not regard the finance company as within his circle.",
+          "anchors": [
+            "cnbc-meeting-2002-afternoon-ch18-p011",
+            "cnbc-meeting-2002-afternoon-ch18-p012"
+          ],
+          "finding": "Drops necessarily from the original, although the uncertainty and funding explanation remain. Less faithful than high on this detail."
+        }
+      ]
+    },
+    {
+      "candidate": "max",
+      "id": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "result_file": "work/buffett-kb-integration/glm-max-results/O1.json",
+      "result_sha256": "a651ca6629162277246021b3accafe9d04ffdda768e1b9e7c44caa6441b9906a",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis",
+      "client_first_token_ms": 44976,
+      "client_total_ms": 54761,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 17878,
+        "output_tokens": 4380
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "truthful_attribution": "No material unverified named-speaker assertion found in inspected answer. Unlabelled meeting continuations are described as a discussion/reply; explicit named quotations map to labelled paragraphs.",
+      "verdict": "Good full formula and useful examples, but a false statement about add-backs makes the central example materially incorrect.",
+      "strengths": [
+        "Full formula, working-capital subtraction and LIFO condition correct.",
+        "Keeps See’s extra spending as maintenance.",
+        "Keeps cash-flow shorthand exception separate from EBITDA.",
+        "Explicit 1998 named quotations are supported by labelled Buffett paragraphs."
+      ],
+      "issues": [
+        {
+          "severity": "material_accounting_explanation",
+          "claim": "Owner earnings are identical in both columns because the add-backs and required reinvestment are the same.",
+          "anchors": [
+            "berkshire-letter-1986:u0288",
+            "berkshire-letter-1986:u0289"
+          ],
+          "finding": "False: a+b is the same, while b differs ($8.3m old versus $19.9m new). The lower new reported earnings are offset by larger add-backs. This is not mere wording preference; it changes the accounting explanation."
+        },
+        {
+          "severity": "moderate_overstatement",
+          "claim": "More important, cash required to maintain position never shows up as a deduction from profit.",
+          "anchors": [
+            "berkshire-letter-1986:u0286",
+            "berkshire-letter-1986:u0290"
+          ],
+          "finding": "Capital outlay is not directly the same period’s expense, but depreciation and other charges do affect reported profit. The source supports estimating c separately and comparing it with b, not a universal ranking of which reason is more important or an implication that maintenance has no expense counterpart."
+        }
+      ],
+      "not_counted_as_failure": [
+        "Old-company $8.3m depreciation is accurate for the specific original table. The later condition explicitly compares required spending against noncash add-backs; it is not the earlier generic b=depreciation formula error."
+      ]
+    },
+    {
+      "candidate": "max",
+      "id": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "result_file": "work/buffett-kb-integration/glm-max-results/C1.json",
+      "result_sha256": "0365d4eb3136a63e76828eae887ba99c5b1e1d456e434b9271053e7cae6763bd",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis",
+      "client_first_token_ms": 100277,
+      "client_total_ms": 108982,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 16712,
+        "output_tokens": 10202
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "truthful_attribution": "Named claims match labelled originals; 1998 continuations remain attributed to the meeting discussion.",
+      "verdict": "Acceptable as a bounded source-based explanation for this question; best of the final C1 outputs. No material factual, mathematical or speaker error found. This is a manual case-level judgment, not a guarantee.",
+      "strengths": [
+        "Keeps the doubt test one-way and explicitly warns confidence is not proof.",
+        "Preserves Berkshire-specific first person in the 1992 complex/changing-business limitation.",
+        "Preserves necessarily and funding independently from Berkshire credit.",
+        "Acknowledges understanding in a general way can differ from being able to value.",
+        "Keeps See’s assortment, machinery and channels distinct from the customer reasons that persisted.",
+        "No unsupported innate claim or wrong date."
+      ],
+      "issues": [],
+      "not_counted_as_failure": [
+        {
+          "claim": "Understanding for investment includes being able to evaluate a whole enterprise, not merely identify products.",
+          "anchors": [
+            "berkshire-letter-1996:u0114",
+            "cnbc-meeting-2002-afternoon-ch18-p005",
+            "cnbc-meeting-2002-afternoon-ch18-p011",
+            "cnbc-meeting-2002-afternoon-ch18-p012"
+          ],
+          "finding": "This is a reasonable synthesis responsive to the question, with the source’s general-understanding versus valuation distinction preserved. It does not need to reproduce a template or carry an editorial label on every sentence."
+        },
+        {
+          "claim": "The investor goal concerns an understandable business with earnings materially higher five, ten and twenty years ahead.",
+          "anchors": [
+            "berkshire-letter-1996:u0116"
+          ],
+          "finding": "The original explicitly addresses the investor with this goal; this formulation is not merely a Berkshire preference generalized by the model. The answer locates it in the 1996 letter. Do not reject this just because other paragraphs describe Berkshire’s own preferences."
+        },
+        {
+          "claim": "Ask friends and learn boundaries from one’s record.",
+          "anchors": [
+            "cnbc-meeting-2014-afternoon-ch07-p007",
+            "cnbc-meeting-2014-afternoon-ch07-p008",
+            "cnbc-meeting-2014-afternoon-ch07-p016"
+          ],
+          "finding": "Friends are an explicit suggestion; learning from prior boundary mistakes is reasonable synthesis. It does not claim an empirical proof or universally sufficient test."
+        }
+      ],
+      "minor_limit": "The compressed opening equates understanding with evaluation, but the following section explicitly distinguishes general understanding from valuation; not a material contradiction in this investing context."
+    }
+  ],
+  "candidate_recommendation": {
+    "choice": "high for an explicitly qualified experimental preview; neither configuration is accepted for unsupervised production answers",
+    "basis": "Both improve attribution. Max C1 is the strongest C1 answer and acceptable on inspected material, but max V1 and O1 introduce material valuation/accounting errors. Max is not consistently more accurate and has 45–100 second waits for first visible content. High is faster and a more practical draft candidate, with its known answer defects still requiring correction.",
+    "case_level_material_acceptance": {
+      "high": {
+        "V1": false,
+        "O1": false,
+        "C1": false
+      },
+      "max": {
+        "V1": false,
+        "O1": false,
+        "C1": true
+      }
+    },
+    "production_acceptance": false,
+    "unqualified_semantic_pass": false,
+    "preview_condition": "Label preview answers as drafts until the scoped grounding review completes; retain original evidence and make clear the review is model-based rather than verified truth. Do not expose the known defective saved outputs as vetted exemplar answers.",
+    "latency_seconds": {
+      "high_first": [
+        7.376,
+        5.477,
+        13.923
+      ],
+      "high_complete": [
+        18.814,
+        16.863,
+        26.852
+      ],
+      "max_first": [
+        86.242,
+        44.976,
+        100.277
+      ],
+      "max_complete": [
+        97.085,
+        54.761,
+        108.982
+      ]
+    },
+    "further_comparison": "Parent has now authorized a finite focused-review comparison. This report does not presume it will fix errors; review corrected actual outputs before accepting them. No further prompt/caveat expansion proposed."
+  },
+  "limits": [
+    "Six outputs on three questions only; not a model-family or full-corpus guarantee.",
+    "Mechanical quote warnings, including the reported old pairing bug, were not used as semantic failure evidence.",
+    "Calculation synthesis is legitimate when its cash-flow basis is specified and its transformations are supported; the max V1 rejection concerns its unconditional liability subtraction, not synthesis or per-share arithmetic in general.",
+    "All six source-event paragraph texts and speakers match the canonical packet."
+  ]
+}

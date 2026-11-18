@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import time
 from dataclasses import dataclass, field, replace
 from functools import lru_cache
 from typing import Any, Callable, Iterator, Protocol
@@ -34,6 +35,7 @@ class ModelProfile:
     max_retries: int = 2
     supports_json_mode: bool = False
     extra_headers: dict[str, str] = field(default_factory=dict)
+    extra_body: dict[str, Any] = field(default_factory=dict)
 
     @property
     def api_key(self) -> str:
@@ -79,6 +81,7 @@ class GenerationAdapter(Protocol):
         messages: list[dict[str, str]],
         max_tokens: int,
         temperature: float | None,
+        observer: Callable[[dict], None] | None = None,
     ) -> Iterator[str]: ...
 
 
@@ -165,6 +168,7 @@ class AnthropicAdapter:
         messages: list[dict[str, str]],
         max_tokens: int,
         temperature: float | None,
+        observer: Callable[[dict], None] | None = None,
     ) -> Iterator[str]:
         kwargs: dict[str, Any] = {
             "model": profile.model,
@@ -176,6 +180,10 @@ class AnthropicAdapter:
             kwargs["temperature"] = temperature
         with self._client(profile).messages.stream(**kwargs) as stream:
             yield from stream.text_stream
+            if observer is not None:
+                final = stream.get_final_message()
+                observer({"type": "usage", "input_tokens": final.usage.input_tokens, "output_tokens": final.usage.output_tokens})
+                observer({"type": "finish", "reason": "stop" if final.stop_reason == "end_turn" else final.stop_reason})
 
 
 class OpenAICompatibleAdapter:
@@ -214,6 +222,8 @@ class OpenAICompatibleAdapter:
             kwargs["temperature"] = temperature
         if json_mode and profile.supports_json_mode:
             kwargs["response_format"] = {"type": "json_object"}
+        if profile.extra_body:
+            kwargs["extra_body"] = profile.extra_body
         response = self._client(profile).chat.completions.create(**kwargs)
         text = response.choices[0].message.content or ""
         raw_usage = getattr(response, "usage", None)
@@ -231,6 +241,7 @@ class OpenAICompatibleAdapter:
         messages: list[dict[str, str]],
         max_tokens: int,
         temperature: float | None,
+        observer: Callable[[dict], None] | None = None,
     ) -> Iterator[str]:
         kwargs: dict[str, Any] = {
             "model": profile.model,
@@ -240,10 +251,23 @@ class OpenAICompatibleAdapter:
         }
         if temperature is not None:
             kwargs["temperature"] = temperature
-        for chunk in self._client(profile).chat.completions.create(**kwargs):
-            text = chunk.choices[0].delta.content if chunk.choices else None
-            if text:
-                yield text
+        if observer is not None:
+            kwargs["stream_options"] = {"include_usage": True}
+        if profile.extra_body:
+            kwargs["extra_body"] = profile.extra_body
+        started = time.monotonic()
+        with self._client(profile) as client:
+            with client.chat.completions.create(**kwargs) as stream:
+                for chunk in stream:
+                    if observer is not None and time.monotonic() - started > profile.timeout:
+                        raise TimeoutError("The generation stream exceeded its total time limit.")
+                    if observer is not None and getattr(chunk, "usage", None):
+                        observer({"type": "usage", "input_tokens": chunk.usage.prompt_tokens, "output_tokens": chunk.usage.completion_tokens})
+                    if chunk.choices and observer is not None and chunk.choices[0].finish_reason:
+                        observer({"type": "finish", "reason": chunk.choices[0].finish_reason})
+                    text = chunk.choices[0].delta.content if chunk.choices else None
+                    if text:
+                        yield text
 
 
 AdapterFactory = Callable[[], GenerationAdapter]
@@ -362,6 +386,7 @@ def load_profiles() -> dict[str, ModelProfile]:
             max_retries=int(raw.get("max_retries", 2)),
             supports_json_mode=bool(raw.get("supports_json_mode", provider == "openai")),
             extra_headers={str(k): str(v) for k, v in headers.items()},
+            extra_body=dict(raw.get("extra_body") or {}),
         )
     return profiles
 
@@ -510,6 +535,7 @@ class GenerationGateway:
         messages: list[dict[str, str]],
         max_tokens: int,
         temperature: float | None = None,
+        observer: Callable[[dict], None] | None = None,
     ) -> Iterator[str]:
         route = self._route(task)
         max_tokens = route.max_tokens or max_tokens
@@ -519,12 +545,16 @@ class GenerationGateway:
         for profile in self._route_profiles(task):
             emitted = False
             try:
+                optional = {"observer": observer} if observer is not None else {}
+                if observer is not None:
+                    observer({"type": "profile", "model": profile.model, "provider": profile.provider})
                 for text in self._adapter(profile).stream(
                     profile,
                     system=system,
                     messages=messages,
                     max_tokens=max_tokens,
                     temperature=temperature,
+                    **optional,
                 ):
                     emitted = True
                     yield text
