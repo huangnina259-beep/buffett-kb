@@ -1,4 +1,5 @@
-"""Explicit live checks. Each case spends one embedding and one generation call.
+"""Explicit live checks. Each case spends one embedding and one writer call, plus one review call
+when ENGLISH_PILOT_VERIFY is enabled.
 
 Only named cases run. Results contain the actual answer, sources, timings and
 provider-reported usage. Completion and citation checks are not semantic passes.
