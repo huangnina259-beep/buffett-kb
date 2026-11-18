@@ -204,7 +204,7 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
   async function sendFeedback(event) {
     event.preventDefault();
     const answerRequest = state.request;
-    if (!state.completed || !answerRequest || $('feedback-fields').disabled) return;
+    if (!state.completed || !answerRequest || $('feedback').hidden || $('feedback-fields').disabled) return;
     const helpful = $('feedback-yes').checked;
     if (!helpful && !$('feedback-no').checked) return;
     const note = helpful ? '' : $('feedback-note').value.trim();
@@ -252,7 +252,8 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
     const measured = [['Sources', timings.retrieval_ms], ['First text', timings.first_token_ms], ['Total', timings.total_ms]].map(([label, value]) => { const time = formatMs(value); return time ? label + ' ' + time : null; }).filter(Boolean);
     $('timings').textContent = measured.join(' · '); $('timings').hidden = !measured.length;
     state.history = [...state.history, { role: 'user', content: question }, { role: 'assistant', content: event.answer.slice(0, 12000) }].slice(-6);
-    state.lastQuestion = question; $('question').value = ''; $('follow-up').hidden = false; $('feedback').hidden = false;
+    state.lastQuestion = question; $('question').value = ''; $('follow-up').hidden = false;
+    $('feedback').hidden = event.feedback_available !== true;
     announce(checked ? 'Answer complete. Citation references were checked; source support still requires judgment.' : 'Answer complete and marked as needing review. Open its citations and listed issues.');
   }
   async function ask() {

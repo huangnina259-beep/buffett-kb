@@ -80,6 +80,7 @@ class EnglishVerificationTests(unittest.TestCase):
         self.assertTrue(any(item.get("message") == "Checking the answer against the original passages…" for item in events))
         final = events[-1]
         self.assertEqual(final["type"], "done")
+        self.assertIs(final["feedback_available"], True)
         self.assertEqual(final["answer"], "Corrected explanation from the originals. [1]")
         self.assertEqual(final["validation"]["status"], "references_checked")
         self.assertEqual(final["usage"]["input_tokens"], 20)
@@ -95,6 +96,7 @@ class EnglishVerificationTests(unittest.TestCase):
         self.assertIn("Draft assertion with an invalid reference", self.gateway.calls[1][1]["messages"][-1]["content"])
         replay = self.events(self.client.post("/api/english/ask", json=self.payload))
         self.assertTrue(replay[-1]["replay"])
+        self.assertIs(replay[-1]["feedback_available"], True)
         self.assertEqual(replay[-1]["answer"], final["answer"])
         self.assertEqual(len(self.gateway.calls), 2)
         self.assertEqual(len(self.rows()), 2)

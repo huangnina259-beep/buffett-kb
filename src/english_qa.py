@@ -92,6 +92,14 @@ def event(kind, **fields):
     return "data: " + json.dumps({"type": kind, **fields}, ensure_ascii=False) + "\n\n"
 
 
+def completed_event(result, *, replay=False):
+    fields = {key: value for key, value in result.items() if key != "sources"}
+    fields["feedback_available"] = True
+    if replay:
+        fields["replay"] = True
+    return event("done", **fields)
+
+
 def reference_checks(answer, sources):
     """Mechanical checks only, deliberately not a claim of semantic validation."""
     ids = set(range(1, len(sources) + 1))
@@ -240,7 +248,7 @@ def stream_answer(payload: Ask):
         result = {"answer": answer, "sources": sources, "validation": checks, "timings": {"retrieval_ms": retrieval_ms, "first_token_ms": first_token_ms, "writer_ms": writer_ms, "reviewer_start_ms": reviewer_start_ms, "reviewer_ms": reviewer_ms, "total_ms": round((time.monotonic() - start) * 1000)}, "model": profile.model, "retrieval": retrieval_info, "usage": combined_usage(list(usage_by_stage.values())), "usage_by_stage": usage_by_stage, "prompt_version": active_prompt_version(verify)}
         finish(request_id, "completed", result, elapsed_ms=result["timings"]["total_ms"])
         completed = True
-        yield event("done", **{k: v for k, v in result.items() if k != "sources"})
+        yield completed_event(result)
     except GeneratorExit:
         raise
     except Exception as exc:
@@ -288,7 +296,7 @@ def ask(payload: Ask, request: Request):
         BUSY.release()
         if prior["status"] == "completed":
             result = json.loads(prior["result"])
-            body = event("sources", sources=result["sources"]) + event("done", **{k: v for k, v in result.items() if k != "sources"}, replay=True)
+            body = event("sources", sources=result["sources"]) + completed_event(result, replay=True)
             return StreamingResponse(iter([body]), media_type="text/event-stream")
         raise HTTPException(409, "This request has already started or ended. A new explicit submission needs a new request ID.")
     return StreamingResponse(stream_answer(payload), media_type="text/event-stream", headers={"Cache-Control": "no-cache, no-transform", "X-Accel-Buffering": "no"})

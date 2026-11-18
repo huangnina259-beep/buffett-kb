@@ -49,8 +49,8 @@ test('only final answers offer feedback; corrections stay tied to the completed 
     return new Response(new ReadableStream({ start(controller) {
       const send = data => controller.enqueue(new TextEncoder().encode('data: ' + JSON.stringify(data) + '\n\n'));
       send({ type: 'token', text: 'Draft' });
-      finish = () => {
-        send({ type: 'done', answer: 'Completed answer', validation: { status: 'references_checked', issues: [] } });
+      finish = (features = {}) => {
+        send({ ...features, type: 'done', answer: 'Completed answer', validation: { status: 'references_checked', issues: [] } });
         controller.close();
       };
     } }), { headers: { 'Content-Type': 'text/event-stream' } });
@@ -58,7 +58,7 @@ test('only final answers offer feedback; corrections stay tied to the completed 
   ui.ask();
   await tick();
   assert.equal(ui.get('feedback').hidden, true);
-  finish();
+  finish({ feedback_available: true });
   await tick();
   assert.equal(ui.get('feedback').hidden, false);
   assert.equal(calls[0][1].entrypoint, 'english_form');
@@ -79,6 +79,16 @@ test('only final answers offer feedback; corrections stay tied to the completed 
   assert.match(ui.get('feedback-status').textContent, /Feedback sent/);
   ui.window.emit('pagehide');
   assert.equal(calls.length, 3);
+  // A follow-up can land on a process serving the old completion format.
+  ui.ask();
+  await tick();
+  finish();
+  await tick();
+  assert.equal(ui.get('answer-wrap').hidden, false);
+  assert.equal(ui.get('follow-up').hidden, false);
+  assert.equal(ui.get('feedback').hidden, true);
+  await ui.get('feedback').emit('submit');
+  assert.equal(calls.length, 4);
 });
 
 test('Stop and pagehide send a single request-linked departure during a pending answer', async () => {
@@ -86,7 +96,7 @@ test('Stop and pagehide send a single request-linked departure during a pending 
     const beacons = [];
     let request, fallback;
     const ui = page(async (url, options) => {
-      if (url.endsWith('/left')) { fallback = options; return new Response(null, { status: 204 }); }
+      if (url.endsWith('/left')) { fallback = options; return new Response(null, { status: 404 }); }
       request = JSON.parse(options.body);
       return new Promise((resolve, reject) => options.signal.addEventListener('abort', () => reject(new Error('Stopped'))));
     }, (url, body) => { beacons.push([url, body]); return action === 'stop'; });
@@ -107,5 +117,7 @@ test('Stop and pagehide send a single request-linked departure during a pending 
       assert.equal(fallback.keepalive, true);
     } else assert.equal(fallback, undefined);
     assert.equal(ui.get('feedback').hidden, true);
+    assert.equal(ui.get('question').value, 'What is intrinsic value?');
+    assert.equal(ui.get('error-title').textContent, 'Stopped');
   }
 });
