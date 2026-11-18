@@ -28,7 +28,7 @@ class InvitedReaders:
             scheme, _, proof = header.partition(b' ')
             if scheme.lower() != b'basic' or not hmac.compare_digest(proof, self.expected):
                 response = PlainTextResponse('Enter your beta invitation to continue.', status_code=401,
-                    headers={'WWW-Authenticate': 'Basic realm="Buffett English beta", charset="UTF-8"', 'Cache-Control': 'no-store'})
+                    headers={'WWW-Authenticate': 'Basic realm="The Compounder", charset="UTF-8"', 'Cache-Control': 'no-store'})
                 return await response(scope, receive, send)
         return await self.app(scope, receive, send)
 
