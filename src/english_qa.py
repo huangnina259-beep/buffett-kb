@@ -261,14 +261,14 @@ def stream_answer(payload: Ask):
         result = {"answer": answer, "sources": sources, "validation": checks, "timings": {"retrieval_ms": retrieval_ms, "first_token_ms": first_token_ms, "writer_ms": writer_ms, "reviewer_start_ms": reviewer_start_ms, "reviewer_ms": reviewer_ms, "total_ms": round((time.monotonic() - start) * 1000)}, "model": profile.model, "retrieval": retrieval_info, "usage": combined_usage(list(usage_by_stage.values())), "usage_by_stage": usage_by_stage, "prompt_version": active_prompt_version(verify)}
         finish(request_id, "completed", result, elapsed_ms=result["timings"]["total_ms"])
         completed = True
-        yield completed_event(result)
+        terminal_event = completed_event(result)
     except GeneratorExit:
         raise
     except Exception as exc:
         # Error messages never include raw provider payloads, keys, or request headers.
         known = isinstance(exc, (RuntimeError, TimeoutError)) and str(exc).startswith(("The pilot", "The configured pilot", "The answer", "The model", "The existing pilot"))
         message = str(exc) if known else "This request could not finish. The visible draft may be incomplete. Submit again to make a new request."
-        yield event("error", message=message)
+        terminal_event = event("error", message=message)
     finally:
         try:
             if stream is not None:
@@ -287,6 +287,8 @@ def stream_answer(payload: Ask):
                             finish(request_id, "failed_or_interrupted", elapsed_ms=round((time.monotonic() - start) * 1000))
             finally:
                 BUSY.release()
+    # A client may submit its next question as soon as it receives this event.
+    yield terminal_event
 
 
 @router.post("/api/english/ask")

@@ -73,7 +73,9 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
 .conversation #transcript { display:block; min-height:0; overflow:auto; overscroll-behavior:contain; scrollbar-gutter:stable; padding:clamp(1.1rem,3.7vw,2.25rem) clamp(1.1rem,4.3vw,3.25rem) .65rem }
 .conversation .composer { border-radius:0; border-top:1px solid var(--line); padding:.6rem clamp(1.1rem,4.3vw,3.25rem) .65rem; background:#fbfcf9 }
 .conversation .composer form { display:flex; align-items:flex-end; gap:.65rem }.conversation .composer textarea { flex:1; min-width:0 }
-.conversation #question { min-height:2.65rem; field-sizing:content; max-height:20dvh; padding:.55rem 0 .4rem }
+.conversation #question { min-height:2.75rem; field-sizing:content; max-height:20dvh; padding:.55rem .7rem; border:1px solid var(--line); border-radius:.65rem; background:white }
+.conversation #question:focus { border-color:var(--green); outline:1px solid var(--green) }
+.queue-note { margin:.3rem 0; font-size:.8125rem; color:var(--green) }
 .conversation .key-hint,.shell:not(.conversation) .transcript-heading { display:none }
 .answer-wrap { margin:0 auto 1.25rem }.thread-archive:empty {display:none}.archived-turn { margin-bottom:2.2rem }
 .question-row { margin:0 0 1.45rem; display:flex; flex-direction:column; align-items:flex-end; gap:.32rem }
@@ -106,8 +108,9 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
 .confirm-dialog { width:min(23rem,90vw); border:1px solid var(--line); border-radius:.8rem; padding:1.3rem; color:var(--ink) }.confirm-dialog h2{font-size:1.15rem}.confirm-dialog p{overflow-wrap:anywhere}
 .confirm-actions { display:flex; justify-content:flex-end; gap:.5rem; margin-top:1rem }
 .source-dialog {position:fixed;inset:0 0 0 auto;width:min(39rem,100%);max-width:100%;height:100dvh;max-height:100dvh;margin:0;padding:0;border:0;border-left:1px solid var(--line);background:#fff;color:var(--text);overflow:auto}.source-dialog::backdrop,.confirm-dialog::backdrop {background:#20342952}
-.source-inner{padding:1.5rem clamp(1.1rem,4vw,2rem) 2rem}.drawer-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.8rem}.eyebrow,.source-metadata,.source-verification,.source-intro,.source-context-note,.source-loading,.speaker,.locator{font-size:.8125rem;color:var(--muted)}
-.close{width:2.6rem;height:2.6rem;font-size:1.5rem;border:1px solid var(--line);border-radius:50%}.source-dialog h2{font:1.7rem/1.3 Georgia,serif;color:var(--ink)}.source-metadata{display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-top:.8rem}.source-verification,.source-context-note,.source-loading,.source-error{margin-top:.75rem}.publisher{display:inline-block;font-size:.875rem;margin-top:.85rem}.source-body{margin-top:1.1rem}.source-intro{margin-bottom:.6rem}.original-paragraph{padding:.8rem 0;border-top:1px solid var(--line)}.original-paragraph.highlighted{background:var(--soft);border-radius:.5rem;padding:.75rem;margin:.35rem 0}.speaker{font-weight:600;margin-bottom:.3rem}.original-text{font:1.05rem/1.7 Georgia,serif;white-space:pre-wrap;overflow-wrap:anywhere}.locator{margin-top:.3rem;overflow-wrap:anywhere}.source-error{color:var(--red)}
+.source-dialog {scroll-padding-top:4.3rem;overscroll-behavior:contain}
+.source-inner{padding:0 clamp(1.1rem,4vw,2rem) 2rem}.drawer-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.5rem 0;margin-bottom:.8rem;background:var(--white);border-bottom:1px solid var(--line)}.eyebrow,.source-metadata,.source-verification,.source-intro,.source-context-note,.source-loading,.speaker,.locator{font-size:.8125rem;color:var(--muted)}
+.close{min-height:2.75rem;padding:.45rem .85rem;color:var(--green);font-size:.875rem;font-weight:600;border:1px solid var(--line);border-radius:.6rem}.close:hover{background:var(--soft)}.source-dialog h2{font:1.7rem/1.3 Georgia,serif;color:var(--ink)}.source-metadata{display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-top:.8rem}.source-verification,.source-context-note,.source-loading,.source-error{margin-top:.75rem}.publisher{display:inline-block;font-size:.875rem;margin-top:.85rem}.source-body{margin-top:1.1rem}.source-intro{margin-bottom:.6rem}.original-paragraph{padding:.8rem 0;border-top:1px solid var(--line)}.original-paragraph.highlighted{background:var(--soft);border-radius:.5rem;padding:.75rem;margin:.35rem 0}.speaker{font-weight:600;margin-bottom:.3rem}.original-text{font:1.05rem/1.7 Georgia,serif;white-space:pre-wrap;overflow-wrap:anywhere}.locator{margin-top:.3rem;overflow-wrap:anywhere}.source-error{color:var(--red)}
 #source-details {margin-top:.75rem;font-size:.875rem;color:var(--muted)}#source-details summary {width:fit-content;color:var(--green)}
 @keyframes pulse {50%{opacity:.4}}
 @media(max-width:640px) {
@@ -166,7 +169,8 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
       </div>
     <section class="composer" aria-label="Ask a question">
 
-      <form id="question-form"><label class="sr-only" for="question">Your question</label><textarea id="question" rows="1" minlength="3" maxlength="2000" required placeholder="Ask a question about investing and understanding businesses…" aria-describedby="question-help scope-note"></textarea><div class="actions"><p class="key-hint" id="question-help">Enter to send · Shift + Enter for a new line<span class="sr-only">. Enter 3 to 2,000 characters.</span></p><div class="action-buttons"><button type="button" class="stop" id="stop" hidden>Stop</button><button type="submit" class="primary" id="ask" disabled>Send</button></div></div></form>
+      <p id="queue-note" class="queue-note" hidden>Queued for the next reply. Editing cancels the send.</p>
+      <form id="question-form"><label class="sr-only" for="question">Your question</label><textarea id="question" rows="1" minlength="3" maxlength="2000" required placeholder="Ask a question about investing and understanding businesses…" aria-describedby="question-help scope-note"></textarea><div class="actions"><p class="key-hint" id="question-help">Enter to send · Shift + Enter for a new line<span class="sr-only">. Enter 3 to 2,000 characters.</span></p><div class="action-buttons"><button type="button" class="stop" id="stop" hidden>Stop</button><button type="submit" class="primary" id="ask" disabled>Send</button><button type="button" class="primary" id="unqueue" hidden>Undo send</button></div></div></form>
     </section>
     </div>
     <p class="scope-note" id="scope-note">Questions and feedback are saved for pilot review. Please omit personal or confidential details.</p>
@@ -179,7 +183,7 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
 <dialog class="confirm-dialog" id="delete-dialog" aria-labelledby="delete-label"><form method="dialog"><h2 id="delete-label">Delete chat?</h2><p id="delete-title"></p><p>This removes the conversation from this browser.</p><div class="confirm-actions"><button type="submit" class="stop" value="cancel" autofocus>Cancel</button><button type="submit" class="primary" value="delete">Delete</button></div></form></dialog>
 <dialog class="source-dialog" id="source-dialog" aria-labelledby="source-title">
   <div class="source-inner">
-    <div class="drawer-head"><p class="eyebrow" id="source-label">Original excerpt</p><button type="button" class="close" id="source-close" aria-label="Close original excerpt">×</button></div>
+    <div class="drawer-head"><p class="eyebrow" id="source-label">Original excerpt</p><button type="button" class="close" id="source-close">Back to questions</button></div>
     <h2 id="source-title">Original excerpt</h2>
     <div class="source-metadata" id="source-metadata"></div>
     <a class="publisher" id="source-link" target="_blank" rel="noopener noreferrer" hidden>Read at the original publisher</a>
@@ -430,6 +434,8 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
   const chats = new Map();
   let currentChat = null;
   let deleteId = null;
+  let queuedQuestion = null;
+  let composerRevision = 0;
 
   function storageWarning(message) {
     $('storage-error').textContent = message;
@@ -651,14 +657,17 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
     } else renderSidebar();
   });
   function updateControls() {
-    $('ask').disabled = state.busy || $('question').value.trim().length < 3;
-    $('question').disabled = state.busy;
+    const length = $('question').value.trim().length;
+    $('ask').disabled = length < 3 || length > 2000 || queuedQuestion !== null;
+    $('ask').textContent = state.busy ? 'Send next' : 'Send';
+    $('ask').hidden = queuedQuestion !== null || (state.busy && !length);
+    $('unqueue').hidden = $('queue-note').hidden = queuedQuestion === null;
     $('stop').hidden = !state.busy;
     $('home').disabled = state.busy;
     $('new-question').disabled = state.busy;
     document.querySelectorAll('[data-question]').forEach(button => { button.disabled = state.busy; });
     document.querySelectorAll('.chat-nav button').forEach(button => { button.disabled = state.busy; });
-    $('question').placeholder = state.history.length ? 'Ask a follow-up…' : 'Ask a question about investing…';
+    $('question').placeholder = state.busy ? 'Write your next question…' : state.history.length ? 'Ask a follow-up or a new question…' : 'Ask a question about investing…';
     $('shell').classList.toggle('conversation', state.busy || !$('answer-wrap').hidden || !$('error').hidden || Boolean(state.history.length));
   }
   function resetQuestion() {
@@ -746,6 +755,9 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
     state.sourceController?.abort(); const controller = new AbortController(); state.sourceController = controller;
     state.activeCitation = trigger; $('about').open = false; $('source-details').open = false;
     const fromAnswer = Number.isInteger(source.id);
+    $('source-dialog').returnValue = '';
+    $('source-close').value = fromAnswer ? 'chat' : 'discovery';
+    $('source-close').textContent = fromAnswer ? 'Back to chat' : 'Back to questions';
     $('source-label').textContent = fromAnswer ? 'Source ' + source.id + ' · Original excerpt' : 'Original excerpt';
     $('source-title').textContent = source.title || 'Original excerpt';
     $('source-metadata').replaceChildren(); $('source-verification').textContent = ''; $('source-boundary').textContent = ''; $('source-context-note').textContent = ''; $('source-body').replaceChildren();
@@ -852,7 +864,6 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
       timings: event.timings || {}, feedback_available: event.feedback_available === true, created: Date.now() };
     saveTurn(turn);
     showFinished(turn);
-    $('question').value = '';
     announce('Answer complete. You can ask another question below.');
   }
   function validationLabel(checked) {
@@ -880,8 +891,9 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
     window.CompounderQuestions?.renderFollowups($('follow-up'), event, askQuestion);
     $('feedback').hidden = event.feedback_available !== true;
   }
-  async function ask(selectedContextId) {
-    const question = $('question').value.trim(); if (state.busy || question.length < 3 || question.length > 2000) return;
+  async function ask(question, selectedContextId) {
+    if (state.busy) return;
+    const revisionAtSend = composerRevision;
     if (state.completed && currentChat) renderArchive(currentChat.turns);
     const controller = new AbortController(); state.controller = controller; state.busy = true; state.stopped = false; state.completed = false; state.draft = ''; state.sources.clear();
     resetFeedback(); state.request = null;
@@ -889,8 +901,24 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
     $('answer-status').className = 'badge draft'; $('answer-status').textContent = 'Draft · still streaming'; $('validation-note').textContent = 'This is a partial draft. Its final reference check has not completed.';
     $('validation-issues').hidden = true; $('follow-up').hidden = true; $('timings').hidden = true; $('sources').hidden = true; $('sources').open = false;
     $('answer').setAttribute('aria-busy', 'true'); $('progress').hidden = false; $('progress-message').textContent = 'Submitting your question…'; $('elapsed').textContent = '';
-    const started = performance.now(); state.elapsedTimer = window.setInterval(() => { $('elapsed').textContent = Math.floor((performance.now() - started) / 1000) + 's'; }, 1000); updateControls();
-    $('question').value = ''; $('answer-details').open = false; closeRail(); focusTurn();
+    const started = performance.now();
+    let lastActivity = started;
+    let timedOut = false;
+    // The review stage can legitimately be silent for its 180-second deadline.
+    state.elapsedTimer = window.setInterval(() => {
+      const now = performance.now();
+      $('elapsed').textContent = Math.floor((now - started) / 1000) + 's';
+      if (now - lastActivity > 210000 && !controller.signal.aborted) {
+        timedOut = true;
+        controller.abort();
+      }
+    }, 1000);
+    updateControls();
+    $('answer-details').open = false; closeRail();
+    if (document.activeElement === $('question') || document.activeElement === $('ask') || document.activeElement === $('unqueue')) {
+      $('asked-question').scrollIntoView?.({block:'start'});
+      $('question').focus({preventScroll:true});
+    } else focusTurn();
     let reader;
     try {
       state.request = { id: crypto.randomUUID(), started, left: false };
@@ -900,6 +928,7 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
       if (!response.body || !response.headers.get('content-type')?.toLowerCase().includes('text/event-stream')) throw new Error('The service did not return an answer stream. Your question has been kept.');
       reader = response.body.getReader(); const decoder = new TextDecoder('utf-8', { fatal: true }); let buffer = '', bytes = 0;
       function handle(block) {
+        lastActivity = performance.now();
         const data = block.split(/\r?\n/).filter(line => line.startsWith('data:')).map(line => line.slice(5).trimStart()).join('\n'); if (!data) return;
         let event; try { event = JSON.parse(data); } catch { throw new Error('The answer stream contained unreadable data. Your draft has not been validated.'); }
         if (!isObject(event) || typeof event.type !== 'string') throw new Error('The answer stream contained an unrecognized event.');
@@ -915,7 +944,9 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
       if (!state.completed) throw new Error('The connection ended before a complete answer was received. The partial draft has not been validated.');
     } catch (error) {
       state.request = null;
-      flushRender(); $('question').value = question; $('answer').setAttribute('aria-busy', 'false');
+      flushRender();
+      if (composerRevision === revisionAtSend && !$('question').value) $('question').value = question;
+      $('answer').setAttribute('aria-busy', 'false');
       if (state.draft) { $('answer-wrap').hidden = false; $('answer-status').className = 'badge review'; $('answer-status').textContent = state.stopped ? 'Stopped · incomplete draft' : 'Incomplete draft'; $('validation-note').textContent = 'This partial draft did not receive a completed reference check.'; }
       else {
         $('answer-status').className = 'badge review';
@@ -923,23 +954,52 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
         $('validation-note').textContent = 'No completed answer was returned.';
       }
       $('error-title').textContent = state.stopped ? 'Stopped' : 'The answer could not be completed';
-      $('error-message').textContent = state.stopped ? 'The request was stopped. Your question is kept in the box, and any partial text is an unvalidated draft.' : (error instanceof Error && error.name !== 'AbortError' ? error.message : 'The request was interrupted. Your question has been kept.');
-      $('error').hidden = false; announce(state.stopped ? 'Request stopped. Your question has been kept.' : 'The answer did not complete. Your question has been kept.');
+      $('error-message').textContent = timedOut ? 'The connection stopped responding. You can send a question again.' : state.stopped ? 'The reply was stopped. You can edit or send your question below.' : (error instanceof Error && error.name !== 'AbortError' ? error.message : 'The request was interrupted. You can edit or send your question below.');
+      if (queuedQuestion !== null) $('error-message').textContent += ' Your next question is still in the box. Press Send when ready.';
+      $('error').hidden = false; announce($('error-message').textContent);
     } finally {
-      if (reader) { try { await reader.cancel(); } catch {} try { reader.releaseLock(); } catch {} }
+      const sendNext = queuedQuestion !== null && queuedQuestion === $('question').value.trim() && state.completed;
+      queuedQuestion = null;
       window.clearInterval(state.elapsedTimer); state.elapsedTimer = null; $('progress').hidden = true; $('answer').setAttribute('aria-busy', 'false'); state.busy = false; state.controller = null; updateControls();
-      if (document.activeElement === $('asked-question') && window.matchMedia('(pointer:fine)').matches) {
+      if (reader) {
+        void reader.cancel().catch(() => {});
+        reader.releaseLock();
+      }
+      if (sendNext) submitComposer();
+      else if (document.activeElement === $('asked-question') && window.matchMedia('(pointer:fine)').matches) {
         $('question').focus({preventScroll:true});
       }
     }
   }
-  $('question-form').addEventListener('submit', event => { event.preventDefault(); void ask(); });
-  $('question').addEventListener('input', updateControls);
-  $('question').addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey && !event.isComposing && event.keyCode !== 229) { event.preventDefault(); void ask(); } });
+  function submitComposer() {
+    const question = $('question').value.trim();
+    if (question.length < 3 || question.length > 2000 || queuedQuestion !== null) return;
+    if (state.busy) {
+      queuedQuestion = question;
+      updateControls();
+      announce('Your question will send after this reply.');
+      return;
+    }
+    $('question').value = '';
+    void ask(question);
+  }
+  $('question-form').addEventListener('submit', event => { event.preventDefault(); submitComposer(); });
+  $('question').addEventListener('input', () => {
+    composerRevision++;
+    if (queuedQuestion !== null) announce('Queued send cancelled. Your edited draft is in the box.');
+    queuedQuestion = null;
+    updateControls();
+  });
+  $('unqueue').addEventListener('click', () => {
+    queuedQuestion = null;
+    updateControls();
+    $('question').focus();
+    announce('Queued send cancelled. Your draft is in the box.');
+  });
+  $('question').addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey && !event.isComposing && event.keyCode !== 229) { event.preventDefault(); submitComposer(); } });
   function askQuestion(question, selectedContextId) {
     if (state.busy) return;
-    $('question').value = question;
-    void ask(selectedContextId);
+    void ask(question, selectedContextId);
   }
   window.CompounderQuestions?.renderStarters($('starters'), askQuestion, (item, trigger) =>
     openSource({context_id: item.context, title: item.title}, trigger));
@@ -949,9 +1009,23 @@ textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink
   $('stop').addEventListener('click', () => { recordDeparture('stop'); state.stopped = true; state.controller?.abort(); });
   $('new-question').addEventListener('click', resetQuestion); $('home').addEventListener('click', resetQuestion);
   $('error-edit').addEventListener('click', () => $('question').focus());
-  $('source-close').addEventListener('click', () => $('source-dialog').close());
+  $('source-close').addEventListener('click', () => {
+    const destination = $('source-close').value;
+    $('source-dialog').close(destination);
+    // Focus on the tap itself so a phone can open its software keyboard.
+    if (destination === 'chat') $('question').focus({preventScroll:true});
+  });
   $('source-dialog').addEventListener('click', event => { if (event.target === event.currentTarget) $('source-dialog').close(); });
-  $('source-dialog').addEventListener('close', () => { state.sourceController?.abort(); if (state.activeCitation?.isConnected) state.activeCitation.focus(); else $('question').focus(); });
+  $('source-dialog').addEventListener('close', () => {
+    const dialog = $('source-dialog');
+    if (dialog.open) return;
+    state.sourceController?.abort();
+    if (dialog.returnValue !== 'chat') {
+      const target = state.activeCitation?.isConnected ? state.activeCitation : $('question');
+      target.focus({preventScroll:true});
+    }
+    state.activeCitation = null;
+  });
   $('about').addEventListener('keydown', event => { if (event.key === 'Escape') { $('about').open = false; $('about').querySelector('summary').focus(); } });
   restoreLibrary();
   updateControls();

@@ -197,3 +197,73 @@ test('a storage quota error retains completed answers in the current tab', async
   assert.deepEqual(calls[3].history.filter(m => m.role === 'user').map(m => m.content),
     ['First question?', 'Second question?', 'Third question?']);
 });
+
+function pendingReplies() {
+  const calls = [], streams = [];
+  const ui = page(async (url, options) => {
+    calls.push(JSON.parse(options.body));
+    return new Response(new ReadableStream({
+      start(controller) { streams.push(controller); },
+    }), {headers:{'Content-Type':'text/event-stream'}});
+  });
+  function type(text) {
+    ui.get('question').value = text;
+    ui.get('question').emit('input');
+  }
+  function end(event) {
+    const stream = streams.shift();
+    stream.enqueue(new TextEncoder().encode('data: ' + JSON.stringify(event) + '\n\n'));
+    stream.close();
+  }
+  function finish() {
+    end({type:'done',answer:'A completed reply [1].',validation:{status:'references_checked'}});
+  }
+  return {ui, calls, type, end, finish};
+}
+
+test('free typing during a reply preserves the draft and only explicit submission sends it', async () => {
+  const {ui, calls, type, finish} = pendingReplies();
+  ui.ask('First question?');
+  await tick();
+  assert.equal(ui.get('question').disabled, false);
+  type('A different investing question?');
+  finish();
+  await tick();
+  assert.equal(calls.length, 1);
+  assert.equal(ui.get('question').value, 'A different investing question?');
+  ui.get('question-form').emit('submit');
+  await tick();
+  type('How are owner earnings calculated?');
+  ui.get('question-form').emit('submit');
+  ui.get('question-form').emit('submit');
+  assert.equal(ui.get('unqueue').hidden, false);
+  assert.equal(calls.length, 2);
+  finish();
+  await tick();
+  assert.equal(calls.length, 3);
+  assert.equal(calls[2].selected_context_id, undefined);
+  assert.equal(calls[2].history.at(-1).content, 'A completed reply [1].');
+  assert.equal(calls[2].question, 'How are owner earnings calculated?');
+  finish();
+  await tick();
+});
+
+test('undo, editing, and failed replies never send a draft or restore text the user cleared', async () => {
+  for (const action of ['undo','edit','clear','error']) {
+    const {ui, calls, type, finish, end} = pendingReplies();
+    ui.ask('Original question?');
+    await tick();
+    type('My next question?');
+    ui.get('question-form').emit('submit');
+    if (action === 'undo') ui.get('unqueue').emit('click');
+    if (action === 'edit') type('A revised question?');
+    if (action === 'clear') type('');
+    if (action === 'error' || action === 'clear') end({type:'error',message:'Interrupted'});
+    else finish();
+    await tick();
+    assert.equal(calls.length, 1);
+    assert.equal(ui.get('question').value, action === 'edit' ? 'A revised question?' : action === 'clear' ? '' : 'My next question?');
+    assert.equal(ui.get('unqueue').hidden, true);
+    assert.equal(ui.get('stop').hidden, true);
+  }
+});

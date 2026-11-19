@@ -2,6 +2,7 @@ import json
 import sys
 import tempfile
 import unittest
+from contextlib import closing
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -72,6 +73,41 @@ class EnglishVerificationTests(unittest.TestCase):
     def assert_slot_free(self):
         self.assertTrue(qa.BUSY.acquire(blocking=False))
         qa.BUSY.release()
+
+    def test_followup_can_take_slot_before_previous_response_is_closed(self):
+        payload = qa.Ask(**self.payload)
+        ledger.claim(self.payload["request_id"], "test-fingerprint")
+        self.assertTrue(qa.BUSY.acquire(blocking=False))
+        with closing(qa.stream_answer(payload)) as previous:
+            for chunk in previous:
+                if json.loads(chunk[6:])["type"] == "done":
+                    break
+            else:
+                self.fail("Expected a terminal done event")
+            self.assertEqual([row["status"] for row in self.rows()], ["completed", "completed"])
+            self.assertTrue(qa.BUSY.acquire(blocking=False), "Follow-up sees the available slot")
+            try:
+                previous.close()
+                self.assertFalse(qa.BUSY.acquire(blocking=False), "Follow-up still owns the slot")
+            finally:
+                qa.BUSY.release()
+
+    def test_stopping_during_writer_settles_it_and_frees_slot(self):
+        payload = qa.Ask(**self.payload)
+        ledger.claim(self.payload["request_id"], "test-fingerprint")
+        self.assertTrue(qa.BUSY.acquire(blocking=False))
+        with closing(qa.stream_answer(payload)) as stream:
+            for chunk in stream:
+                if json.loads(chunk[6:])["type"] == "token":
+                    break
+            else:
+                self.fail("Expected a writer token")
+            self.assertFalse(qa.BUSY.acquire(blocking=False), "Writer still owns the slot")
+        self.assertEqual([(row["stage"], row["status"]) for row in self.rows()], [("answer", "failed_or_interrupted")])
+        with ledger.connection() as conn:
+            status = conn.execute("SELECT status FROM requests WHERE id=?", (self.payload["request_id"],)).fetchone()[0]
+        self.assertEqual(status, "failed_or_interrupted")
+        self.assert_slot_free()
 
     def test_corrected_final_answer_two_reservations_and_free_replay(self):
         events = self.events(self.client.post("/api/english/ask", json=self.payload))
