@@ -1,0 +1,815 @@
+{
+  "status": "Historical experiments; no overall production pass",
+  "observations": [
+    {
+      "case": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "request_id": "07fd13ca-c11f-4c7d-ba8f-5386285939b2",
+      "client_total_ms": 21348,
+      "client_first_token_ms": 11860,
+      "run": "results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "You can tell you really understand a business when you can confidently predict its future cash flows and competitive position over many years, and when you know exactly where your knowledge ends. If you have any doubt about whether something is inside your circle of competence, it isn’t. That is the first and most reliable test.\n\n### The “doubt” test\n\nWarren Buffett gave a blunt rule at the 2002 meeting: “if you have doubts about something being into your circle of competence, it isn’t.” [1] He added that it is better to be well within the circle than to tiptoe along the line. [1] This means that genuine understanding produces a feeling of certainty, not a vague sense that you “sort of” get it. If you find yourself rationalising or hoping, you probably only know the product, not the business.\n\n### The predictability test\n\nUnderstanding a business means being able to forecast its economics with high confidence. In the 1992 letter, Buffett wrote that Berkshire sticks to businesses that are “relatively simple and stable in character. If a business is complex or subject to constant change, we’re not smart enough to predict future cash flows.” [2] He and Charlie Munger look for operations “virtually certain to possess enormous competitive strength ten or twenty years from now.” [4] They call such companies “The Inevitables” – firms like Coca‑Cola and Gillette whose dominance is not seriously questioned by any sensible observer. [4] If you cannot describe why the business will still be strong a decade from now, you do not understand it; you only know its current products.\n\n### The valuation test\n\nKnowing products does not equal knowing how to value the enterprise. At the 1998 meeting, Buffett explained that they treat risk as a go/no‑go valve: if they cannot see the future clearly, they simply give up rather than adjust a discount rate. [3] The value of any business is determined by the cash inflows and outflows expected during its remaining life, discounted at an appropriate interest rate. [2] If you cannot estimate those future “coupons” – the cash the business will generate – you lack the understanding needed to invest. Buffett noted that you can understand a company like General Motors “in a general way” but still not be able to value it. [1] That distinction is crucial: product knowledge is general; valuation requires a specific, reasoned estimate of future economics.\n\n### The boundary test\n\nA hallmark of real competence is knowing where it ends. At the 2014 meeting, Buffett admitted he went outside his circle in retail and when he bought control of Berkshire Hathaway. [5] He said being realistic about your own talents and shortcomings is essential, and that some people are much better at it than others. [5] Munger added that if you have competence, you “almost automatically have a feeling of where the edge of the competence is.” [1] He gave a simple analogy: if you are five‑foot‑two, you know you have no future in the NBA. [5] Similarly, if you cannot articulate why a business will succeed and where your knowledge stops, you are probably outside your circle.\n\n### A concrete example\n\nBuffett contrasted two cases at the 2002 meeting. He said he could evaluate a business like Larson‑Juhl (a picture‑framing company) immediately because it was within his circle. But when he was offered a large finance company, he understood every individual transaction yet did not regard the whole enterprise as within his competence. [1] That shows the difference: understanding transactions is not the same as understanding the business’s durability, funding needs, and competitive dynamics menus. If you can only list products or describe operations but cannot assess long‑term competitive advantage and cash‑flow predictability, you do not truly understand the business.",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 349,
+          "first_token_ms": 11856,
+          "total_ms": 21338
+        },
+        "model": "DeepSeek-V4-Flash",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 13785,
+          "output_tokens": 1513
+        },
+        "prompt_version": "english-originals-1"
+      },
+      "error": null
+    },
+    {
+      "case": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "request_id": "393a5efe-1bea-4127-95d5-ae223c68b14b",
+      "client_total_ms": 26383,
+      "client_first_token_ms": 14699,
+      "run": "results",
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "completion": {
+        "answer": "Reported profit (GAAP net income) differs from the cash an owner can actually take out because GAAP earnings include non‑cash charges but **do not deduct the capital spending required to keep the business competitive**. The correct measure for an owner is “owner earnings,” which adjusts reported profit for both of these factors.\n\n### 1. Non‑cash charges are added back\nDepreciation, amortization, depletion, and certain other non‑cash items (such as purchase‑price inventory write‑offs and deferred‑tax adjustments) reduce reported earnings but do not consume cash. In the owner‑earnings formula these are added back to reported earnings [1]. For example, in the Scott Fetzer illustration, the “new” company (N) reported $28.6 million of net income while the “old” company (O) reported $40.2 million – yet both generated identical cash because the extra $11.6 million of charges in column N were purely accounting entries [1].\n\n### 2. Maintenance capital expenditures must be subtracted\nThe critical subtraction is the **average annual amount of capitalized expenditures for plant and equipment that the business requires to fully maintain its long‑term competitive position and its unit volume** [1]. If the business also needs additional working capital to hold its ground, that increment is subtracted as well [1]. GAAP earnings never deduct this maintenance‑capex figure; they only deduct historical depreciation, which is often lower than the real cash needed to stay in place. As Buffett notes, “Most managers probably will acknowledge that they need to spend something more than (b) [depreciation] on their businesses over the longer term just to hold their ground” [1]. When maintenance capex exceeds depreciation, GAAP earnings overstate owner earnings – a common situation in manufacturing, retailing, extractive industries, and utilities [1].\n\n### 3. The owner‑earnings formula\nThe full definition from the 1986 letter is:\n\n> Owner earnings = (a) reported earnings  \n> + (b) depreciation, depletion, amortization, and certain other non‑cash charges  \n> – (c) the average annual amount of capitalized expenditures for plant and equipment, etc. that the business requires to fully maintain its long‑term competitive position and its unit volume (plus any additional working capital needed to maintain that position) [1].\n\nThis formula makes clear that the cash an owner can actually withdraw is **reported profit adjusted for non‑cash items and then reduced by the necessary reinvestment to keep the business healthy**. The result is often far from GAAP net income. For Scott Fetzer, Buffett and Munger believed that (c) was “very close to the ‘old’ company’s (b) number of $8.3 million,” so owner earnings were much better depicted by the O‑column earnings of $40.2 million than by the N‑column GAAP figure of $28.6 million [1].\n\n### 4. Why EBITDA is misleading\nA common but dangerous shortcut is EBITDA (earnings before interest, taxes, depreciation, and amortization). EBITDA adds back all non‑cash charges but **ignores the subtraction of maintenance capex**. Buffett calls it “utter nonsense” because “any business with significant fixed assets almost always has with it a concomitant requirement that major cash be reinvested in order simply to stay in the same place” [3]. Using EBITDA to measure an owner’s distributable cash is like claiming a company never needs to replace its plant – a fantasy that has been used to justify overpriced securities [1][3].\n\n### 5. The “Frozen Corporation” thought experiment\nBen Graham’s “Frozen Corporation” – a company whose charter forbids ever paying cash to owners – is worth nothing, because “a financial asset has to give you back cash to justify you laying out cash for it now” [3]. This illustrates that the only cash that matters to an owner is what can eventually be taken out, after all necessary reinvestment. Reported profit that never turns into distributable cash is irrelevant.\n\n### Summary\nReported profit differs from cash an owner can take out because:\n- It includes non‑cash charges that must be added back.\n- It does **not** subtract the capital spending needed to maintain the business’s competitive position (maintenance capex and any required working‑capital increases).\n- The correct metric is owner earnings, which makes both adjustments. For many businesses, maintenance capex exceeds depreciation, so GAAP earnings overstate true distributable cash. For a few businesses (e.g., a bridge or a long‑lived gas field), maintenance capex is tiny, and EBITDA may be a reasonable shorthand – but for most enterprises it is dangerously misleading [1][3].",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 321,
+          "first_token_ms": 14697,
+          "total_ms": 26376
+        },
+        "model": "DeepSeek-V4-Flash",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 14955,
+          "output_tokens": 1932
+        },
+        "prompt_version": "english-originals-1"
+      },
+      "error": null
+    },
+    {
+      "case": "V0",
+      "question": "how to evaluate a stock",
+      "request_id": "cd7db4b7-7fb0-4d8f-b54e-472307ec64e7",
+      "client_total_ms": 75680,
+      "client_first_token_ms": 64104,
+      "run": "results",
+      "source_context_ids": [
+        "letter-1992-0074-0085",
+        "letter-1996-0098-0118",
+        "letter-2013-investing-p001-p040",
+        "letter-1994-0013-0026",
+        "letter-2000-pdf-p12-p3-through-p13-p9"
+      ],
+      "completion": {
+        "answer": "To evaluate a stock using the framework from the Berkshire archive, you must determine the intrinsic value of the underlying business and buy only when the market price offers a clear margin of safety. This is not a mechanical formula but a disciplined, business-like process that combines qualitative judgment with a quantitative estimate of future cash flows.\n\n### 1. Define Your Circle of Competence\nThe first step is to determine if the business lies within your “circle of competence” [2:u0114]. Buffett states that he and Munger “try to stick to businesses we believe we understand. That means they must be relatively simple and stable in character. If a business is complex or subject to constant change, we’re not smart enough to predict future cash flows” [1:u0084]. If you cannot make a reasonable estimate of future earnings, “just forget it and move on” [3:p0013]. You do not need to be an expert on every company, but you must know the boundaries of your own knowledge [2:u0114].\n\n### 2. Assess the Quality and Durability of the Business\nNext, evaluate the business’s competitive position. The ideal business is one that is “unlikely to experience major change” and possesses “enormous competitive strength ten or twenty years from now” [2:u0101]. Buffett calls these “The Inevitables”—companies like Coca-Cola and Gillette that dominate their fields and are virtually certain to continue doing so for an investment lifetime [2:u0107].\n\nThe best business to own is one that “over an extended period can employ large amounts of incremental capital at very high rates of return” [1:u0083]. Growth is not automatically good; “growth benefits investors only when the business in point can invest at incremental returns that are enticing—in other words, only when each dollar used to finance the growth creates over a dollar of long-term market value” [1:u0080]. Management must also be “honest and competent” [1:u0074].\n\n### 3. Estimate Future Cash Flows (The “Coupons”)\nThe core of the valuation is estimating the future cash flows the business will generate. Buffett defines intrinsic value as “the discounted value of the cash that can be taken out of a business during its remaining life” [4:u0023]. The formula is the same for stocks as for bonds, but unlike a bond, the equity “coupons” must be estimated by the analyst [1:u0081].\n\nThis requires answering Aesop’s three questions: “How certain are you that there are indeed birds in the bush? When will they emerge and how many will there be? What is the risk-free interest rate (which we consider to be the yield on long-term U.S. bonds)?” [5:p12-4]. Because precise numbers are foolish, “working with a range of possibilities is the better approach” [5:p12-7]. If the range is so wide that no useful conclusion can be reached, the stock should be passed over [5:p12-8].\n\n### 4. Discount to Present Value and Apply a Margin of Safety\nOnce you have a range of estimated future cash flows, you discount them back to the present using the risk-free interest rate [1:u0081], [5:p12-4]. This gives you a range for the intrinsic value of the business.\n\nFinally, compare the current market price to your calculated intrinsic value range. “If we calculate the value of a common stock to be only slightly higher than its price, we’re not interested in buying” [1:u0085]. You must insist on a “margin of safety” in the purchase price, which Buffett calls “the cornerstone of investment success” [1:u0085]. Even the best business can be a bad investment if you overpay: “You can, of course, pay too much for even the best of businesses” [2:u0110].\n\n### 5. Adopt the Right Temperament\nThroughout this process, the investor must ignore macro predictions and market noise. “Forming macro opinions or listening to the macro or market predictions of others is a waste of time” [3:p0016]. “Focus on the future productivity of the asset you are considering” [3:p0013]. View market volatility as a friend, not a foe; “a climate of fear is your friend when investing; a euphoric world is your enemy” [3:p0022].\n\nThe recommended holding period is long: “If you aren’t willing to own a stock for ten years, don’t even think about owning it for ten minutes” [2:u0116]. For those who cannot or will not do this work, the archive recommends a low-cost S&P 500 index fund as the superior alternative [2:u0113], [3:p0028].",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "No original passage was cited; this may be a scope or evidence-gap response.",
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 597,
+          "first_token_ms": 64088,
+          "total_ms": 75657
+        },
+        "model": "DeepSeek-V4-Flash",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 13047,
+          "output_tokens": 4681
+        },
+        "prompt_version": "english-originals-1"
+      },
+      "error": null
+    },
+    {
+      "case": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "request_id": "32b65d24-4d81-4a3c-b5d9-2d02710dce13",
+      "client_total_ms": 27113,
+      "client_first_token_ms": 10354,
+      "run": "results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "To work out what a company is worth before deciding whether its shares are a bargain, you must estimate its **intrinsic value** – the discounted value of all the cash that can be taken out of the business during its remaining life – and then compare that figure to the current market price. The process is straightforward in concept but requires discipline, self-awareness, and a willingness to accept uncertainty. The key steps, drawn from Warren Buffett’s own explanations, are:\n\n1. **Stay inside your circle of competence.**  \n2. **Estimate future distributable cash flows (owner earnings).**  \n3. **Discount those flows at a reasonable interest rate.**  \n4. **Compare the resulting intrinsic value per share to the stock price.**\n\n---\n\n### 1. Know what you understand – and what you don’t\n\nBefore you can value a company, you must be confident that you understand its business well enough to make a rough estimate of its future earnings. Buffett puts it bluntly: “If you have doubts about something being into your circle of competence, it isn’t” [1]. You do not need to be an expert in every industry, but you must be able to answer basic questions: How does the company earn money? What are its competitive advantages? What are the normal economics of the business? If you cannot make a “rough estimate of the asset’s future earnings, just forget it and move on” [4].\n\nEven Buffett admits he has sometimes strayed outside his circle – for example, in retail and in his original purchase of Berkshire itself [5]. The ability to recognize the boundary is itself a skill. Charlie Munger adds that “if you have competence, you almost automatically have a feeling of where the edge of the competence is” [1]. If you are unsure, you are probably outside it.\n\n---\n\n### 2. Estimate future distributable cash flows\n\nIntrinsic value is not about reported earnings or book value. Buffett defines it as “the discounted value of the cash that can be taken out of a business during its remaining life” [3]. For a company you might own outright, that means the cash you could actually withdraw after maintaining the business. For a stock, it means your proportionate share of those future cash flows.\n\nIn practice, you start with **owner earnings** – a concept that adjusts reported earnings for maintenance capital expenditure and certain non-cash charges. In the 2004 annual meeting, Buffett endorsed an audience member’s approach that used “look-through earnings” (Berkshire’s share of earnings from both controlled and partially owned businesses) as a proxy for distributable cash, while noting that capital expenditure typically exceeds depreciation over time [2]. The key is to focus on the cash the business can generate for owners, not on accounting numbers.\n\nBuffett’s own examples illustrate the method. When he bought a Nebraska farm in 1986, he calculated the “normalized return” from the farm to be about 10% based on expected crop yields and operating expenses [4]. For a New York retail property, he estimated the “unleveraged current yield” at about 10% and then considered how income would grow as below-market leases expired [4]. In both cases, he thought only about what the asset would produce, not about daily price changes.\n\nFor a stock, you need to estimate an earnings range for five years out or more. “If the answer is yes, we will buy the stock (or business) if it sells at a reasonable price in relation to the bottom boundary of our estimate” [4]. If you cannot make that estimate, move on.\n\n---\n\n### 3. Discount the cash flows at an appropriate rate\n\nOnce you have a stream of estimated future cash flows, you discount them back to the present to arrive at a single intrinsic value. The discount rate should reflect the long-term risk-free rate (e.g., the yield on long-term government bonds) plus a risk premium appropriate for the business. In the 2004 meeting, Buffett did not quarrel with the audience member’s use of a 7% discount rate, but he stressed that “the question of what number to use” is subjective and that “neither one of us knows” the right variables [2].\n\nThe calculation typically includes a terminal value – the value of cash flows beyond the explicit forecast period. The audience member assumed the business would stop growing after 20 years and then produce a perpetual 7% coupon, which Buffett accepted as a reasonable framework [2]. The exact numbers are less important than the logic: “the business today is worth the present value of all the cash it can distribute between now and Judgment Day” [2].\n\n---\n\n### 4. Compare intrinsic value to the market price\n\nIf your estimated intrinsic value per share is significantly above the current stock price, the shares may be a bargain. Buffett emphasizes that you should focus on the “bottom boundary” of your estimate – a conservative figure – and buy only when the price is well below that [4]. This provides a margin of safety.\n\nCrucially, you must ignore short-term market noise. “Games are won by players who focus on the playing field – not by those whose eyes are glued to the scoreboard” [4]. A stock’s daily price fluctuations are like a moody neighbor shouting offers for your farm; you can use them to your advantage only if you have already done your homework [4].\n\n---\n\n### A note on uncertainty\n\nIntrinsic value is always a “highly subjective figure that will change both as estimates of future cash flows are revised and as interest rates move” [3]. No one can pinpoint it exactly. The goal is not precision but a reasonable range. If you cannot estimate that range with confidence, you are not ready to buy. As Buffett says, “omniscience isn’t necessary; you only need to understand the actions you undertake” [4].\n\nFor most non-professional investors, the simplest path is to own a low-cost S&P 500 index fund, which automatically provides diversification and avoids the need to value individual companies [4]. But if you choose to value a specific business, the method above – rooted in understanding, cash-flow estimation, and discounting – is the only logical way to decide whether its shares are a bargain.",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 338,
+          "first_token_ms": 10347,
+          "total_ms": 27105
+        },
+        "model": "DeepSeek-V4-Flash",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 15328,
+          "output_tokens": 1689
+        },
+        "prompt_version": "english-originals-1"
+      },
+      "error": null
+    },
+    {
+      "case": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "request_id": "32a5775c-cfbd-4a7d-81d1-cd37fd8893bc",
+      "client_total_ms": 22033,
+      "client_first_token_ms": 6619,
+      "run": "reviewed-context-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "## The core test: doubt itself is the answer\n\nIf you have any doubt about whether a business is inside your circle of competence, it isn't. As Buffett put it in 2002: \"if you have doubts about something being into your circle of competence, it isn't.\" [1] That is the single most practical diagnostic. Product familiarity is not the same as business understanding, and the difference shows up precisely where doubt appears.\n\n## Knowing the product vs. knowing the economics\n\nUnderstanding a product means you can describe what a company sells, how it works, and perhaps why customers buy it. Understanding a business means you can evaluate its long-term economics: the durability of its competitive advantage, the likely range of future cash flows, and whether those cash flows can be predicted with reasonable confidence.\n\nBuffett made this distinction concrete in 2002 when discussing a large finance company. He said: \"I understand what they do, but I don't understand everything that's going on within it, and I don't understand that — whether I can continually fund it, you know, on a basis, independent from using Berkshire's credit.\" [1] He understood every individual transaction the company did, yet he did not regard the whole enterprise as within his circle of competence. [1] That is the gap between product knowledge and business understanding: you can know what a company does and still be unable to judge its sustainability, its funding needs, or its competitive position.\n\n## The cash-flow predictability test\n\nThe 1992 letter provides the valuation framework that separates genuine understanding from superficial familiarity. The value of any business is determined by \"the cash inflows and outflows — discounted at an appropriate interest rate — that can be expected to occur during the remaining life of the asset.\" [2] The critical difference between a bond and a stock is that \"the investment analyst must himself estimate the future 'coupons.'\" [2] If you cannot estimate those future cash flows with enough confidence to justify a purchase price, you do not understand the business.\n\nBuffett describes how Berkshire deals with this: \"First, we try to stick to businesses we believe we understand. That means they must be relatively simple and stable in character. If a business is complex or subject to constant change, we're not smart enough to predict future cash flows.\" [2] Note the condition: simplicity and stability are prerequisites for understanding. A business that is constantly changing may have exciting products, but that does not mean you understand its economics.\n\n## The threshold test, not a risk-adjustment game\n\nIn 1998, Buffett explained that he does not use different discount rates to compensate for uncertainty about a business. Instead, he applies a go/no-go threshold: \"We look at riskiness, essentially, as being sort of a go/no-go valve in terms of looking at the future businesses. In other words, if we think we simply don't know what's going to happen in the future, that doesn't mean it's necessarily risky, it just means we don't know.\" [3] He explicitly rejects the idea of saying \"we don't know what's going to happen, so therefore we'll discount it at 9 percent instead of 7 percent.\" [3]\n\nThis is a crucial practical distinction. If you find yourself wanting to use a higher discount rate because you are uncertain about the business, you have already answered your own question: you do not understand it well enough. Genuine understanding produces conviction about the range of outcomes, not a vague sense that higher risk requires a higher return.\n\n## The stability and inevitability test\n\nThe 1996 letter describes the kind of businesses that are genuinely understandable: those \"unlikely to experience major change.\" [4] Buffett explains that he and Munger search for operations \"that we believe are virtually certain to possess enormous competitive strength ten or twenty years from now.\" [4] A fast-changing industry \"may offer the chance for huge wins, but it precludes the certainty we seek.\" [4]\n\nThis is not about predicting quarterly earnings. It is about judging whether a business's competitive position is durable. Buffett uses Coca-Cola as an example: the fundamentals that underlie its competitive dominance and economics \"have remained constant through the years,\" and the reasons people buy the product are \"virtually unchanged from what they were in the 1920s.\" [4] If you cannot identify what makes a business durable for decades, you likely know its products but not its business.\n\n## Knowing the boundary is the competence\n\nMunger made this point sharply in 2002: \"if you have competence, you almost automatically have a feeling of where the edge of the competence is. Because after all, it wouldn't be much of a competence if you didn't know its boundary.\" [1] In 2014, he added that competency is a relative concept and that knowing your limitations is itself a form of wisdom. [5]\n\nBuffett acknowledged that even he has gone outside his circle, particularly in retail. [5] He also noted that his purchase of Berkshire itself was probably outside his circle of competence. [5] The point is not that you will never make mistakes, but that honest self-assessment is the only way to stay within your circle. As Buffett said in 1996: \"The size of that circle is not very important; knowing its boundaries, however, is vital.\" [4]\n\n## Practical self-diagnosis\n\nBased on the sources, here are the questions to ask yourself:\n\n1. **Do I have any doubt?** If yes, you are outside the circle. [1]\n2. **Can I estimate future cash flows with reasonable confidence?** If the business is complex or subject to constant change, you cannot. [2]\n3. **Am I tempted to use a higher discount rate because I am uncertain?** That is a sign you do not understand the business well enough. [3]\n4. **Can I identify why the business will still have strong competitive advantages in ten or twenty years?** If not, you know the product, not the business. [4]\n5. **Do I know exactly where my understanding ends?** If you cannot articulate what you do not know, you may not know what you think you know. [1][5]\n\nProduct knowledge is a starting point, not a destination. Genuine business understanding produces the confidence to estimate future cash flows, the humility to recognize uncertainty, and the discipline to walk away when doubt remains.",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 332,
+          "first_token_ms": 6613,
+          "total_ms": 22022
+        },
+        "model": "DeepSeek-V4-Flash",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 14091,
+          "output_tokens": 1600
+        },
+        "prompt_version": "english-originals-2-with-source-caveats"
+      },
+      "error": null
+    },
+    {
+      "case": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "request_id": "d9f77026-4d82-4fed-b756-93cf1fc48664",
+      "client_total_ms": 18486,
+      "client_first_token_ms": 6931,
+      "run": "reviewed-context-results",
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "completion": {
+        "answer": "Reported profit (GAAP net income) differs from the cash an owner can actually take out because GAAP earnings include non-cash charges like depreciation and amortization but **ignore the necessary capital spending and working capital investments required to maintain the business’s competitive position and unit volume**. The owner can only withdraw the cash that remains after those essential reinvestments are made, regardless of what the income statement shows.\n\n### The Owner Earnings Formula\n\nWarren Buffett introduced the concept of \"owner earnings\" in the 1986 Berkshire letter to bridge exactly this gap. The formula is:\n\n**Owner earnings = (a) reported earnings + (b) depreciation, depletion, amortization, and certain other non-cash charges – (c) the average annual amount of capitalized expenditures for plant and equipment, etc. that the business requires to fully maintain its long-term competitive position and its unit volume.** (If the business also needs additional working capital to maintain its position, that increment is also subtracted in (c).) [1]\n\nThe critical insight is that (b) is a non-cash expense added back, but (c) is a real cash outlay that must be subtracted. The owner cannot take (b) home; much of it must stay inside the business just to keep the business from shrinking.\n\n### Why GAAP Can Overstate or Understate Owner Earnings\n\nThe 1986 letter illustrates this with the Scott Fetzer acquisition. Before Berkshire bought it, Scott Fetzer’s GAAP net income was $40.2 million. After the purchase, purchase-price accounting adjustments (writing up inventory, fixed assets, and goodwill) caused reported GAAP net income to fall to $28.6 million, even though the underlying economics were identical. Both columns generated the same actual cash for owners. [1]\n\nBuffett explains that for Scott Fetzer, the maintenance capital spending (c) was very close to the old company’s depreciation (b) of $8.3 million. Therefore, owner earnings were far better depicted by the old GAAP earnings of $40.2 million than by the new GAAP figure of $28.6 million. [1]\n\nBut the opposite is common. When (c) exceeds (b), GAAP earnings overstate owner earnings. Buffett notes that most managers acknowledge they need to spend more than depreciation over the long term just to hold their ground. The oil industry is a conspicuous example: had major oil companies spent only depreciation each year, they would have guaranteed shrinkage in real terms. [1]\n\n### The \"Cash Flow\" Fallacy and EBITDA\n\nThis is why Buffett calls EBITDA (earnings before interest, taxes, depreciation, and amortization) \"utter nonsense.\" [3] EBITDA is essentially (a) + (b) without subtracting (c). It implies the business is like the Pyramids—forever state-of-the-art, never needing replacement or refurbishment. [1]\n\nCharlie Munger adds that using EBITDA, a measure known to be nonsense, and then piling additional reasoning on that false assumption, is not a creditable intellectual performance. [3]\n\nThe only exception is for businesses with huge initial outlays and tiny ongoing outlays, like a bridge or an extremely long-lived gas field. For manufacturing, retailing, extractive companies, and utilities, (c) is always significant. Over five or ten years, they must make the investment or the business decays. [1]\n\n### How This Affects Valuation\n\nThe valuation formula is unchanged since Aesop: you must estimate the amount and timing of cash that will actually emerge from the business and discount it at the risk-free rate (the yield on long-term U.S. bonds). [2] The relevant cash flow is not reported earnings or EBITDA, but the net cash the business can distribute to owners after all necessary reinvestments.\n\nBuffett confirms this approach in 2004: \"The business today is worth the present value of all the cash it can distribute between now and Judgment Day.\" He expects capital expenditures to be, on average, a little more than depreciation unless there is high inflation. [5]\n\n### Practical Distinctions\n\n- **A business that requires little or no capital to grow** (like See’s Candy, which needs only $500,000 to $1 million more than depreciation annually to hold its ground) generates high owner earnings relative to reported earnings. [1]\n- **A business that must reinvest all its cash flow just to stay in place** has owner earnings near zero, even if reported profits look healthy.\n- **A business that grows but requires heavy capital investment at low returns** can destroy value. Growth is only a plus in the value equation if the discounted cash it generates exceeds the cash inputs required. [2]\n\nThe accountants’ job is to record, not to evaluate. The evaluation—estimating (c) and thus true owner earnings—falls to investors and managers. [1]",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 351,
+          "first_token_ms": 6926,
+          "total_ms": 18476
+        },
+        "model": "DeepSeek-V4-Flash",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 15423,
+          "output_tokens": 1314
+        },
+        "prompt_version": "english-originals-2-with-source-caveats"
+      },
+      "error": null
+    },
+    {
+      "case": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "request_id": "ee01b48d-51c3-4704-a94e-2cc21be901a8",
+      "client_total_ms": 19631,
+      "client_first_token_ms": 7603,
+      "run": "reviewed-context-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "To work out what a company is worth before deciding whether its shares are a bargain, you need to estimate its **intrinsic value** – the present value of all the cash the business can distribute to owners over its remaining life – and then compare that estimate to the current market price. If the intrinsic value is substantially higher than the price, the shares may be a bargain. The approach is conceptually straightforward but requires disciplined judgment and a clear understanding of the business.\n\n### 1. Define intrinsic value as future distributable cash\n\nIntrinsic value is defined as “the discounted value of the cash that can be taken out of a business during its remaining life” [3]. This is the only logical way to evaluate the relative attractiveness of investments [3]. The cash that can be taken out is not the same as reported earnings; it is the cash the business can distribute to owners after reinvesting enough to maintain its competitive position. In practice, many investors use “look-through earnings” or owner earnings as a rough proxy for distributable cash [2].\n\n### 2. Estimate future cash flows within your circle of competence\n\nYou must first decide whether you can sensibly estimate an earnings range for five years out, or more. If you cannot, move on to another prospect [4]. This requires staying inside your **circle of competence** – the set of businesses you truly understand. Buffett advises: “If you have doubts about something being into your circle of competence, it isn’t” [1]. You don’t need to be an expert in every industry, but you must be able to make a rough estimate of the asset’s future earnings [4]. For example, Buffett bought a farm in 1986 after learning from his son how many bushels of corn and soybeans it would produce and what the operating expenses would be; from those estimates he calculated a normalized return of about 10% [4]. He did not need to know everything about farming, only enough to estimate future productivity.\n\n### 3. Apply a discounted cash flow (DCF) framework\n\nThe general approach is to project distributable cash over a period (say, 20 years) and then estimate a terminal value, discount all those flows back to the present at an appropriate rate, and sum them to get the business’s intrinsic value [2]. Buffett endorsed this line of thinking when an audience member described it: “The line of thinking is correct, it just depends on what variables you plug in” [2]. The key variables are:\n\n- **Growth assumptions**: How fast can the business grow its distributable cash? Be conservative. Buffett noted that for a large company like Berkshire, growth rates are likely lower than many assume because it becomes harder to deploy capital as the business grows [2].\n- **Capital expenditure vs. depreciation**: Expect capital expenditures to be, on average, a little more than depreciation unless there is high inflation [2]. This means owner earnings are typically less than reported earnings.\n- **Discount rate**: The rate should reflect the time value of money and the risk of the cash flows. In the 2004 example, the audience used 7% [2]. There is no universal correct rate; it depends on your opportunity cost and the certainty of your estimates.\n- **Terminal value**: After the projection period, assume a sustainable level of cash flow (e.g., a perpetual coupon) and discount it back [2].\n\n### 4. Compare intrinsic value to market price\n\nOnce you have an estimated intrinsic value per share, compare it to the current stock price. If the price is well below your conservative estimate, the shares may be a bargain. However, remember that intrinsic value is highly subjective and changes as estimates of future cash flows and interest rates change [3]. Buffett emphasizes that you should focus on the future productivity of the asset, not on short-term price movements or macro predictions [4].\n\n### 5. Practical example: the farm investment\n\nBuffett’s 1986 farm purchase illustrates the process. He estimated the normalized return (about 10% on the purchase price) based on crop yields and expenses. He did not worry about daily valuations or economic headlines. Over 28 years, the farm tripled its earnings and became worth five times his purchase price [4]. The key was that he understood the asset’s earning power and had no pressure to sell.\n\n### Summary of steps\n\n1. **Understand the business** – stay within your circle of competence.\n2. **Estimate future distributable cash** – use conservative growth assumptions and account for necessary reinvestment.\n3. **Discount those cash flows** at a rate that reflects your required return and the certainty of your estimates.\n4. **Compare the resulting intrinsic value per share** to the current market price.\n5. **Only act when there is a significant margin of safety** – when the price is far below your conservative estimate.\n\nNo one can pinpoint intrinsic value exactly, but the discipline of estimating it forces you to think like a business owner rather than a speculator. As Buffett says, “Games are won by players who focus on the playing field – not by those whose eyes are glued to the scoreboard” [4].",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 590,
+          "first_token_ms": 7585,
+          "total_ms": 19607
+        },
+        "model": "DeepSeek-V4-Flash",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 15650,
+          "output_tokens": 1422
+        },
+        "prompt_version": "english-originals-2-with-source-caveats"
+      },
+      "error": null
+    },
+    {
+      "case": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "request_id": "eff7b997-380e-49f1-a72d-d54101cdf501",
+      "client_total_ms": 74420,
+      "client_first_token_ms": null,
+      "run": "qwen-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {},
+      "error": "The model returned no answer text."
+    },
+    {
+      "case": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "request_id": "cf02317e-14cb-4e34-b940-447a92846b6c",
+      "client_total_ms": 76305,
+      "client_first_token_ms": null,
+      "run": "qwen-direct-results",
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "completion": {},
+      "error": "The model returned no answer text."
+    },
+    {
+      "case": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "request_id": "d50c5696-7289-450e-8bd6-3cfd6ae20e89",
+      "client_total_ms": 61445,
+      "client_first_token_ms": 32872,
+      "run": "minimax-results",
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "completion": {
+        "answer": "Reported profit and the cash an owner can actually pull out of a business diverge for two main reasons: some expenses that hit earnings never touch cash, and some cash outlays that keep the business intact never hit earnings. The 1986 owner-earnings appendix lays out the gap as a simple equation, and the Scott Fetzer example makes it concrete.\n\n## The owner-earnings equation\n\nBuffett defines \"owner earnings\" as (a) reported earnings, plus (b) depreciation, depletion, amortization, and certain other non-cash charges, minus (c) the average annual amount of capitalized expenditures for plant and equipment that the business requires to fully maintain its long-term competitive position and its unit volume. If the business also needs additional working capital to hold that position, that increment belongs in (c) as well, though businesses using LIFO inventory accounting usually do not need extra working capital if unit volume is unchanged [1].\n\nThe key point is that (c) is a judgment call, often a hard one, so the result is \"vaguely right\" rather than \"precisely wrong\" [1]. Reported GAAP earnings, by contrast, look deceptively precise.\n\n## Non-cash charges that reduce earnings but not cash\n\nWhen Berkshire bought Scott Fetzer for $315 million against a $172.4 million book value, GAAP required purchase-price adjustments that created four new charges flowing through the income statement: $4,979,000 of non-cash inventory costs, $5,054,000 of extra depreciation from the fixed-asset write-up, $595,000 of goodwill amortization, and $998,000 of deferred-tax adjustments, totaling $11.6 million [1]. None of these are deductible for income tax, so the \"new\" Scott Fetzer pays exactly the same tax as the \"old\" one would have, even though GAAP earnings differ sharply [1]. The same sales, wages, and taxes produced identical cash for owners in both columns; only the accounting differed [1].\n\nThis is why (b) in the equation is broader than depreciation alone. It includes amortization of intangibles and other purchase-price adjustments, because those are accounting artifacts of an acquisition price, not real economic costs.\n\n## Capital outlays that use cash but not earnings\n\nThe other side of the gap is (c). A business that owns factories, stores, or oil wells must keep spending just to stand still. If a company spends only its depreciation each year, it is shrinking in real terms; the oil industry is cited as a conspicuous example [1]. At See's Candies, capitalized expenditures exceed depreciation by $500,000 to $1 million annually simply to hold competitive ground [1]. Munger adds a darker version: some businesses look fine while you keep pouring money in, and then \"all of a sudden it doesn't work, and no cash comes back\" [3].\n\n## The \"cash flow\" fallacy\n\nWall Street routinely reports \"cash flow\" as earnings plus depreciation, without subtracting (c). Buffett calls this \"absolute folly\" for manufacturing, retailing, extractive companies, and utilities, where reinvestment is always significant [1][3]. EBITDA, in particular, is dismissed as \"utter nonsense\" because it strips out the cash needed merely to stay in the same place [3]. A business that defers capital spending for a year or two may look cash-rich, but over five or ten years the investment must be made or the business decays [1].\n\n## Why this matters for valuation\n\nThe point of working through owner earnings is that two balance sheets depicting the same assets and liabilities can produce very different GAAP earnings and therefore very different multiples-based valuations, even though the underlying cash is identical [1]. The 1986 appendix shows that owner earnings for the \"old\" and \"new\" Scott Fetzer are the same, because (a) plus (b) is the same in both columns and (c) is necessarily the same [1]. For Scott Fetzer specifically, Buffett and Munger judge that (c) is close to the old company's $8.3 million of depreciation and far below the new company's $19.9 million, so reported GAAP earnings understate true owner earnings [1].\n\nThe broader valuation framework, restated in the 2000 letter, asks three questions: how certain are the future cash flows, when and how large will they be, and what is the risk-free interest rate [2]. Common yardsticks like P/E or book value matter only as clues to those cash flows, and growth itself can destroy value if the cash inputs in early years exceed the discounted value of later cash [2]. The 2004 meeting reinforces the same template: estimate distributable cash over time, discount it, subtract liabilities and minority interests, and divide by shares, while remembering that CAPEX will on average run a bit above depreciation and that reinvested earnings must earn at least the discount rate to add value [5].\n\nIn short, reported profit differs from distributable cash because accounting records transactions rather than value, and because keeping a business intact costs real money that never appears as an expense.",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 583,
+          "first_token_ms": 32858,
+          "total_ms": 61425
+        },
+        "model": "MiniMax-M3-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 16979,
+          "output_tokens": 2347
+        },
+        "prompt_version": "english-originals-1"
+      },
+      "error": null
+    },
+    {
+      "case": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "request_id": "e37a8d66-692f-46f8-a04b-fb067c7c2752",
+      "client_total_ms": 94831,
+      "client_first_token_ms": 86333,
+      "run": "glm-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {},
+      "error": "The model did not finish its answer. The visible draft is incomplete."
+    },
+    {
+      "case": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "request_id": "84a942ba-e60e-40a0-9ed2-922df31e080e",
+      "client_total_ms": 18798,
+      "client_first_token_ms": 4163,
+      "run": "qwen-large-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "You can tell you really understand a business—rather than just knowing its products—when you can confidently answer whether it will still have strong economics in ten or twenty years, and when you have no doubt that it sits inside your circle of competence. If you have any doubt, it does not.\n\n**The core test: doubt means \"no\"**\n\nWarren Buffett gave a blunt rule in 2002: \"if you have doubts about something being into your circle of competence, it isn't.\" [1] He added that it is \"better to be well within the circle than to be trying to tiptoe along the line.\" [1] So the first test is not positive—it is negative. You do not need to prove you understand a business; you need to check whether you have any doubt. If you do, the answer is no.\n\nCharlie Munger made the same point in 2014: \"if you have competence, you almost automatically have a feeling of where the edge of the competence is. Because after all, it wouldn't be much of a competence if you didn't know its boundary.\" [1] He suggested the question \"almost answers itself\"—you generally know when you are over your depth, just as you know not to play chess against Bobby Fischer without training. [1]\n\n**Understanding the whole enterprise, not just the transactions**\n\nA key distinction Buffett drew in 2002: understanding what a company does is not the same as understanding the whole enterprise. He described being approached about \"a very large finance company\":\n\n> \"I understand what they do, but I don't understand everything that's going on within it, and I don't understand that—whether I can continually fund it, you know, on a basis, independent from using Berkshire's credit, and so on. So, even though I could understand every individual transaction they did, I don't regard the whole enterprise, or the operation of it, necessarily as being within my circle of competence.\" [1]\n\nThat is a concrete test you can apply to any business: can you understand not just the product and the transactions, but the entire operation—including how it is funded, how it makes money over time, and what could break it? If you can understand every transaction but not the whole enterprise, you do not understand the business.\n\n**The predictability test: will the economics last?**\n\nBuffett's 1996 letter gives the deeper standard. He and Munger favor \"businesses and industries unlikely to experience major change\" because they are \"searching for operations that we believe are virtually certain to possess enormous competitive strength ten or twenty years from now.\" [4] He contrasted this with fast-changing industries: \"A fast-changing industry environment may offer the chance for huge wins, but it precludes the certainty we seek.\" [4]\n\nHe used See's Candies as an example. The company changed in many ways since 1972—different candy assortment, different machinery, different distribution—but \"the reasons why people today buy boxed chocolates, and why they buy them from us rather than from someone else, are virtually unchanged from what they were in the 1920s.\" [4] That is the test: can you identify why customers buy from this company, and can you see that reason persisting for decades?\n\n**What you need to be able to value**\n\nUnderstanding a business also means being able to estimate its future cash flows. In his 1992 letter, Buffett wrote that the value of any stock, bond, or business is \"determined by the cash inflows and outflows—discounted at an appropriate interest rate—that can be expected to occur during the remaining life of the asset.\" [2] For equities, unlike bonds, \"the investment analyst must himself estimate the future 'coupons.'\" [2]\n\nHe then stated the practical consequence: \"we try to stick to businesses we believe we understand. That means they must be relatively simple and stable in character. If a business is complex or subject to constant change, we're not smart enough to predict future cash flows.\" [2] So a real test of understanding is: can you estimate the future cash flows with reasonable confidence? If you cannot, the business is outside your circle.\n\n**A caution: you can be wrong about your own circle**\n\nBuffett acknowledged in 2014 that even he has gone outside his circle. \"I would say that in my own case, I've gone out of it more often in retail than in any other arena. I think it's easy to sort of think you understand retail, and then subsequently find out you don't.\" [5] He also said buying control of Berkshire Hathaway was likely outside his circle: \"That was a dumb decision—which worked out.\" [5]\n\nThis matters for your question because it shows that self-assessment is fallible. Buffett said being \"self-realistic\" is partly innate—\"some people seem a whole lot better at it than the others\"—and he noted that some CEOs \"have no idea of where their circle of competence begins and ends.\" [5] He suggested one practical check: \"You might get some of your friends that know you well to offer contributions.\" [5]\n\n**A practical summary**\n\nTo tell whether you really understand a business, apply these tests from the sources:\n\n1. **The doubt test**: If you have any doubt about whether the business is in your circle, it is not. [1]\n2. **The whole-enterprise test**: Can you understand the entire operation—including funding and long-term viability—not just the individual transactions or products? [1]\n3. **The predictability test**: Can you see why customers buy from this company, and can you see that reason persisting for ten to twenty years? [4]\n4. **The cash-flow test**: Can you estimate the future cash inflows and outflows with reasonable confidence? If the business is complex or constantly changing, you cannot. [2]\n5. **The humility test**: Remember that you can be wrong about your own circle, as Buffett was in retail and with Berkshire itself. [5]\n\nKnowing a company's products is only the beginning. Real understanding means you can see the durable economics, estimate the future cash flows, and have no doubt about the boundary of what you know.",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 356,
+          "first_token_ms": 4158,
+          "total_ms": 18791
+        },
+        "model": "Qwen3-VL-235B-A22B-Instruct-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 16462,
+          "output_tokens": 1627
+        },
+        "prompt_version": "english-originals-2-with-source-caveats"
+      },
+      "error": null
+    },
+    {
+      "case": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "request_id": "dedbd244-13af-4d65-9754-a45b2fe628a3",
+      "client_total_ms": 17319,
+      "client_first_token_ms": 4418,
+      "run": "qwen-large-results",
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "completion": {
+        "answer": "# What Makes Reported Profit Different from Cash an Owner Can Actually Take Out\n\nThe core answer, as Warren Buffett explained in the 1986 letter, is that reported (GAAP) earnings include non-cash charges and accounting adjustments that do not reflect actual cash leaving the business, while true owner cash flow must also subtract the capital the business must reinvest just to stay competitive. The two figures can differ substantially.\n\n## The Accounting Distortions\n\nBuffett illustrated this with a 1986 example using Scott Fetzer, a company Berkshire had just acquired. He presented the same business two ways: \"Company O\" (as if never purchased) and \"Company N\" (as actually reported after purchase). Both columns show identical economics—same sales, wages, taxes, and same cash generated for owners—but different reported profits: $40.2 million versus $28.6 million [1].\n\nThe gap came from purchase-price accounting adjustments. Berkshire paid $315 million for net assets carried at $172.4 million, a $142.6 million premium [1]. Under GAAP, that premium had to be allocated: $37.3 million to inventory, $68.0 million to fixed assets, $13.0 million eliminated from deferred tax liabilities, and the remaining $24.3 million to goodwill [1]. Because the written-up assets must be depreciated or amortized, the \"new\" company showed higher annual charges to earnings—$4.979 million for non-cash inventory costs, $5.054 million for extra depreciation, $595,000 for goodwill amortization, and $998,000 for deferred-tax adjustments, totaling $11.6 million [1].\n\nCrucially, none of these newly created accounting costs were deductible for income taxes. The \"new\" Scott Fetzer paid exactly the same tax as the \"old\" one would have [1]. So the lower reported profit did not mean less cash was available.\n\n## The Owner Earnings Formula\n\nBuffett defined \"owner earnings\" as:\n\n- (a) reported earnings, plus\n- (b) depreciation, depletion, amortization, and certain other non-cash charges, less\n- (c) the average annual capitalized expenditures for plant and equipment that the business requires to fully maintain its long-term competitive position and unit volume. If the business needs additional working capital to maintain its position, that increment also belongs in (c) [1].\n\nThe key insight: you cannot simply add back all non-cash charges and call the result \"cash flow.\" You must subtract (c), the maintenance capital spending. For Scott Fetzer, Buffett believed (c) was very close to the \"old\" company's depreciation figure of $8.3 million, and much below the \"new\" company's $19.9 million of total non-cash charges. Therefore, owner earnings were far better depicted by the \"old\" column's reported earnings [1].\n\n## Why \"Cash Flow\" Numbers Mislead\n\nBuffett was sharply critical of the \"cash flow\" figures routinely presented in Wall Street reports, which add (a) plus (b) but do not subtract (c). These presentations imply the business is \"forever state-of-the-art, never needing to be replaced, improved or refurbished\" [1]. In manufacturing, retailing, extractive companies, and utilities, (c) is always significant. A business may defer capital spending in a given year, but over five or ten years it must make the investment \"or the business decays\" [1].\n\nAt the 1998 annual meeting, Buffett called EBITDA \"utter nonsense\" for the same reason: it looks at a figure stated before the cash requirements of merely staying in the same place competitively. Any business with significant fixed assets almost always requires major cash reinvestment just to maintain its position [3]. Charlie Munger added that using a measure known to be nonsense, then piling additional reasoning on that false assumption, is \"not creditable intellectual performance\" [3].\n\n## The Practical Distinction\n\nThe difference between reported profit and distributable cash comes down to three things:\n\n1. **Non-cash accounting charges** (depreciation, amortization, purchase-price adjustments) reduce reported earnings but do not remove cash from the business.\n2. **Maintenance capital spending** removes real cash but is not fully captured in depreciation—it must be estimated separately, and it is \"a guess—and one sometimes very difficult to make\" [1].\n3. **Growth capital** is different from maintenance capital. If a business reinvests cash to grow, that cash is not distributable to owners now, but it may generate more cash later. As Buffett said in 1998, a company that reinvests all its cash flow for five years \"had better have some very big figures coming in down the road. Because at some day, a financial asset has to give you back cash to justify you laying out cash for it now\" [3].\n\nBuffett's conclusion: the accountants' job is \"to record, not to evaluate. The evaluation job falls to investors and managers\" [1]. Accounting numbers are the starting point, but they are \"but an aid to business thinking, never a substitute for it\" [1].",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 313,
+          "first_token_ms": 4412,
+          "total_ms": 17308
+        },
+        "model": "Qwen3-VL-235B-A22B-Instruct-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 17530,
+          "output_tokens": 1276
+        },
+        "prompt_version": "english-originals-2-with-source-caveats"
+      },
+      "error": null
+    },
+    {
+      "case": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "request_id": "7645a657-63fc-47ae-aa05-d0733a47fcdd",
+      "client_total_ms": 18556,
+      "client_first_token_ms": 4859,
+      "run": "qwen-large-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "The core method, as described in the sources, is to estimate the cash a business can distribute to its owners over its remaining life, then discount that stream back to the present. You compare that present value to the market price. If the price is significantly below your estimate, the shares may be a bargain.\n\nHere is how the sources break down that process.\n\n### 1. Define intrinsic value as future distributable cash\n\nThe starting point is a clear definition. In the 1994 letter, Buffett states: \"We define intrinsic value as the discounted value of the cash that can be taken out of a business during its remaining life.\" [3] He adds that this figure is \"highly subjective\" and will change as your estimates of future cash flows and interest rates change. [3]\n\nIn 2004, he confirmed this approach when an audience member described a valuation model. Buffett said, \"The line of thinking is correct, it just depends on what variables you plug in.\" He elaborated: \"The approach, in general, the approach of trying to figure out distributable cash over a period of time. The business today is worth, the present value at some number... it's worth the present value of all the cash it can distribute between now and Judgment Day.\" [2]\n\n### 2. Estimate future earnings, not price changes\n\nYour focus must be on the business's future productivity, not on what the stock price might do. In the 2013 letter, Buffett writes: \"Focus on the future productivity of the asset you are considering. If you don't feel comfortable making a rough estimate of the asset's future earnings, just forget it and move on.\" [4] He contrasts this with speculation: \"If you instead focus on the prospective price change of a contemplated purchase, you are speculating.\" [4]\n\nThe 2004 meeting provides a concrete example of this estimation. The audience member proposed using \"look-through earnings\" (Berkshire's share of earnings from its partially-owned companies, plus its own operating earnings) as a proxy for distributable earnings. He then assumed growth rates of 15% for years one to five and 10% for years six to twenty. [2] Buffett did not endorse those specific numbers—in fact, he said, \"I think we might settle for lower numbers on earnings gains than you postulated because we're very large.\" [2] But he did not quarrel with the general approach of projecting earnings and discounting them. [2]\n\n### 3. Choose a discount rate and handle capital spending\n\nThe discount rate is your required return, and it is a variable you must choose. In the 2004 example, the audience member used 7%. [2] Buffett noted, \"you're using 7 percent, but the question of what number to use\" is open. [2] The sources do not prescribe a specific rate; they treat it as a judgment call.\n\nA critical adjustment involves capital expenditures. The 2004 audience member noted that Berkshire's capital spending exceeded its depreciation by $173 million. [2] Buffett agreed with the caution this implies: \"I would say that your assumptions about CAPEX, and related to depreciation, I would expect CAPEX to be, on average, a little more than depreciation unless we run into highly inflationary times.\" [2] This means you should not assume that reported earnings are fully distributable; you must account for the cash needed to maintain and grow the business.\n\n### 4. Stay inside your circle of competence\n\nThis entire exercise is only valid for businesses you understand. In 2002, Buffett said, \"if you have doubts about something being into your circle of competence, it isn't.\" [1] He gave an example of a large finance company: \"I understand what they do, but I don't understand everything that's going on within it... even though I could understand every individual transaction they did, I don't regard the whole enterprise, or the operation of it, necessarily as being within my circle of competence.\" [1] The 2013 letter reinforces this: \"It's vital, however, that we recognize the perimeter of our 'circle of competence' and stay well inside of it.\" [4]\n\n### 5. Compare your estimate to the price\n\nOnce you have your intrinsic value estimate, you compare it to the market price. The 2013 letter describes the decision rule: \"If the answer is yes, we will buy the stock (or business) if it sells at a reasonable price in relation to the bottom boundary of our estimate.\" [4] This suggests using a conservative estimate—the bottom of your range—as the benchmark.\n\nThe 1994 letter warns that book value is not a substitute for this analysis: \"book value is meaningless as an indicator of intrinsic value.\" [3] The example given is that in 1964, Berkshire's book value of $19.46 per share \"considerably overstated the stock's intrinsic value\" because the textile business was worth less than its carrying value. [3]\n\n### A note on what the sources do not provide\n\nThe sources do not give you a formula for the \"right\" discount rate, nor do they tell you how to project earnings for a specific company. They describe the framework and the judgment required. The 2004 exchange is explicit that the inputs are your responsibility: \"everybody has to do their own equation and plug in some numbers.\" [2] The sources also do not suggest that you should subtract all liabilities from a business's cash-flow value to get a per-share figure; that step in the 2004 example was the audience member's own calculation, not a rule Buffett endorsed. [2]",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 682,
+          "first_token_ms": 4842,
+          "total_ms": 18533
+        },
+        "model": "Qwen3-VL-235B-A22B-Instruct-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 18295,
+          "output_tokens": 1470
+        },
+        "prompt_version": "english-originals-2-with-source-caveats"
+      },
+      "error": null
+    },
+    {
+      "case": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "request_id": "e701a551-ad99-4d79-b003-2c6d9d630e96",
+      "client_total_ms": 16210,
+      "client_first_token_ms": 3107,
+      "run": "glm-low-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "The short answer, from these sources: you really understand a business when you can evaluate it as a whole enterprise — its future cash flows, its competitive position, and how it will be funded — not merely describe what it sells. Doubt is the test: if you have doubts about whether something is in your circle of competence, it isn't [1].\n\n**The distinction Buffett draws**\n\nBuffett makes it explicitly with a finance company he was once called about. He said he could understand \"every individual transaction they did,\" but he did not understand \"everything that's going on within it\" — specifically, whether it could be continually funded on a basis independent of Berkshire's credit. So even though he understood each transaction, he did \"not necessarily\" regard the whole enterprise as within his circle of competence [1]. Knowing the products is like knowing the transactions; understanding the business is knowing the whole operation, including its economics and durability.\n\nHe also separates understanding from valuation. You can understand a Coke bottler, McDonald's, Walmart, or General Motors \"in a general way\" — and still not be able to value it [1]. Understanding is a prerequisite, not the same thing as being able to estimate what the business is worth.\n\n**Practical tests supported by the sources**\n\n- **The doubt test.** \"If you have doubts about something being in your circle of competence, it isn't\" [1]. If a friend is buying it or everyone says money will be made and you're not sure you understand it — you don't [1]. Note the direction of this warning: doubt disqualifies, but the absence of doubt doesn't by itself prove competence [1].\n- **Can you predict the cash flows?** Buffett's stated reason for avoiding complex or constantly changing businesses is that he isn't smart enough to predict their future cash flows; the businesses must be \"relatively simple and stable in character\" [2]. A real test of understanding is whether you can estimate the business's future \"coupons\" — the cash it will throw off — with some confidence [2].\n- **Can you see it unchanged in ten or twenty years?** He looks for businesses \"unlikely to experience major change,\" seeking operations \"virtually certain to possess enormous competitive strength ten or twenty years from now\" [4]. See's is his example: the machinery and channels changed, but why people buy the chocolates hasn't changed since the 1920s [4]. If you can articulate why customers will still choose this business decades out, that's understanding; if you can only describe what it sells, that's not.\n- **Do you know the boundary?** Munger's point: real competence includes a feel for where its edge is — \"it wouldn't be much of a competence if you didn't know its boundary\" [1]. Buffett adds that even he has crossed the line, most often in retail (the Baltimore department store, and taking control of Berkshire itself) [5]. So misjudging the boundary is a normal, recurring failure, not a one-time embarrassment.\n- **Can you state what you don't know?** What counts is \"not how much they know, but rather how realistically they define what they don't know\" [2]. If you can't say what would have to be true for the business to fail, you probably don't understand it.\n\n**Two cautions from the sources**\n\nFirst, understanding is not the same as being able to value. Buffett says you can understand Walmart or General Motors and still not know what price it should be [1]. Second, self-assessment is hard even for experienced investors — Buffett says he can't tell you the best way to develop that sense of yourself, and suggests asking friends who know you well; Munger's contribution was blunt questions like \"What the hell do you know about that?\" [5]. Munger also frames competence as relative: what matters is competing where you have an edge, not being brilliant in absolute terms [5].\n\nThe size of the circle doesn't matter much; knowing where it ends does [4].",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 335,
+          "first_token_ms": 3104,
+          "total_ms": 16197
+        },
+        "model": "GLM-5.3-Flash-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 16462,
+          "output_tokens": 1067
+        },
+        "prompt_version": "english-originals-2-with-source-caveats"
+      },
+      "error": null
+    },
+    {
+      "case": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "request_id": "a08197a0-cbf5-451b-bb19-b86460635fa8",
+      "client_total_ms": 17393,
+      "client_first_token_ms": 4449,
+      "run": "glm-low-results",
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "completion": {
+        "answer": "Reported profit and owner cash differ mainly because of non-cash accounting charges and the capital a business must reinvest just to stay where it is.\n\n**The core distinction: owner earnings**\n\nIn his 1986 letter appendix, Buffett defines \"owner earnings\" as: (a) reported earnings, plus (b) depreciation, depletion, amortization and certain other non-cash charges, less (c) the average annual capitalized expenditures the business requires to fully maintain its long-term competitive position and unit volume. If additional working capital is required to maintain competitive position and unit volume, that increment is also included in (c) — subtracted, so it reduces owner earnings. He notes a partial exception: LIFO businesses usually don't need extra working capital if unit volume doesn't change [1].\n\nThe Scott Fetzer example shows why reported profit alone misleads. Berkshire bought Scott Fetzer for $315 million against $172.4 million of book net worth, and purchase-price accounting forced write-ups of inventory and fixed assets plus goodwill. These produced $11.6 million of new accounting charges — extra depreciation, goodwill amortization, inventory costs and deferred-tax adjustments — none of them tax-deductible and none reflecting any change in the business's actual economics. Both the \"old\" and \"new\" Scott Fetzer generated identical cash for owners; only the accounting differed [1].\n\n**Why the gap can go either way**\n\nWhether GAAP earnings overstate or understate owner earnings depends on the relationship between (b) and (c). When (c) — required maintenance spending — exceeds (b), GAAP earnings overstate owner earnings, \"frequently this overstatement is substantial\"; Buffett cites the oil industry, where companies spending only (b) would have shrunk in real terms. At Scott Fetzer, the reverse held: he judged (c) close to the old company's $8.3 million and well below the new company's $19.9 million, so owner earnings exceeded reported GAAP earnings [1].\n\n**The \"cash flow\" fallacy**\n\nWall Street \"cash flow\" figures typically add (a) plus (b) but ignore (c), implying businesses never need replacement or refurbishment. Buffett calls this meaningless for manufacturing, retailing, extractive companies and utilities, where (c) is always significant; he allows it only as shorthand for enterprises making huge initial outlays and tiny outlays thereafter, like a bridge or long-lived gas field [1]. At the 1998 meeting he called EBITDA \"utter nonsense\" for the same reason — it is stated before the cash required simply to stay in the same place competitively [3]. Munger added that in some businesses the eventual cash-back part of the equation is an illusion: you keep pouring money in and no cash ever comes back [3].\n\n**The valuation framing**\n\nThe same idea appears in valuation terms: a business is worth the present value of the cash it can distribute between now and Judgment Day; if cash is retained and reinvested, it only helps if it earns more than the discount rate [5]. At the 1998 meeting, Buffett said a company spending all its cash flow doesn't get credit for gross cash flow — only for the net cash left each year — and that at some point a financial asset must actually deliver cash back to justify laying out cash now [3].\n\nSo the practical distinction: reported profit is an accounting construct that can include non-cash charges irrelevant to economics, while owner cash requires subtracting what the business must genuinely reinvest to hold its competitive position and unit volume. Estimating that required reinvestment, (c), is a guess — sometimes very difficult — which is why Buffett prefers being \"vaguely right than precisely wrong\" [1].",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 377,
+          "first_token_ms": 4444,
+          "total_ms": 17380
+        },
+        "model": "GLM-5.3-Flash-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 17530,
+          "output_tokens": 930
+        },
+        "prompt_version": "english-originals-2-with-source-caveats"
+      },
+      "error": null
+    },
+    {
+      "case": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "request_id": "4bff7a5d-8646-41d8-a367-06213c57934f",
+      "client_total_ms": 20692,
+      "client_first_token_ms": 4807,
+      "run": "glm-low-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "# Working out what a company is worth\n\nThe core method, as stated in the 1994 letter: **\"We define intrinsic value as the discounted value of the cash that can be taken out of a business during its remaining life.\"** It is necessarily a subjective estimate that changes as cash-flow forecasts and interest rates change, but it is \"the only logical way to evaluate the relative attractiveness of investments and businesses\" [3]. Book value is explicitly *not* a substitute — the 1994 letter calls it \"meaningless as an indicator of intrinsic value,\" using the examples of 1964 Berkshire (book value overstated value because the assets were tied up in a sub-profitable textile business) and a college education (where the \"book value\" is the cost, including foregone earnings, and intrinsic value is the discounted excess earnings over a working lifetime) [3].\n\n## The practical sequence, from the sources\n\n**1. Decide whether you can estimate future earnings at all.** When buying stocks — which Buffett and Munger think of as \"small portions of businesses\" — the analysis is the same as buying whole businesses: \"We first have to decide whether we can sensibly estimate an earnings range for five years out, or more.\" If yes, they buy only at a reasonable price relative to the *bottom* of that estimate; if they can't estimate earnings, they move on [4]. This is the circle-of-competence filter: if you have doubts whether something is inside it, it isn't, and it's better to be well within the circle than tiptoeing along its edge [1]. Buffett's own example of the boundary: he understood every individual transaction at a large finance company but did not regard the whole enterprise as within his circle, because he couldn't be sure it could be continually funded independently of Berkshire's credit [1]. He has also admitted the boundary can fail — retail most often, and buying control of Berkshire itself was \"a dumb decision — which worked out\" [5].\n\n**2. Estimate the distributable cash.** In the 2004 meeting, an audience member walked through valuing Berkshire: start with operating earnings, add look-through earnings from partially owned companies, consider capital expenditures versus depreciation, project growth, discount the flows and a terminal value, adjust for liabilities and minority interests, then divide by shares outstanding. Buffett's response endorsed the *approach* — \"the present value of all the cash it can distribute between now to Judgment Day\" — while stressing that the answer depends entirely on the variables plugged in, and that \"neither one of us knows\" [2]. Note two of his qualifications: he would expect capital spending to run a little above depreciation on average (absent high inflation), and he thought Berkshire's actual earnings growth would likely be lower than the questioner assumed because of its size [2]. Those specific numbers were the audience member's assumptions, not prescribed inputs.\n\n**3. Judge the price against that value.** The 2013 letter describes the same logic applied to a farm and a NYU retail property: estimate normalized future earnings (about a 10% unleveraged yield in both cases), consider what could raise them, and buy when there's no downside and potential upside — thinking only about what the asset will produce, not its daily quotations [4]. For stocks specifically, the test is whether you can \"sensibly estimate an earnings range for five years out\" and whether the price is reasonable against the bottom of that range [4].\n\n## A few distinctions that matter\n\n- **Understanding a business is not the same as being able to value it.** You can understand General Motors or Walmart \"in a general way\" without being able to value them [1]. Conversely, understanding every individual transaction doesn't mean the whole enterprise is inside your circle — Buffett's example was a large finance company where he understood the transactions but was uncertain about the operation as a whole and whether it could be continually funded independently of Berkshire's credit [1].\n- **Doubt is disqualifying.** \"If you have doubts about something being into your circle of competence, it isn't\" [1]. Munger adds that real competence includes knowing its boundary, and that you stretch the boundary only by working at it, including practice [1].\n- **Retention only helps if it earns above your discount rate.** If cash is retained and reinvested at a rate higher than your discount rate, you get a benefit from that retention; otherwise the value is the distributable cash itself [2].\n- **Ignore the macro.** In 54 years, Buffett and Munger never foregone an attractive purchase because of the macro or political environment — those subjects \"never come up\" in their decisions [4].\n\nWhat the sources don't give you: a current discount rate, a current growth assumption, or any formula for today's specific companies. The 7% figure in the 2004 exchange was one audience member's choice, and Buffett noted \"the question of what number to use\" is open [2]. The method is fixed; the inputs are yours to estimate, honestly, within your own circle.",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 705,
+          "first_token_ms": 4788,
+          "total_ms": 20666
+        },
+        "model": "GLM-5.3-Flash-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 18295,
+          "output_tokens": 1322
+        },
+        "prompt_version": "english-originals-2-with-source-caveats"
+      },
+      "error": null
+    },
+    {
+      "case": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "request_id": "9c013e5f-54c9-4000-abdc-14ebf9599210",
+      "client_total_ms": 26852,
+      "client_first_token_ms": 13923,
+      "run": "final-candidate-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "The test is not familiarity with the product but whether you can evaluate the business — whether you can make a reasoned judgment about its future cash flows and know where your understanding stops. Several markers from the sources help you tell the difference.\n\n**The doubt test.** At the 2002 meeting, Buffett put it bluntly: \"if you have doubts about something being into your circle of competence, it isn't\" [1]. If you find yourself unsure whether you understand something — especially when a friend is buying or everyone says money will be made — then you don't understand it [1]. Note the direction of this rule: doubt is a reason to keep something *out* of your circle; the absence of doubt is not by itself proof of competence.\n\n**Understanding the parts is not understanding the whole.** This is the sharpest distinction in the sources. Buffett described a call about a very large finance company: \"even though I could understand every individual transaction they did, I don't regard the whole enterprise, or the operation of it, necessarily as being within my circle of competence\" — partly because he could not tell whether it could be continually funded independent of Berkshire's credit [1]. Knowing what a company sells is like knowing individual transactions; understanding the enterprise means understanding how the whole thing works and sustains itself over time.\n\n**The evaluation test, not the product test.** In the 1992 letter, the point of sticking to understandable businesses is practical: they must be \"relatively simple and stable in character,\" because if a business is complex or constantly changing, future cash flows cannot be predicted [2]. So a working question is: can I estimate what this business will earn over its life? You can understand a company \"in a general way\" and still not be able to value it — Buffett said exactly that about General Motors in 2002 [1]. Understanding shows up as the ability to evaluate, not as product familiarity.\n\n**Knowing the boundary matters more than its size.** The 1996 letter states that you only need to evaluate companies within your circle, and that \"the size of that circle is not very important; knowing its boundaries, however, is vital\" [4]. Munger made the same point in 2002: real competence almost automatically includes a feeling for where its edge is — \"it wouldn't be much of a competence if you didn't know its boundary\" [1].\n\n**Reality-check with history and with honest friends.** In 2014, Buffett acknowledged that he and Munger had gone outside their own circle despite trying to be self-realistic — most often, for him, in retail, where it is \"easy to sort of think you understand retail, and then subsequently find out you don't\" [5]. He praised Mrs. B of the Furniture Mart as the ultimate example: she knew exactly what she knew and what she didn't [5]. He also suggested asking friends who know you well — Charlie's contribution was occasionally asking, \"What the hell do you know about that?\" [5].\n\nOne caution from the 1998 meeting discussion: not knowing the future doesn't make a business objectively risky — \"it means it's risky for us,\" and the response is to pass on it rather than compensate with a higher discount rate [3]. In that discussion, several response paragraphs are not individually attributed to a named speaker, so the exact wording should be read as the dated meeting exchange rather than a verified Buffett quotation.\n\nThe practical summary, drawn only from these sources: you understand a business when you can evaluate it as a whole — its long-term economics and its boundaries of uncertainty — not merely describe what it sells; when you feel no doubt about it being in your circle; and when you can honestly say where that circle ends.",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 310,
+          "first_token_ms": 13918,
+          "total_ms": 26841
+        },
+        "model": "GLM-5.3-Flash-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 16712,
+          "output_tokens": 1699
+        },
+        "prompt_version": "english-originals-3-qualified-synthesis"
+      },
+      "error": null
+    },
+    {
+      "case": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "request_id": "6984972d-4fb4-46be-a737-e74368574552",
+      "client_total_ms": 16863,
+      "client_first_token_ms": 5477,
+      "run": "final-candidate-results",
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "completion": {
+        "answer": "## The short answer\n\nReported profit is an accounting figure; the cash an owner can actually take out is what Buffett calls \"owner earnings\": reported earnings, plus non-cash charges added back, minus the capital spending the business genuinely needs to stay where it is. The gap between the two comes almost entirely from that last subtraction, which GAAP earnings never make [1].\n\n## The owner-earnings formula\n\nIn the 1986 letter appendix, owner earnings are defined as (a) reported earnings, plus (b) depreciation, depletion, amortization and certain other non-cash charges, less (c) the average annual capitalized expenditure the business requires to fully maintain its long-term competitive position and its unit volume. If additional working capital is needed to maintain competitive position and unit volume, that increment is also included in (c) — with the exception that LIFO businesses usually don't need extra working capital if unit volume doesn't change [1].\n\nThe key point is that (c) is a guess, and sometimes a very difficult one. But Buffett treats owner earnings, not the GAAP figure, as the relevant number for valuation — for investors buying stocks and managers buying whole businesses — citing Keynes's \"I would rather be vaguely right than precisely wrong\" [1].\n\n## Why reported profit can mislead\n\nTwo distinct problems show up:\n\n**Accounting noise.** Using Scott Fetzer as the example, Buffett shows that purchase-price accounting created $11.6 million of new charges — inventory costs, extra depreciation, goodwill amortization, and deferred-tax adjustments — that were not deductible for tax and reflected no change in the underlying economics. Both versions of the company generated the same cash for owners; only the accounting differed [1]. Owner earnings for the two columns come out identical, because the sum of (a) and (b) is the same and (c) is necessarily the same [1].\n\n**The bigger trap: ignoring (c).** Most managers need to spend more than (b) over the long term just to hold their ground in unit volume and competitive position. When (c) exceeds (b), GAAP earnings overstate owner earnings — frequently substantially, with the oil industry cited as a recent example [1]. This is the absurdity of Wall Street \"cash flow\" numbers, which add (a) plus (b) but never subtract (c), implying a business is like the Pyramids, never needing replacement or refurbishment. Such shorthand has some utility for businesses making huge initial outlays and tiny outlays thereafter — a bridge or a very long-lived gas field — but it is meaningless for manufacturing, retailing, extractive companies and utilities, where (c) is always significant and deferred spending over a year must be made up over five or ten, or the business decays [1].\n\nAt the 1998 meeting, the same point was made about EBITDA: looking at a figure stated before the cash required simply to stay in the same place competitively was called \"absolute folly\" [3].\n\n## The valuation connection\n\nWhen valuing a business, the discussion at the 1998 meeting emphasized that a company spending its money as it comes in gets no credit for gross cash flow — only for the net cash left each year — and that a financial asset must eventually deliver cash back to justify cash laid out today [3]. At the 2004 meeting, an audience member's distributable-cash framework was endorsed in general terms, with the caveat that the reply expected capital expenditures to average somewhat more than depreciation (barring highly inflationary times), and that everyone must plug in their own numbers [5].\n\nIn short: reported profit is a starting point, but the owner's real cash is what remains after the business pays the full cost of staying in place — and only the owner's judgment about that cost, not the accounting, reveals it.",
+        "validation": {
+          "status": "references_checked",
+          "issues": [],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 339,
+          "first_token_ms": 5473,
+          "total_ms": 16851
+        },
+        "model": "GLM-5.3-Flash-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 17878,
+          "output_tokens": 1067
+        },
+        "prompt_version": "english-originals-3-qualified-synthesis"
+      },
+      "error": null
+    },
+    {
+      "case": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "request_id": "c4d2a41e-44da-47b8-b07c-ebaf9a8653c9",
+      "client_total_ms": 18814,
+      "client_first_token_ms": 7376,
+      "run": "final-candidate-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "## The core definition\n\nStart with the definition given in the 1994 letter: intrinsic value is \"the discounted value of the cash that can be taken out of a business during its remaining life\" [3]. That means a company is worth the present value of all the cash it can distribute between now and, as the 2004 meeting discussion put it, \"Judgment Day\" [2]. Book value — an easily calculated figure — is described there as \"meaningless as an indicator of intrinsic value,\" useful only as a rough, often understated tracking measure [3]. So the task is not to inspect the balance sheet but to estimate future cash generation and discount it back at an appropriate rate. Any such figure is necessarily highly subjective, changing as cash-flow estimates are revised and as interest rates move [3].\n\n## The practical sequence\n\nThe 2013 letter describes how Buffett and Munger actually approach a stock, which they treat as a small portion of a business: first decide whether they can sensibly estimate an earnings range for five years out or more. If yes, they buy only if the price is reasonable relative to the bottom boundary of that estimate. If they cannot estimate future earnings — which they say is usually the case — they simply move on [4]. The same logic appears in the farm example: the analysis focused on what the property would produce (normalized yield, likely productivity gains), not on daily price quotations or macro forecasts [4].\n\n## What the 2004 Berkshire example shows\n\nAt the 2004 annual meeting, an audience member walked through a full calculation for Berkshire: starting from operating earnings plus estimated look-through earnings, adjusting for the gap between capital spending and depreciation, projecting growth in two phases, discounting at 7 percent, subtracting liabilities and minority interests, and dividing by the share count [2]. The reply — from the dated meeting discussion, where several turns are unlabeled — endorsed the general line of thinking: estimating distributable cash over time and taking present value is the correct approach, but \"it just depends on what variables you plug in,\" and \"everybody has to do their own equation and plug in some numbers\" [2]. Two cautions were given: capital expenditure should on average run a little above depreciation (barring highly inflationary times), and earnings-growth assumptions should probably be lower than the questioner postulated, because a very large business finds it harder to deploy incoming capital at high returns [2]. Note that the specific inputs — 15% and 10% growth, a 7% discount rate — were the audience member's assumptions, not prescribed figures, and the 7% rate is a historical example, not a universal discount rate [2].\n\n## Two gates before any arithmetic\n\nFirst, competence. You can only value what you can understand. In the 2002 meeting, Buffett said that if you have doubts about something being in your circle of competence, it isn't — and gave the example of a large finance company where he understood every individual transaction but did not regard the whole enterprise, including whether it could be continually funded independently of Berkshire's credit, as necessarily within his circle [1]. Second, the earnings test itself: if you can't make a rough estimate of an asset's future earnings, the 2013 letter's advice is to forget it and move on [4].\n\nOnly after passing both gates does the price question arise — and the bargain judgment is whether the quoted price sits reasonably against the low end of your estimated earnings range [4].",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 652,
+          "first_token_ms": 7359,
+          "total_ms": 18790
+        },
+        "model": "GLM-5.3-Flash-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 18545,
+          "output_tokens": 1107
+        },
+        "prompt_version": "english-originals-3-qualified-synthesis"
+      },
+      "error": null
+    },
+    {
+      "case": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "request_id": "d2cb2888-dcb8-4f52-9bcc-824c1cbca55b",
+      "client_total_ms": 108982,
+      "client_first_token_ms": 100277,
+      "run": "glm-max-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "Understanding a business, in this archive, means being able to evaluate it — form a confident view of its long-term cash economics — not being able to describe what it sells. Product knowledge is at best the entry ticket; the test is whether you can judge the whole enterprise and know where that ability stops.\n\n**The doubt test — and its one-way direction**\n\nAt the 2002 meeting, Buffett's rule was: \"if you have doubts about something being into your circle of competence, it isn't\" [1]. If you're not sure whether you understand something, you don't [1]. Note the direction of that test: doubt keeps something out of the circle, but feeling certain does not by itself prove you're inside. The 2014 meeting shows self-assessment can fail even for him — he said he had strayed out of his circle most often in retail, and called his decision to buy control of Berkshire Hathaway a dumb one that happened to work out [5].\n\n**Understanding means evaluating, not describing**\n\nThe 2002 discussion distinguishes levels of knowing: you can understand a Coke bottler, McDonald's, or \"in a general way, General Motors. You may not be able to value it\" [1]. Understanding Walmart doesn't tell you what the price should be [1]. What turns familiarity into competence is the ability to evaluate — and the 1992 letter explains what that requires: estimating the future cash flows yourself, since the analyst must estimate the equity \"coupons\" that a bond's contract supplies automatically [2]. That is why Berkshire sticks to businesses \"relatively simple and stable in character\"; if a business is complex or subject to constant change, \"we're not smart enough to predict future cash flows\" [2]. As that letter puts it, what counts is not how much you know but how realistically you define what you don't know [2].\n\n**The whole enterprise, not the individual transactions**\n\nThe 2002 finance-company example makes the product-versus-enterprise line concrete: Buffett understood every individual transaction at a large finance company, but not everything going on within it, nor whether it could be continually funded independently of Berkshire's credit — so he did not regard the whole enterprise as necessarily within his circle [1]. Knowing the product is transaction-level; understanding the business means knowing the whole machine, including how it funds itself and whether its economics hold up.\n\n**What the understanding is for**\n\nThe 1996 letter identifies the object of understanding: See's products, machinery, and channels all changed after 1972, but the reasons people buy boxed chocolates from See's are virtually unchanged since the 1920s and not likely to change for 20 or even 50 years [4]. That durability — not the current product lineup — is what you need to judge, because the goal is a business whose earnings are virtually certain to be materially higher five, ten and twenty years out [4]. And when uncertainty remains, the 1998 meeting discussion described riskiness as a go/no-go valve: not knowing the future is risky \"for us,\" and the answer is to pass on the business, not to compensate with a higher discount rate [3].\n\n**Knowing the boundary is the competence**\n\nMunger argued in 2002 that real competence carries a feel for its own edge, and that you stretch it only by working at it, including practice [1]; the 1996 letter adds that the circle's size is not very important, but knowing its boundaries is vital [4]. Buffett's practical suggestions: ask friends who know you well, and expect the boundary to show itself in your record — his own retail misses did that [5].",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 343,
+          "first_token_ms": 100272,
+          "total_ms": 108972
+        },
+        "model": "GLM-5.3-Flash-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 16712,
+          "output_tokens": 10202
+        },
+        "prompt_version": "english-originals-3-qualified-synthesis"
+      },
+      "error": null
+    },
+    {
+      "case": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "request_id": "cc13c87b-c830-4339-8171-5a17ac687c3e",
+      "client_total_ms": 54761,
+      "client_first_token_ms": 44976,
+      "run": "glm-max-results",
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "completion": {
+        "answer": "Reported profit and owner-takeable cash differ for two distinct reasons: some accounting charges involve no cash at all, and — more important — the cash a business must reinvest just to stay where it is never shows up as a deduction from profit. The 1986 appendix resolves this with what Buffett calls \"owner earnings\": reported earnings, plus depreciation, depletion, amortization and certain other non-cash charges, minus the average annual capitalized expenditures the business requires to fully maintain its long-term competitive position and unit volume. If additional working capital is required to maintain that position and volume, the increment belongs in that subtraction too — though LIFO businesses usually do not need extra working capital when unit volume is unchanged [1].\n\n**The Scott Fetzer illustration.** After Berkshire bought Scott Fetzer, purchase-price accounting wrote up assets, and the resulting charges cut reported earnings from $40.2 million to $28.6 million — yet the two columns depicted \"identical economics\" and generated the same cash for owners, because the $11.6 million of new charges (inventory costs, extra depreciation, goodwill amortization, deferred-tax adjustments) were not deductible for tax and involved no cash leaving the business [1]. Owner earnings come out identical for both columns, since the add-backs and the required reinvestment are the same either way [1].\n\n**Which way the gap runs.** For Scott Fetzer itself, Buffett judged the required maintenance spending close to the old depreciation figure of $8.3 million and far below the new, inflated one — so owner earnings were *larger* than GAAP profit [1]. But he stressed this is the unusual case: most managers must spend more than depreciation over the long term just to hold their ground, and when that required spending exceeds the non-cash add-backs, GAAP earnings overstate owner earnings, frequently substantially — with the oil industry of that era the conspicuous example [1]. Even at See's, a wonderful business, capitalized expenditures ran $500,000 to $1 million above depreciation annually just to hold ground competitively [1].\n\n**The \"cash flow\" fallacy.** The Wall Street convention of adding earnings and non-cash charges without subtracting required reinvestment implies a business that is, in Buffett's words, \"forever state-of-the-art, never needing to be replaced, improved or refurbished\" [1]. He allowed that such shorthand has some utility for enterprises making huge initial outlays and tiny outlays thereafter — a bridge or an extremely long-lived gas field — but called it meaningless for manufacturing, retailing, extractive companies and utilities, where maintenance spending is always significant and deferred capital spending over five or ten years means the business decays [1].\n\n**The same point in the meetings.** At the May 4, 1998 meeting, Buffett said a company spending money as it comes in \"don't get credit for gross cash flow, they get credit for whatever net cash is left every year,\" and he labeled EBITDA \"utter nonsense\" precisely because it is stated before the cash requirements of merely staying in the same place [3]. At the 2004 meeting, a shareholder walked through valuing Berkshire from distributable cash; the reply endorsed the general approach — a business is worth the present value of all the cash it can distribute — while noting the variables are guesses and that capital expenditures would likely average a bit more than depreciation absent highly inflationary times [5].\n\nFinally, the estimate of required maintenance spending is a guess, sometimes very difficult to make — hence the borrowed verdict, \"I would rather be vaguely right than precisely wrong\" [1]. Accounting numbers are the starting point, but the accountants' job is to record, not to evaluate; evaluation falls to investors and managers [1].",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 329,
+          "first_token_ms": 44970,
+          "total_ms": 54750
+        },
+        "model": "GLM-5.3-Flash-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 17878,
+          "output_tokens": 4380
+        },
+        "prompt_version": "english-originals-3-qualified-synthesis"
+      },
+      "error": null
+    },
+    {
+      "case": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "request_id": "97969330-b6e4-42ef-9ec8-3286d28aa1ba",
+      "client_total_ms": 97085,
+      "client_first_token_ms": 86242,
+      "run": "glm-max-results",
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "completion": {
+        "answer": "The core method in these sources is straightforward to state: a business is worth the discounted value of the cash that can be taken out of it over its remaining life, and a share is a bargain when the price is reasonable against your estimate of that distributable cash. The harder part comes first — deciding whether you can make a sensible estimate at all.\n\n## Step one: can you estimate the earnings?\n\nBefore any numbers, the 2013 letter describes the test used when buying stocks, which are treated as small portions of businesses: the question is whether you can \"sensibly estimate an earnings range for five years out, or more.\" If yes, you buy at a reasonable price relative to the bottom boundary of that estimate; if not, you move on to other prospects [4]. The same letter's farm example shows what this looks like in practice: the 1986 farm purchase rested on estimates of bushels produced and operating expenses, yielding a calculated normalized return of about 10% — no unusual knowledge required, just an estimate of what the asset would produce [4].\n\nThis gate is also the circle of competence. At the 2002 meeting, Buffett's advice was that \"if you have doubts about something being into your circle of competence, it isn't,\" and it is better to be well within the circle than tiptoeing along its edge [1]. He also distinguished understanding from valuing: you can understand, in a general way, businesses like a Coke bottler or General Motors, but \"you may not be able to value it\" [1]. Understanding pieces is not enough, either — in the large finance company example, he understood every individual transaction yet did not regard the whole enterprise as within his circle, partly because of uncertainty about whether it could be continually funded independently of Berkshire's credit [1].\n\n## Step two: the calculation itself\n\nAt the 2004 meeting, a questioner worked through the method for Berkshire: estimate distributable cash (using look-through earnings as a rough proxy), assume growth rates, discount the flows and a terminal value, subtract liabilities and minority interests, and divide by the share count [2]. The reply agreed the line of thinking was correct but stressed that everything depends on the variables, which neither party really knows [2]. Points the discussion added: if cash is retained and reinvested at a rate above your discount rate, retention adds value, but retained earnings must then be deployed into more businesses, and the returns on those are the open question; capital expenditures were expected to average a little more than depreciation absent highly inflationary times; and the questioner's 15% and 10% growth assumptions were probably too high for an enterprise Berkshire's size [2]. Munger added a caution against getting overly excited about a single unusual year when everything worked well [2]. Note that the 7% discount rate and growth figures were the questioner's assumptions, not prescribed inputs — the reply explicitly said everyone must plug in their own numbers [2].\n\n## Step three: compare with the price\n\nThe bargain test comes only at the end: buy if the shares sell \"at a reasonable price in relation to the bottom boundary of our estimate\" [4]. Keep the levels distinct — the discounted cash stream values the whole business; subtracting liabilities and dividing by shares gets you to equity per share, which is what you compare with a one-share quote [2].\n\nFinally, do not lean on book value. The 1994 letter calls it an easily calculated but limited number — a rough, significantly understated tracking measure for Berkshire — and states flatly that \"book value is meaningless as an indicator of intrinsic value\" [3]. Intrinsic value is inherently subjective, shifting as cash-flow estimates are revised and as interest rates move, but it remains the only logical way to judge relative attractiveness [3].",
+        "validation": {
+          "status": "needs_review",
+          "issues": [
+            "A quotation could not be matched exactly to an original cited in its paragraph."
+          ],
+          "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+        },
+        "timings": {
+          "retrieval_ms": 689,
+          "first_token_ms": 86226,
+          "total_ms": 97062
+        },
+        "model": "GLM-5.3-Flash-W8A8",
+        "usage": {
+          "type": "usage",
+          "input_tokens": 18545,
+          "output_tokens": 6925
+        },
+        "prompt_version": "english-originals-3-qualified-synthesis"
+      },
+      "error": null
+    }
+  ]
+}

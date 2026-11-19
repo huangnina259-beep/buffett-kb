@@ -1,0 +1,637 @@
+{
+  "date": "2026-11-18",
+  "scope": "A finite 14-context pilot; transport completion and reference checks are not semantic acceptance. These are observed outputs, including failures.",
+  "cases": [
+    {
+      "case": "A1",
+      "question": "Using Buffett’s valuation principles, is Apple cheap enough for me to buy today?",
+      "record_sha256": "a0c4b3c9f8da4b5a0b262ab86f9214d1c0197898765c23947e1caf97269bf331",
+      "completed": true,
+      "client_first_token_ms": 5903,
+      "client_total_ms": 61354,
+      "answer": "**No — the sources cannot answer that, and neither can I.** The archive explains *how* Buffett values a business, but it contains no current facts about Apple: no present price, no current cash flows, no today's interest rates. A \"cheap enough\" judgment requires comparing a calculated value to today's price, and this archive supplies neither side of that comparison for Apple. What it does supply is the method you would have to apply yourself, with current data.\n\n**The method, as the sources describe it**\n\nValue is the cash a business can be expected to distribute over its remaining life, discounted at an appropriate interest rate — and the formula is the same for stocks, bonds, or whole businesses [1]. Buffett frames it through Aesop: how certain are you there are birds in the bush, when will they emerge and how many, and what is the risk-free rate (which he identifies as the yield on long-term U.S. bonds) [4]. Growth matters only as a variable inside that equation: it benefits investors only when each dollar used to finance growth creates more than a dollar of long-term market value, and it hurts in a low-return business requiring incremental funds [1]. Growth can destroy value when early cash inputs exceed the discounted value of later cash generated [4].\n\nScreening shortcuts such as a low price-to-book ratio, low P/E, or high dividend yield are \"far from determinative\" [1]; they relate to valuation only insofar as they clue you to the amount and timing of cash flows [4].\n\n**The steps you would need to take**\n\n1. **Judge knowability first.** Ask whether you can sensibly estimate an earnings range five years out or more; if not, \"just forget it and move on\" [5]. Berkshire sticks to businesses that are relatively simple and stable, because complex or constantly changing businesses defeat cash-flow prediction [1].\n2. **Work in ranges, not precise numbers.** Using precise numbers is \"foolish\"; a range of possibilities is the better approach, and usually the range is so wide that no useful conclusion can be reached [4]. Where even a very broad range yields no conviction about the future cash flows — often with new businesses or rapidly changing industries — any capital commitment must be labeled speculative [4].\n3. **Buy only with a margin of safety.** If calculated value is only slightly above price, Buffett is not interested; he calls this principle, emphasized by Ben Graham, the cornerstone of investment success [1]. In the 2013 letter, the test is buying at a reasonable price relative to the *bottom boundary* of the earnings estimate [5].\n4. **Use a discount rate reflecting your certainty.** At the 1994 meeting, Buffett said that in a world of 7% long-term bond rates he would want to discount future after-tax cash streams at at least a 10% rate, but that the rate depends on the certainty felt about the business — more certainty, a rate somewhat closer to the bond yield [2]. Those are 1994 figures, historical examples only, not current inputs.\n5. **Focus on distributable cash.** In the 2004 meeting discussion of valuing Berkshire itself, the reply endorsed the general approach of estimating distributable cash over time and discounting it, while stressing that everyone must plug in their own numbers — and noting that retained cash adds value only if it can be deployed at a rate above your discount rate [3]. The questioner's specific growth rates, discount rate, and liability adjustment there were that audience member's assumptions, not a prescribed model, and the reply expected lower earnings gains given Berkshire's size [3]. Munger added a caution against getting overly excited about a single unusually good year [3].\n\n**What is missing**\n\nEverything Apple-specific: current free cash flow, capital needs relative to depreciation, the current price, and today's risk-free rate. Without those, no valuation range can be formed. The honest answer the framework gives is: do the equation with current numbers, and if you cannot estimate the future cash flows with reasonable confidence, move on to other prospects [5].",
+      "validation": {
+        "status": "references_checked",
+        "issues": [],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "timings": {
+        "retrieval_ms": 329,
+        "first_token_ms": 5899,
+        "writer_ms": 16582,
+        "reviewer_start_ms": 16920,
+        "reviewer_ms": 44420,
+        "total_ms": 61348
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 14956,
+          "output_tokens": 1047
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 16011,
+          "output_tokens": 2279
+        }
+      },
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "sources": [
+        {
+          "number": 1,
+          "context_id": "letter-1992-0074-0085",
+          "title": "Valuation, knowability and margin of safety",
+          "url": "https://www.berkshirehathaway.com/letters/1992.html"
+        },
+        {
+          "number": 2,
+          "context_id": "cnbc-meeting-1994-morning-ch13",
+          "title": "13. Unlikely we'd buy company with no current cash flow",
+          "url": "https://buffett.cnbc.com/video/1994/04/25/morning-session---1994-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 3,
+          "context_id": "chapter:cnbc-meeting-2004-afternoon-ch28",
+          "title": "28. Estimating intrinsic value",
+          "url": "https://buffett.cnbc.com/video/2004/05/01/afternoon-session---2004-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 4,
+          "context_id": "letter-2000-pdf-p12-p3-through-p13-p9",
+          "title": "Cash-flow uncertainty, useful ranges, and errors despite confidence",
+          "url": "https://www.berkshirehathaway.com/letters/2000pdf.pdf"
+        },
+        {
+          "number": 5,
+          "context_id": "letter-2013-investing-p001-p040",
+          "title": "Some Thoughts About Investing: farm, property, stock selection and learning",
+          "url": "https://www.berkshirehathaway.com/letters/2013ltr.pdf"
+        }
+      ],
+      "failure_events": []
+    },
+    {
+      "case": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "record_sha256": "99acd22ad0cba6f1b99cde4bd187f9a6456ea1955d9a457f8a09a2a9b203c27c",
+      "completed": true,
+      "client_first_token_ms": 8008,
+      "client_total_ms": 43739,
+      "answer": "The test the sources point to is not whether you can describe what a company sells, but whether you can evaluate the business — form a reasoned view of what it will earn — and whether you can locate the edge of your own understanding. Several markers of that distinction appear across these materials.\n\n**Understanding means being able to evaluate, not merely describe.** In the 2002 meeting, Buffett listed businesses a young investor could understand — a Coke bottler, the Coca-Cola Company, McDonald's, Walmart, Costco — while noting of General Motors that \"you may not be able to value it\" [1]. Understanding and being able to value are related but distinct steps. The 1992 letter makes the evaluation point concrete: a bond's future cash flows are defined by its coupon and maturity date, but for equities the analyst \"must himself estimate the future 'coupons,'\" and management's ability can dramatically affect those equity coupons [2]. If you cannot form a reasoned estimate of what the business will produce over its life, product familiarity is not understanding.\n\n**Doubt is disqualifying; comfort is not proof.** The 2002 answer gives a one-sided test: \"if you have doubts about something being into your circle of competence, it isn't\" [1]. Note the direction of that warning — doubt means keep the business outside the circle, but the absence of doubt does not by itself establish competence. The same meeting shows how subtle the boundary can be: Buffett described a call about a very large finance company where he understood what they did and could understand every individual transaction, yet he did not regard the whole enterprise, or its operation, necessarily as within his circle, because he did not understand whether it could be continually funded on a basis independent of Berkshire's credit [1]. Understanding the parts is not understanding the whole.\n\n**Stability and predictability are what make evaluation possible.** The 1992 letter explains that Berkshire sticks to businesses that are \"relatively simple and stable in character,\" because if a business is complex or subject to constant change, \"we're not smart enough to predict future cash flows\" [2]. The 1996 letter extends this: Berkshire favors businesses unlikely to experience major change because it seeks operations \"virtually certain to possess enormous competitive strength ten or twenty years from now\" [4]. So the practical question is not \"do I know this product?\" but \"can I say with reasonable confidence what this business's competitive position and earnings will look like far into the future?\" The 1996 letter's advice to individual investors points the same way: purchase, at a rational price, \"a part interest in an easily-understandable business whose earnings are virtually certain to be materially higher five, ten and twenty years from now\" [4].\n\n**The boundary matters more than the size.** The 1996 letter states that the size of your circle \"is not very important; knowing its boundaries, however, is vital\" [4]. Munger's 2002 comment reinforces this: genuine competence includes \"a feeling of where the edge of the competence is,\" and the boundary gets stretched by working at it, including practice [1]. The 2014 meeting shows the boundary can fail even for experienced investors — Buffett said he had gone outside his circle more often in retail than any other arena, thinking he understood it and later finding he did not, and cited Mrs. B as the exemplar of knowing \"exactly what she knew and what she didn't know\" [5].\n\n**Finally, uncertainty is a signal to pass, not to adjust.** In the 1998 meeting discussion — where several response turns are unattributed in the transcript — risk is described as a \"go/no-go valve\": if you simply don't know what will happen, that doesn't make the business necessarily risky in itself; it makes it risky for you, and might not be risky for someone who understands it. The response described is to give up, not to compensate by discounting at a higher rate for risk [3].\n\nOne caution from the 2014 meeting: self-assessment is imperfect, and Buffett acknowledged having gone outside his own circle, particularly in retail [5]. So treat your conclusion about any given business as a judgment to be tested — he suggested asking friends who know you well — rather than a settled fact [5].",
+      "validation": {
+        "status": "needs_review",
+        "issues": [
+          "A quotation could not be matched exactly to an original cited in its paragraph."
+        ],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "timings": {
+        "retrieval_ms": 335,
+        "first_token_ms": 8005,
+        "writer_ms": 20187,
+        "reviewer_start_ms": 20531,
+        "reviewer_ms": 23188,
+        "total_ms": 43732
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 16712,
+          "output_tokens": 1350
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 17920,
+          "output_tokens": 2246
+        }
+      },
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "sources": [
+        {
+          "number": 1,
+          "context_id": "meeting-2002-boundary",
+          "title": "Understanding transactions is not understanding the whole enterprise",
+          "url": "https://buffett.cnbc.com/video/2002/05/04/afternoon-session---2002-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 2,
+          "context_id": "letter-1992-0074-0085",
+          "title": "Valuation, knowability and margin of safety",
+          "url": "https://www.berkshirehathaway.com/letters/1992.html"
+        },
+        {
+          "number": 3,
+          "context_id": "cnbc-meeting-1998-afternoon-ch44",
+          "title": "44. \"We prefer what other people call risk\"",
+          "url": "https://buffett.cnbc.com/video/1998/05/04/afternoon-session---1998-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 4,
+          "context_id": "letter-1996-0098-0118",
+          "title": "Common Stock Investments: durable economics and the limits of competence",
+          "url": "https://www.berkshirehathaway.com/letters/1996.html"
+        },
+        {
+          "number": 5,
+          "context_id": "meeting-2014-self-assessment",
+          "title": "Recognizing the boundary can fail even for Buffett",
+          "url": "https://buffett.cnbc.com/video/2014/05/03/afternoon-session---2014-berkshire-hathaway-annual-meeting.html"
+        }
+      ],
+      "failure_events": []
+    },
+    {
+      "case": "N1",
+      "question": "Can you give me a reliable sourdough recipe for a first loaf?",
+      "record_sha256": "ae2853669c0f09dae6ffa90c55abc1f71e509b1d1f672ca5cf5b97aae088219c",
+      "completed": true,
+      "client_first_token_ms": 4652,
+      "client_total_ms": 13453,
+      "answer": "I can't help with that from these sources. The material provided is a Berkshire Hathaway archive — annual report passages and shareholder meeting transcripts covering valuation, circles of competence, and investing principles. It contains no cooking or baking content of any kind, so there is no sourdough recipe (or any recipe) I could give you that would be supported by these originals [1][2][3][4][5].\n\nIf you have a question about the material here — for example, how the 1992 letter describes the discounted-cash-flow approach to valuing a business [1], what Buffett and Munger have said about staying within a circle of competence [2][5], or the farm and New York real estate examples from the 2013 letter [3] — I'm glad to explain it using these sources.",
+      "validation": {
+        "status": "references_checked",
+        "issues": [],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "timings": {
+        "retrieval_ms": 320,
+        "first_token_ms": 4648,
+        "writer_ms": 8986,
+        "reviewer_start_ms": 9317,
+        "reviewer_ms": 4124,
+        "total_ms": 13444
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 17851,
+          "output_tokens": 210
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 18201,
+          "output_tokens": 307
+        }
+      },
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "sources": [
+        {
+          "number": 1,
+          "context_id": "letter-1992-0074-0085",
+          "title": "Valuation, knowability and margin of safety",
+          "url": "https://www.berkshirehathaway.com/letters/1992.html"
+        },
+        {
+          "number": 2,
+          "context_id": "meeting-2002-boundary",
+          "title": "Understanding transactions is not understanding the whole enterprise",
+          "url": "https://buffett.cnbc.com/video/2002/05/04/afternoon-session---2002-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 3,
+          "context_id": "letter-2013-investing-p001-p040",
+          "title": "Some Thoughts About Investing: farm, property, stock selection and learning",
+          "url": "https://www.berkshirehathaway.com/letters/2013ltr.pdf"
+        },
+        {
+          "number": 4,
+          "context_id": "cnbc-meeting-1994-morning-ch13",
+          "title": "13. Unlikely we'd buy company with no current cash flow",
+          "url": "https://buffett.cnbc.com/video/1994/04/25/morning-session---1994-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 5,
+          "context_id": "meeting-2019-learning",
+          "title": "Learning through research; broad and narrow paths are not the same prescription",
+          "url": "https://buffett.cnbc.com/video/2019/05/06/afternoon-session---2019-berkshire-hathaway-annual-meeting.html"
+        }
+      ],
+      "failure_events": []
+    },
+    {
+      "case": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "record_sha256": "ccdabbc47ffaa4426109a84c3e0da6aacefe5a3c585b60f7c173e0aafc40d2eb",
+      "completed": true,
+      "client_first_token_ms": 15763,
+      "client_total_ms": 91405,
+      "answer": "Reported profit and distributable cash differ for two reasons: some charges deducted from reported earnings never involve cash leaving the business, and some cash that does leave must be reinvested simply to keep the business where it is. Reported earnings alone capture neither adjustment in a way that tells an owner what cash the business actually makes available.\n\n**The non-cash add-backs.** In his 1986 appendix, Buffett defines \"owner earnings\" as (a) reported earnings plus (b) depreciation, depletion, amortization, and certain other non-cash charges, less (c) the average annual capitalized expenditures the business requires to fully maintain its long-term competitive position and unit volume — with any required additional working capital also included in (c), i.e., subtracted (though LIFO businesses usually need no additional working capital if unit volume is unchanged) [1]. The Scott Fetzer example shows why the add-backs matter. After Berkshire bought the company, purchase-price accounting created $11.6 million of new charges to 1986 earnings — non-cash inventory costs, extra depreciation from written-up fixed assets, goodwill amortization, and deferred-tax adjustments — even though \"the two columns depict identical economics\" and both generate the same cash for owners [1]. None of these newly created accounting costs were tax-deductible; the business itself was unchanged [1]. (Some of these charges recur for years — the extra depreciation and deferred-tax items for about 12 more years, goodwill amortization for 39 — while the inventory charges were \"apt to be small or non-existent in future years\" [1].)\n\n**The subtraction is the critical half.** Adding back non-cash items without subtracting (c) is exactly the \"cash flow\" fallacy. Most managers, Buffett notes, must spend more than (b) over the long term just to hold their ground in unit volume and competitive position; when (c) exceeds (b), \"GAAP earnings overstate owner earnings,\" frequently substantially — the oil industry being a recent example [1]. This is his objection to Wall Street \"cash flow\" numbers, which total (a) plus (b) but ignore (c), implying a business like the Pyramids, \"forever state-of-the-art, never needing to be replaced, improved or refurbished\" [1]. At the 1998 meeting, the same objection was made about EBITDA: looking at a figure stated before the cash required simply to stay in the same place competitively was called \"absolute folly\" [3]. The limited exception is the discussed cash-flow shorthand for enterprises making huge initial outlays and only tiny outlays thereafter, such as a bridge or an extremely long-lived gas field; for manufacturing, retailing, extractive companies, and utilities, (c) is always significant [1]. Note that the comparison is not automatic: Buffett also stated that for Berkshire's own businesses, historical-cost (b) — excluding amortization of intangibles and other purchase-price adjustments — was quite close in amount to (c), with See's an example of spending $500,000 to $1 million above depreciation just to hold ground competitively [1].\n\n**Net cash, not gross.** At the 1998 meeting, Buffett said a company spending money as it comes in \"doesn't get credit for gross cash flow, they get credit for whatever net cash is left every year\" [3]. The meeting discussion went on to describe the best business as one handing you more money each year while requiring little or nothing to be put back in, and the worst as one forcing you to reinvest heavily at low returns just to stay in the game [3]. Munger added that for some businesses the eventual cash coming back is an illusion — you keep pouring money in and none comes back [3].\n\n**The estimate is inherently uncertain.** Figure (c) \"must be a guess - and one sometimes very difficult to make,\" yet owner earnings, not the GAAP figure, is what Buffett considers relevant for valuation, echoing Keynes's preference to be \"vaguely right than precisely wrong\" [1]. At the 2004 meeting, an audience member worked through a distributable-cash valuation of Berkshire, and the reply endorsed the general approach — a business is worth the present value of all the cash it can distribute between now and Judgment Day — while questioning the specific variables: the discussion noted that capital spending would on average be expected to run a little more than depreciation absent highly inflationary times, and that Berkshire's size made lower earnings gains likely than the questioner had postulated [5]. Those inputs were the questioner's assumptions, not a prescribed model.\n\nIn short: reported profit is an accounting record; distributable cash is profit adjusted for non-cash items and, crucially, reduced by whatever the business must spend to stay where it is.",
+      "validation": {
+        "status": "needs_review",
+        "issues": [
+          "A quotation could not be matched exactly to an original cited in its paragraph."
+        ],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "timings": {
+        "retrieval_ms": 10080,
+        "first_token_ms": 15758,
+        "writer_ms": 17245,
+        "reviewer_start_ms": 27335,
+        "reviewer_ms": 64047,
+        "total_ms": 91397
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 17878,
+          "output_tokens": 1050
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 18978,
+          "output_tokens": 4257
+        }
+      },
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "sources": [
+        {
+          "number": 1,
+          "context_id": "letter-1986-0154-0297",
+          "title": "Complete owner-earnings appendix",
+          "url": "https://www.berkshirehathaway.com/letters/1986.html"
+        },
+        {
+          "number": 2,
+          "context_id": "letter-2000-pdf-p12-p3-through-p13-p9",
+          "title": "Cash-flow uncertainty, useful ranges, and errors despite confidence",
+          "url": "https://www.berkshirehathaway.com/letters/2000pdf.pdf"
+        },
+        {
+          "number": 3,
+          "context_id": "cnbc-meeting-1998-afternoon-ch08",
+          "title": "8. Avoid the \"Frozen Corporation\"",
+          "url": "https://buffett.cnbc.com/video/1998/05/04/afternoon-session---1998-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 4,
+          "context_id": "cnbc-meeting-1998-afternoon-ch44",
+          "title": "44. \"We prefer what other people call risk\"",
+          "url": "https://buffett.cnbc.com/video/1998/05/04/afternoon-session---1998-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 5,
+          "context_id": "chapter:cnbc-meeting-2004-afternoon-ch28",
+          "title": "28. Estimating intrinsic value",
+          "url": "https://buffett.cnbc.com/video/2004/05/01/afternoon-session---2004-berkshire-hathaway-annual-meeting.html"
+        }
+      ],
+      "failure_events": []
+    },
+    {
+      "case": "O2",
+      "question": "A business must put more cash into inventory just to keep sales volume unchanged. In Buffett’s owner-earnings calculation, does that raise or reduce the cash available to owners?",
+      "record_sha256": "ca4371bdc947d680ca7bee9925380500e8dc3061e5770f93c2b301e5db3810fb",
+      "completed": true,
+      "client_first_token_ms": 6077,
+      "client_total_ms": 37584,
+      "answer": "It reduces the cash available to owners. In Buffett's owner-earnings formula, cash that must be tied up in additional working capital belongs in component (c), which enters the calculation with a minus sign.\n\nBuffett defines owner earnings as reported earnings (a), plus depreciation, depletion, amortization and certain other non-cash charges (b), less (c), the average annual capitalized expenditures the business requires to fully maintain its long-term competitive position and its unit volume. He then adds the working-capital rule directly: if the business requires additional working capital to maintain its competitive position and unit volume, \"the increment also should be included in (c)\" [1]. Since (c) is subtracted, extra cash locked into inventory lowers owner earnings — the business is generating less distributable cash even though it is only holding its volume steady.\n\nOne qualification matters. Buffett notes that businesses using the LIFO inventory method \"usually do not require additional working capital if unit volume does not change\" [1]. So whether the inventory investment actually occurs depends on the accounting method and circumstances; the general rule is that required additional working capital belongs in (c) and reduces owner earnings.\n\nTwo further points from the sources. First, (c) is inherently an estimate — Buffett calls it \"a guess - and one sometimes very difficult to make\" — which is why owner earnings lack the false precision of GAAP figures [1]. Second, the same logic appears in the annual-meeting discussions: in 1998, Buffett said a company spending its cash as it comes in gets credit only for \"whatever net cash is left every year,\" not gross cash flow [3]. And in the 2004 meeting, the reply to a questioner's Berkshire valuation endorsed the general approach of \"trying to figure out distributable cash over a period of time,\" while noting that the variables — including capital spending relative to depreciation — are matters each person must estimate for themselves [2].",
+      "validation": {
+        "status": "needs_review",
+        "issues": [
+          "A quotation could not be matched exactly to an original cited in its paragraph."
+        ],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "timings": {
+        "retrieval_ms": 343,
+        "first_token_ms": 6073,
+        "writer_ms": 11194,
+        "reviewer_start_ms": 11547,
+        "reviewer_ms": 26016,
+        "total_ms": 37577
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 16757,
+          "output_tokens": 672
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 17415,
+          "output_tokens": 1540
+        }
+      },
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "sources": [
+        {
+          "number": 1,
+          "context_id": "letter-1986-0154-0297",
+          "title": "Complete owner-earnings appendix",
+          "url": "https://www.berkshirehathaway.com/letters/1986.html"
+        },
+        {
+          "number": 2,
+          "context_id": "chapter:cnbc-meeting-2004-afternoon-ch28",
+          "title": "28. Estimating intrinsic value",
+          "url": "https://buffett.cnbc.com/video/2004/05/01/afternoon-session---2004-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 3,
+          "context_id": "cnbc-meeting-1998-afternoon-ch08",
+          "title": "8. Avoid the \"Frozen Corporation\"",
+          "url": "https://buffett.cnbc.com/video/1998/05/04/afternoon-session---1998-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 4,
+          "context_id": "letter-1992-0074-0085",
+          "title": "Valuation, knowability and margin of safety",
+          "url": "https://www.berkshirehathaway.com/letters/1992.html"
+        },
+        {
+          "number": 5,
+          "context_id": "letter-1994-0013-0026",
+          "title": "Ownership, book value and intrinsic value",
+          "url": "https://www.berkshirehathaway.com/letters/1994.html"
+        }
+      ],
+      "failure_events": []
+    },
+    {
+      "case": "V0",
+      "question": "how to evaluate a stock",
+      "record_sha256": "2877949f65c1ec407b4a9ac9fc73207b62a090c523da6c4338542e9667117b81",
+      "completed": true,
+      "client_first_token_ms": 4830,
+      "client_total_ms": 39499,
+      "answer": "## The core method: value a business, not a ticker\n\nThe starting point in these letters is that a stock is a partial ownership of a business, and it should be evaluated the same way you would evaluate buying the whole company. Berkshire's stated criteria, unchanged since 1977 except for substituting \"an attractive price\" for \"a very attractive price\" because of both market conditions and Berkshire's size, are: a business that can be understood, with favorable long-term prospects, operated by honest and competent people, available at an attractive price [1].\n\n## The valuation formula\n\nThe value of any stock, bond or business is the cash inflows and outflows expected over its remaining life, discounted at an appropriate interest rate [1]. The 1994 letter defines intrinsic value the same way: \"the discounted value of the cash that can be taken out of a business during its remaining life\" — a necessarily subjective figure that changes as cash-flow estimates are revised and as interest rates move [4]. The 2000 letter frames the same idea through Aesop: you must estimate how certain you are that there are \"birds in the bush,\" when they will emerge and how many there will be, and what the risk-free rate is — thinking in dollars, not birds [5].\n\nThe key difference from bonds is that a bond's coupon and maturity date define its future cash flows, while for a stock the analyst must estimate the future \"coupons\" — and management quality, which rarely affects a bond coupon, can dramatically affect those equity coupons [1].\n\n## What matters and what doesn't\n\n- **Growth is not a separate category.** Growth is a component of value whose importance can range from negligible to enormous, and whose impact can be negative as well as positive. Growth benefits investors only when each dollar used to finance it creates more than a dollar of long-term market value; in a low-return business requiring incremental funds, growth hurts the investor [1]. The 2000 letter makes the same point: growth can destroy value if early cash inputs exceed the discounted value of the cash those assets generate later [5].\n- **Common yardsticks are only clues.** Low price-to-book, low P/E, or high dividend yield are \"far from determinative\" of a value purchase, and their opposites are in no way inconsistent with one [1]. Dividend yield, P/E, price-to-book and even growth rates matter only to the extent they provide clues to the amount and timing of cash flows [5].\n- **Buy the cheapest calculated option.** The investment shown by the discounted-cash-flow calculation to be cheapest is the one to purchase — and if bonds calculate as the more attractive investment, they should be bought [1].\n\n## Dealing with uncertainty\n\nBecause estimating future \"coupons\" is where even experienced analysts go wrong, the letters describe two safeguards. First, stick to businesses that are relatively simple and stable; if a business is complex or subject to constant change, future cash flows can't be predicted — and what counts is not how much you know but how realistically you define what you don't know [1]. The 2013 letter puts it as: decide whether you can sensibly estimate an earnings range for five years out or more; if yes, buy only at a reasonable price in relation to the bottom boundary of that estimate, and if not, move on to other prospects [3]. Second, insist on a margin of safety: if calculated value is only slightly above price, don't buy [1]. The 2000 letter adds that using precise numbers is foolish — working with a range of possibilities is better — and that when the range must be so wide that no useful conclusion can be reached, any capital commitment must be labeled speculative; this kind of uncertainty frequently arises with new businesses and rapidly changing industries [5].\n\n## Behavior around the purchase\n\nThe 2013 letter stresses focusing on the future productivity of the asset rather than daily price quotes, ignoring macro and market predictions as a waste of time — and dangerous, because they blur your view of what matters — and treating a climate of fear as your friend and a euphoric world as your enemy [3]. The 1996 letter adds a ten-year test: \"If you aren't willing to own a stock for ten years, don't even think about owning it for ten minutes\" [2].\n\nOne caution: the farm example in the 2013 letter — where the purchase was judged to have \"no downside and potentially substantial upside\" — was a first-person assessment of one specific 1986 purchase at a specific price, based on a normalized return of about 10% calculated from estimated yields and operating expenses, not a general rule that investors can establish zero risk [3]. And these letters are historical; applying the method today requires current facts the archive does not provide.",
+      "validation": {
+        "status": "needs_review",
+        "issues": [
+          "A quotation could not be matched exactly to an original cited in its paragraph."
+        ],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "timings": {
+        "retrieval_ms": 671,
+        "first_token_ms": 4813,
+        "writer_ms": 15985,
+        "reviewer_start_ms": 16663,
+        "reviewer_ms": 22811,
+        "total_ms": 39478
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 16244,
+          "output_tokens": 1116
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 17479,
+          "output_tokens": 2301
+        }
+      },
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "sources": [
+        {
+          "number": 1,
+          "context_id": "letter-1992-0074-0085",
+          "title": "Valuation, knowability and margin of safety",
+          "url": "https://www.berkshirehathaway.com/letters/1992.html"
+        },
+        {
+          "number": 2,
+          "context_id": "letter-1996-0098-0118",
+          "title": "Common Stock Investments: durable economics and the limits of competence",
+          "url": "https://www.berkshirehathaway.com/letters/1996.html"
+        },
+        {
+          "number": 3,
+          "context_id": "letter-2013-investing-p001-p040",
+          "title": "Some Thoughts About Investing: farm, property, stock selection and learning",
+          "url": "https://www.berkshirehathaway.com/letters/2013ltr.pdf"
+        },
+        {
+          "number": 4,
+          "context_id": "letter-1994-0013-0026",
+          "title": "Ownership, book value and intrinsic value",
+          "url": "https://www.berkshirehathaway.com/letters/1994.html"
+        },
+        {
+          "number": 5,
+          "context_id": "letter-2000-pdf-p12-p3-through-p13-p9",
+          "title": "Cash-flow uncertainty, useful ranges, and errors despite confidence",
+          "url": "https://www.berkshirehathaway.com/letters/2000pdf.pdf"
+        }
+      ],
+      "failure_events": []
+    },
+    {
+      "case": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "record_sha256": "bc520511185291f75729365b7fe232fcfa70d1438170b8c881d321d21399f8e4",
+      "completed": true,
+      "client_first_token_ms": 6952,
+      "client_total_ms": 65007,
+      "answer": "## Start with the definition of value\n\nIn the archive, the anchor is this definition: intrinsic value is \"the discounted value of the cash that can be taken out of a business during its remaining life\" [3]. It is necessarily a subjective estimate — it changes as your cash-flow forecasts change and as interest rates move — but it is described as the only logical way to judge the relative attractiveness of investments and businesses [3]. Book value is explicitly *not* a substitute: the 1994 letter concludes that book value is \"meaningless as an indicator of intrinsic value,\" useful only as a rough, significantly understated tracking measure [3]. The letter illustrates the gap with Berkshire itself: in 1964 its $19.46 per-share book value overstated intrinsic value because the resources were tied up in a sub-profitable textile business, whereas by 1994 many controlled businesses were worth far more than their carrying values [3].\n\n## The practical sequence\n\n**1. Ask whether you can estimate future earnings at all.** When buying stocks — which are treated as small portions of businesses — the analysis is the same as buying whole businesses: first decide whether you can sensibly estimate an earnings range for five years out or more. If yes, buy only if the price is reasonable relative to the *bottom* of that estimate. If you can't estimate future earnings — which is described as usually the case — move on to other prospects [4]. The 2013 letter puts the same point as a general rule: focus on the future productivity of the asset, and if you can't make a rough estimate of its future earnings, forget it and move on [4].\n\n**2. Estimate the distributable cash.** In a 2004 meeting, an audience member walked through valuing Berkshire: he took operating earnings plus estimated look-through earnings, considered the gap between capital spending and depreciation, projected growth, discounted the flows and a terminal value, adjusted for liabilities and minority interests, and divided by shares outstanding. The meeting discussion in response endorsed the general approach — \"the approach of trying to figure out distributable cash over a period of time\" — while stressing that everything depends on which variables you plug in, and that \"neither one of us knows\" the right ones [2]. Two cautions from that same response: capital spending was expected to average a little more than depreciation (absent highly inflationary times), and retained earnings only add value if the business can reinvest them at a rate above your discount rate [2]. Note that the specific inputs in that exchange — 15% and 10% growth, a 7% discount rate, subtracting the liabilities — were the questioner's assumptions, not prescribed inputs; the response also expected *lower* earnings gains than the questioner postulated, given Berkshire's size [2].\n\n**3. Convert to a per-share figure — carefully.** The audience example divided a whole-business value by the share count [2]. Keep the levels distinct: the discounted cash stream is the value of the whole business; dividing by shares gives the value of one equity share, which is what you compare against a per-share market quote [2][3].\n\n**4. Check that the business is inside your circle.** You can only estimate earnings for businesses you actually understand. The 2002 discussion is blunt: \"if you have doubts about something being into your circle of competence, it isn't,\" and it's better to be well inside the circle than tiptoeing along its edge [1]. Understanding individual transactions is not the same as understanding the whole enterprise — in one example, a large finance company was set aside because, despite understanding each individual transaction, there was uncertainty about the whole operation and whether it could be continually funded independently of Berkshire's credit [1]. Munger added in that same discussion that genuine competence carries a feeling for where its own edge lies [1].\n\n## Two cautions\n\nFirst, the estimate is inherently fuzzy and subjective — the 1994 letter stresses this even while calling intrinsic value essential [3]. Second, a historical example is not a formula: the 1986 farm purchase was judged to have \"no downside and potentially had substantial upside\" based on that specific farm's normalized ~10% return and the price paid [4]. That was one assessment of one purchase at one time — it is not a rule that any purchase you feel confident about carries no risk. And the discount rate used in any of these examples is a historical illustration, not a rate to apply today; current decisions need current numbers this archive doesn't supply.",
+      "validation": {
+        "status": "references_checked",
+        "issues": [],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "timings": {
+        "retrieval_ms": 676,
+        "first_token_ms": 6935,
+        "writer_ms": 18954,
+        "reviewer_start_ms": 19638,
+        "reviewer_ms": 45340,
+        "total_ms": 64985
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 18545,
+          "output_tokens": 1279
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 19797,
+          "output_tokens": 2678
+        }
+      },
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "sources": [
+        {
+          "number": 1,
+          "context_id": "meeting-2002-boundary",
+          "title": "Understanding transactions is not understanding the whole enterprise",
+          "url": "https://buffett.cnbc.com/video/2002/05/04/afternoon-session---2002-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 2,
+          "context_id": "chapter:cnbc-meeting-2004-afternoon-ch28",
+          "title": "28. Estimating intrinsic value",
+          "url": "https://buffett.cnbc.com/video/2004/05/01/afternoon-session---2004-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 3,
+          "context_id": "letter-1994-0013-0026",
+          "title": "Ownership, book value and intrinsic value",
+          "url": "https://www.berkshirehathaway.com/letters/1994.html"
+        },
+        {
+          "number": 4,
+          "context_id": "letter-2013-investing-p001-p040",
+          "title": "Some Thoughts About Investing: farm, property, stock selection and learning",
+          "url": "https://www.berkshirehathaway.com/letters/2013ltr.pdf"
+        },
+        {
+          "number": 5,
+          "context_id": "meeting-2014-self-assessment",
+          "title": "Recognizing the boundary can fail even for Buffett",
+          "url": "https://buffett.cnbc.com/video/2014/05/03/afternoon-session---2014-berkshire-hathaway-annual-meeting.html"
+        }
+      ],
+      "failure_events": []
+    },
+    {
+      "case": "V2",
+      "question": "If I’m buying a small piece of a business, how do I judge a sensible price without just relying on its P/E ratio?",
+      "record_sha256": "efb60edd4cb67ecd1c45aa3e34d8fcab322d88c1bd2ab17de9cb800eb0fa7bfd",
+      "completed": true,
+      "client_first_token_ms": 10662,
+      "client_total_ms": 44681,
+      "answer": "The short answer, from these sources: treat the stock exactly as you would treat buying the entire business. Estimate the cash the business will produce over its remaining life, discount those flows to a present value, and demand a price well below that figure. The P/E ratio is not the analysis; the sources treat it as a rough symptom, far from determinative on its own.\n\n**Why the P/E alone misleads.** In the 1992 letter, Buffett argues that the usual \"value\" markers — a low price-to-book ratio, a low price-earnings ratio, or a high dividend yield — are \"far from determinative\" as to whether you're buying something for what it is worth, and that the opposite characteristics are in no way inconsistent with a value purchase [2]. Growth, likewise, tells you little about value by itself: it benefits investors only when each dollar used to finance growth creates more than a dollar of long-term market value, and it hurts the investor in a low-return business that keeps absorbing incremental funds [2]. So the ratio is at best a symptom; the real question is what the business will actually earn and hand back to owners.\n\n**The practical steps the sources support:**\n\n1. **Value it as if buying the whole company.** In the 2013 letter, Buffett says that when he and Munger buy stocks — which they think of as small portions of businesses — the analysis is the same as for buying an entire business: they first decide whether they can sensibly estimate an earnings range five years out or more, and buy only if the price is reasonable in relation to the bottom boundary of that estimate. If they can't estimate future earnings — usually the case — they move on [1].\n\n2. **Discount expected cash flows.** The 1992 letter, citing John Burr Williams, gives the core equation: the value of any stock, bond or business today is the cash inflows and outflows expected over the asset's remaining life, discounted at an appropriate interest rate. The formula is the same for stocks and bonds; the hard part is that with equities you must estimate the future \"coupons\" yourself, and management ability can dramatically affect them [2].\n\n3. **Use a consistent discount rate as a yardstick, adjusted for certainty.** At the 1998 meeting, Buffett said Berkshire discounts at the long rate simply to have a standard of measurement across all businesses [5]; the meeting discussion added that this is a common yardstick and does not mean you pay the full present value that calculation produces [5]. At the 1994 meeting, Buffett said that in a world of 7% long-term bond rates, Berkshire would want to discount future after-tax cash streams at at least a 10% rate [4]; the discussion added that the rate depends on the certainty felt about the business — the more certain, the closer they are willing to play it — and that they have to feel pretty certain about any business before being interested at all [4]. These are historical examples from 1994 and 1998, not a current rate.\n\n4. **Count net cash, not gross cash flow.** A company spending its cash as it comes in on new stores or plants gets no credit for gross cash flow — only for whatever net cash is left each year [5]. This is why Buffett called EBITDA \"utter nonsense\": it is stated before the cash required simply to stay in the same place competitively [5].\n\n5. **Demand a margin of safety.** If calculated value is only slightly higher than the price, they're not interested; the margin-of-safety principle, so strongly emphasized by Ben Graham, is called the cornerstone of investment success [2].\n\nTwo cautions from the sources: stay well inside your circle of competence — if you have doubts whether something is in it, it isn't [3] — and recognize that even an experienced, intelligent analyst can easily go wrong estimating future \"coupons,\" which is precisely why the simple-and-stable filter and the margin of safety exist [2].",
+      "validation": {
+        "status": "references_checked",
+        "issues": [],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "timings": {
+        "retrieval_ms": 346,
+        "first_token_ms": 10657,
+        "writer_ms": 21903,
+        "reviewer_start_ms": 22259,
+        "reviewer_ms": 22410,
+        "total_ms": 44672
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 17804,
+          "output_tokens": 1501
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 18945,
+          "output_tokens": 2084
+        }
+      },
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "sources": [
+        {
+          "number": 1,
+          "context_id": "letter-2013-investing-p001-p040",
+          "title": "Some Thoughts About Investing: farm, property, stock selection and learning",
+          "url": "https://www.berkshirehathaway.com/letters/2013ltr.pdf"
+        },
+        {
+          "number": 2,
+          "context_id": "letter-1992-0074-0085",
+          "title": "Valuation, knowability and margin of safety",
+          "url": "https://www.berkshirehathaway.com/letters/1992.html"
+        },
+        {
+          "number": 3,
+          "context_id": "meeting-2002-boundary",
+          "title": "Understanding transactions is not understanding the whole enterprise",
+          "url": "https://buffett.cnbc.com/video/2002/05/04/afternoon-session---2002-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 4,
+          "context_id": "cnbc-meeting-1994-morning-ch13",
+          "title": "13. Unlikely we'd buy company with no current cash flow",
+          "url": "https://buffett.cnbc.com/video/1994/04/25/morning-session---1994-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 5,
+          "context_id": "cnbc-meeting-1998-afternoon-ch08",
+          "title": "8. Avoid the \"Frozen Corporation\"",
+          "url": "https://buffett.cnbc.com/video/1998/05/04/afternoon-session---1998-berkshire-hathaway-annual-meeting.html"
+        }
+      ],
+      "failure_events": []
+    },
+    {
+      "case": "V3",
+      "question": "How do I go from estimating what the whole business can pay its owners to deciding whether one share is cheap?",
+      "record_sha256": "ea457db395780408f33b86b7ae6e6159903b32b221253866e240e10681a9669f",
+      "completed": true,
+      "client_first_token_ms": 31627,
+      "client_total_ms": 94550,
+      "answer": "## The short answer\n\nValue the whole business as the discounted value of the cash it can pay out over its remaining life, then compare your fractional ownership of that value — not the whole-business figure — against the per-share price, and buy only when the price leaves a real margin of safety below your estimate. The sources supply the pieces: owner earnings [1], the discounted-cash definition of intrinsic value [2][3], the discount-rate yardstick [4], and the margin-of-safety test at the end [3].\n\n## Step 1: Estimate what the business can pay its owners\n\nStart with owner earnings: reported earnings plus depreciation, depletion, amortization and certain other non-cash charges, minus the average annual capitalized expenditures the business requires to fully maintain its long-term competitive position and unit volume — and if additional working capital is required to hold that competitive position and unit volume, the increment belongs in the subtraction too (with the noted exception that businesses using LIFO usually do not require additional working capital if unit volume does not change) [1]. This is the figure the 1986 letter calls the relevant one \"for valuation purposes — both for investors in buying stocks and for managers in buying entire businesses\" [1].\n\nTwo cautions travel with the formula. Component (c) must be a guess, sometimes very difficult to make, which is why owner earnings lacks the deceptive precision of GAAP figures [1]. And when (c) exceeds the full set of non-cash addbacks in (b) — not merely depreciation — GAAP earnings overstate owner earnings, sometimes substantially; the oil industry of that era was the cited example [1]. At the 1998 annual meeting, the same point arose in discussion: a company that spends money as it comes in \"doesn't get credit for gross cash flow, they get credit for whatever net cash is left every year,\" and EBITDA was dismissed as nonsense for businesses with significant fixed assets, since major cash must be reinvested simply to stay in the same place [4].\n\n## Step 2: Discount, using a common yardstick\n\nIntrinsic value is defined as \"the discounted value of the cash that can be taken out of a business during its remaining life\" — necessarily subjective, changing as cash-flow estimates are revised and as interest rates move [2]. In the 1998 meeting discussion, the stated practice was to discount at the long-term Treasury rate as a standard of measurement across all businesses — the questioner noted long Treasurys were around 6% at the time — while stressing that this does not mean paying the amount the present-value calculation produces; it is a common yardstick. A business reinvesting all its cash for several years had better deliver very big cash figures down the road, because at some point a financial asset has to give you back cash [4]. The 6% figure was a 1998 fact from the question, not a standing rule.\n\n## Step 3: Scale to one share\n\nThe bridge from whole business to single share is ownership proportion. Berkshire's 1994 letter illustrates the logic with partial stakes: a 7.8% interest in Coca-Cola meant an economic interest in 21 billion of its servings, producing nearly $200 million of \"soft-drink earnings\" for Berkshire in 1994 [2]. Stocks are thought of as \"small portions of businesses,\" analyzed the same way as buying them entire [5]. So the per-share comparison is: your estimate of the whole business's value, multiplied by the fraction one share represents, set against the quoted price. A whole-company value and a one-share quote are different units and must never be set directly against each other.\n\n## Step 4: Apply the margin of safety\n\nThe final test is Graham's margin-of-safety principle: if the calculated value of a stock is only slightly higher than its price, the 1992 letter says, \"we're not interested in buying\" [3]. The 2013 letter puts the idea operationally: first decide whether you can sensibly estimate an earnings range five years out or more; if yes, buy only at a reasonable price relative to the bottom boundary of that estimate; if you can't estimate, move on [5]. Low price-to-book, low P/E or high dividend yield alone do not establish value, and growth benefits owners only when each dollar financing it creates more than a dollar of long-term market value [3].\n\nOne honest limitation: the sources describe the method but contain no current discount rate, no current business figures, and no numerical rule for how large the discount to calculated value must be beyond \"not slight\" — those require current facts and judgment the archive does not supply.",
+      "validation": {
+        "status": "needs_review",
+        "issues": [
+          "A quotation could not be matched exactly to an original cited in its paragraph."
+        ],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "timings": {
+        "retrieval_ms": 464,
+        "first_token_ms": 31623,
+        "writer_ms": 44908,
+        "reviewer_start_ms": 45384,
+        "reviewer_ms": 49148,
+        "total_ms": 94542
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 19411,
+          "output_tokens": 1854
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 20668,
+          "output_tokens": 3149
+        }
+      },
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "sources": [
+        {
+          "number": 1,
+          "context_id": "letter-1986-0154-0297",
+          "title": "Complete owner-earnings appendix",
+          "url": "https://www.berkshirehathaway.com/letters/1986.html"
+        },
+        {
+          "number": 2,
+          "context_id": "letter-1994-0013-0026",
+          "title": "Ownership, book value and intrinsic value",
+          "url": "https://www.berkshirehathaway.com/letters/1994.html"
+        },
+        {
+          "number": 3,
+          "context_id": "letter-1992-0074-0085",
+          "title": "Valuation, knowability and margin of safety",
+          "url": "https://www.berkshirehathaway.com/letters/1992.html"
+        },
+        {
+          "number": 4,
+          "context_id": "cnbc-meeting-1998-afternoon-ch08",
+          "title": "8. Avoid the \"Frozen Corporation\"",
+          "url": "https://buffett.cnbc.com/video/1998/05/04/afternoon-session---1998-berkshire-hathaway-annual-meeting.html"
+        },
+        {
+          "number": 5,
+          "context_id": "letter-2013-investing-p001-p040",
+          "title": "Some Thoughts About Investing: farm, property, stock selection and learning",
+          "url": "https://www.berkshirehathaway.com/letters/2013ltr.pdf"
+        }
+      ],
+      "failure_events": []
+    }
+  ]
+}

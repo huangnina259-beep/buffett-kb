@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-11-18",
+  "scope": "Bounded independent manual source review of the three completed GLM low-reasoning outputs. No APIs, network calls, original changes, caveat edits or prompt changes.",
+  "source_packet_sha256": "34aecaaf607ddcf2532a382e7f6955aeae1892f1f43541eb27c9dd89dcf9b53f",
+  "reading_notes_sha256": "226c1294f1702ae68c975e4b52e4aaf29415cb2687923e4f8703e2aa7da9cb90",
+  "cases": [
+    {
+      "id": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "result_file": "work/buffett-kb-integration/glm-low-results/V1.json",
+      "result_sha256": "45bf4286c07c654ccb477eeac19d866194f5b163c333d0aad450435a66e82e75",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-2-with-source-caveats",
+      "client_first_token_ms": 4807,
+      "client_total_ms": 20692,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 18295,
+        "output_tokens": 1322
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "assessment": "Useful valuation overview, but the generalized no-downside buying instruction is a substantive publication blocker; moderate contextual issues also remain.",
+      "severe_blocker": "Unsupported general buying rule from one historical farm example, rather than an error in the present-value definition.",
+      "useful": [
+        "Subjective lifetime distributable-cash definition and conservative comparison are preserved.",
+        "No invented required-return definition or risk-premium formula.",
+        "Audience numerical assumptions distinguished from prescribed inputs.",
+        "Recognizes knowing products or transactions is insufficient for enterprise valuation."
+      ],
+      "issues": [
+        {
+          "severity": "material_advice_blocker",
+          "claim": "Estimate normalized earnings, consider what could raise them, and buy when there is no downside and potential upside.",
+          "evidence": [
+            "letter-2013-investing-p005",
+            "letter-2013-investing-p006",
+            "letter-2013-investing-p008",
+            "letter-2013-investing-p025"
+          ],
+          "finding": "The no-downside phrase is Buffett’s historical judgment on his farm purchase, conditioned on the price, expected output/expenses, possible bad crops and no pressure to sell. The answer generalizes it into an acquisition rule and conflates two examples. The source’s general stock discussion instead compares price with the bottom of an estimable earnings range."
+        },
+        {
+          "severity": "material_qualification",
+          "claim": "Book value is meaningless as an indicator of intrinsic value.",
+          "evidence": [
+            "berkshire-letter-1994:u0020",
+            "berkshire-letter-1994:u0022",
+            "berkshire-letter-1994:u0024",
+            "berkshire-letter-1994:u0026"
+          ],
+          "finding": "The answer acknowledges the education example but still presents its concluding phrase as a general stock-valuation rule, omitting the same section’s rough tracking role for Berkshire book value."
+        },
+        {
+          "severity": "moderate_scope_loss",
+          "claim": "After enumerating the audience method, the answer says Buffett endorsed the approach without separating liability/minority subtraction from the general distributable-cash approach.",
+          "evidence": [
+            "cnbc-meeting-2004-afternoon-ch28-p011",
+            "cnbc-meeting-2004-afternoon-ch28-p014",
+            "cnbc-meeting-2004-afternoon-ch28-p015",
+            "cnbc-meeting-2004-afternoon-ch28-p019"
+          ],
+          "finding": "This risks treating every listed modelling step as endorsed. The original reply supports the general present-value approach but does not specifically validate liability/minority adjustments. It is not a demonstrated numerical double subtraction in the answer."
+        },
+        {
+          "severity": "provenance_blocker_under_project_rules",
+          "claim": "Buffett’s 2004 response and qualifications.",
+          "evidence": [
+            "cnbc-meeting-2004-afternoon-ch28-p014",
+            "cnbc-meeting-2004-afternoon-ch28-p015",
+            "cnbc-meeting-2004-afternoon-ch28-p016",
+            "cnbc-meeting-2004-afternoon-ch28-p017",
+            "cnbc-meeting-2004-afternoon-ch28-p020"
+          ],
+          "finding": "These continuation paragraphs have speaker=null in the original packet. Named speaker claims are not verified."
+        }
+      ],
+      "not_counted_as_failure": [
+        "Ignore the macro is brisk wording, but 2013 p016 directly criticizes macro/market forecasting and p025 directly reports their purchase practice. Do not flag merely because it is imperative.",
+        "The opening lacks a worked per-share conversion but no incompatible numerical comparison is made."
+      ]
+    },
+    {
+      "id": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "result_file": "work/buffett-kb-integration/glm-low-results/O1.json",
+      "result_sha256": "a0d4456b3cbbafa3d22960036e33e4f1c13c980055cd99a1605892e4b0be924c",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-2-with-source-caveats",
+      "client_first_token_ms": 4449,
+      "client_total_ms": 17393,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 17530,
+        "output_tokens": 930
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "assessment": "Economically sound and useful for the question; source-attribution correction remains.",
+      "severe_blocker": null,
+      "useful": [
+        "Full b and c definitions, required working-capital sign and LIFO condition correct.",
+        "Explicitly compares full b against c to explain both directions of the reported-versus-owner-earnings gap.",
+        "Scott Fetzer equal economics and purchase accounting faithfully explained.",
+        "The bridge/gas-field exception remains attached to the a+b shorthand; EBITDA is criticized separately.",
+        "Identifies c as a difficult estimate."
+      ],
+      "issues": [
+        {
+          "severity": "provenance_blocker_under_project_rules",
+          "claim": "Buffett said in 1998 a financial asset must eventually deliver cash to justify its cost.",
+          "evidence": [
+            "cnbc-meeting-1998-afternoon-ch08-p005",
+            "cnbc-meeting-1998-afternoon-ch08-p011"
+          ],
+          "finding": "The net-versus-gross statement p005 has explicit Buffett attribution, but the later cash-return sentence p011 has speaker=null. The paragraph merges their attribution."
+        }
+      ],
+      "not_counted_as_failure": [
+        "Noncash charges irrelevant to economics is broad in isolation, but the complete answer explicitly recognizes maintenance/replacement spending and explains purchase accounting. No materially misleading depreciation inference is made.",
+        "The 1986 original says the cash-flow shorthand may be useful for some initial-outlay businesses; the answer’s allows it only wording is somewhat firmer, but its examples and economic distinction remain accurate enough for this question."
+      ]
+    },
+    {
+      "id": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "result_file": "work/buffett-kb-integration/glm-low-results/C1.json",
+      "result_sha256": "64a2e32c5d1d4e02070f2e6300a58fc2de18b27b249ea1784d90a0f9af610fd7",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-2-with-source-caveats",
+      "client_first_token_ms": 3107,
+      "client_total_ms": 16210,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 16462,
+        "output_tokens": 1067
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "assessment": "Useful and materially better than both preceding models on this case; moderate scope and synthesis issues remain, without the earlier critical confidence/innateness reversals.",
+      "severe_blocker": null,
+      "useful": [
+        "Explicitly states absence of doubt does not prove competence.",
+        "Preserves necessarily and the finance-company Berkshire-credit qualification.",
+        "Distinguishes general understanding from valuation.",
+        "Retains fallibility and friends’ challenge without claiming self-assessment is innate.",
+        "No wrong 2014 date attached to the 2002 Munger material."
+      ],
+      "issues": [
+        {
+          "severity": "material_qualification",
+          "claim": "Seeing customer reasons persisting for decades is presented as a test sufficient for understanding; the heading asks whether the business will be unchanged in ten or twenty years.",
+          "evidence": [
+            "berkshire-letter-1996:u0101",
+            "berkshire-letter-1996:u0103",
+            "berkshire-letter-1996:u0109",
+            "berkshire-letter-1992:u0084"
+          ],
+          "finding": "Berkshire seeks predictable durable strength and explains its own forecasting limitations. These preferences are not a universal definition of competence, and the See’s example explicitly includes changes in machinery, assortment and distribution. The body is more qualified than the heading, so this is scope loss rather than a wholly false claim that nothing can change."
+        },
+        {
+          "severity": "moderate_unlabelled_synthesis",
+          "claim": "If you cannot say what would have to be true for the business to fail, you probably do not understand it.",
+          "evidence": [
+            "berkshire-letter-1992:u0084"
+          ],
+          "finding": "Knowing one’s limits supports an editorial diagnostic idea, but this particular operational test is not stated in the cited primary passage. Label as synthesis or omit."
+        },
+        {
+          "severity": "minor_grouping",
+          "claim": "Retail most often (the Baltimore department store, and taking control of Berkshire itself).",
+          "evidence": [
+            "cnbc-meeting-2014-afternoon-ch07-p008",
+            "cnbc-meeting-2014-afternoon-ch07-p009",
+            "cnbc-meeting-2014-afternoon-ch07-p010"
+          ],
+          "finding": "The parenthesis may group the textile-company takeover under retail. These are separate acknowledged mistakes. This does not impair the main fallibility point."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "content_assessment": "O1 sound on material economics; C1 useful with moderate scope corrections; V1 requires removing the generalized no-downside instruction and correcting contextual overreach.",
+    "comparison": "Better C1 source fidelity than Qwen and earlier DeepSeek. O1 economically comparable to the improved Qwen result, with fewer details and clear b/c comparison. V1 has no invented risk-premium/required-return definition, but still generalizes examples and unresolved speakers.",
+    "strict_release_status": "All require at least targeted corrections under project rules; this is not a claim that all are unusable or economically wrong.",
+    "next_prompt_advice": "The planned bounded test of explicit speaker-null and example-scope instructions is justified. Keep reading notes labelled editorial and subordinate to originals; require synthesis to remain labelled. Do not continue expanding notes from every sample or describe the next prompt as guaranteed. Evaluate the actual fixed-prompt results and preserve unsuccessful attempts.",
+    "latency_range_seconds": [
+      16.21,
+      20.692
+    ]
+  },
+  "limits": [
+    "Three questions only, using supplied passages; not a corpus-wide or model-family guarantee.",
+    "Exact-quote validator needs_review was not automatically treated as semantic failure."
+  ]
+}

@@ -1,0 +1,266 @@
+{
+  "schema_version": "bounded-source-review-1",
+  "reviewed_on": "2026-11-18",
+  "scope": "Actual DeepSeek V1,O1,C1 outputs after source caveats; comparisons are source-based, not template-similarity scoring.",
+  "status": "independent_agent_review_not_semantic_guarantee",
+  "source_packet_sha256": "34aecaaf607ddcf2532a382e7f6955aeae1892f1f43541eb27c9dd89dcf9b53f",
+  "reading_notes_sha256": "226c1294f1702ae68c975e4b52e4aaf29415cb2687923e4f8703e2aa7da9cb90",
+  "cases": [
+    {
+      "case": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "result_sha256": "3064f43b49f9593c3e7cf9558786a1164766ec8eda92169ba982e27de698c4e1",
+      "model": "DeepSeek-V4-Flash",
+      "prompt_version": "english-originals-2-with-source-caveats",
+      "acceptance": "not_accepted_as_written",
+      "assessment": "Useful intrinsic-value definition, cash-flow focus, uncertainty and per-share comparison. Not accepted as written: unsupported valuation rules and mathematical/generalization defects remain.",
+      "selected_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "applicable_caveat_ids": [
+        "competence-uncertainty",
+        "audience-valuation-assumptions"
+      ],
+      "source_event_integrity_checks": [
+        {
+          "context_id": "meeting-2002-boundary",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "chapter:cnbc-meeting-2004-afternoon-ch28",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "letter-1994-0013-0026",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "letter-2013-investing-p001-p040",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "meeting-2014-self-assessment",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        }
+      ],
+      "findings": [
+        {
+          "severity": "material",
+          "answer_excerpt": "many investors use “look-through earnings” or owner earnings as a rough proxy",
+          "problem": "A single audience member proposed look-through earnings as a proxy; the source does not establish this general practice or treat owner earnings and look-through earnings as equivalent.",
+          "primary_paragraph_ids": [
+            "cnbc-meeting-2004-afternoon-ch28-p008",
+            "cnbc-meeting-2004-afternoon-ch28-p014"
+          ]
+        },
+        {
+          "severity": "material",
+          "answer_excerpt": "The rate should reflect the time value of money and the risk of the cash flows",
+          "problem": "Introduces a risk/required-return/opportunity-cost prescription unsupported by the selected originals. The separate 1998 packet rejects using a higher rate to compensate for not understanding the business; that context was not selected here.",
+          "primary_paragraph_ids": [
+            "cnbc-meeting-2004-afternoon-ch28-p015",
+            "cnbc-meeting-1998-afternoon-ch08-p005",
+            "cnbc-meeting-1998-afternoon-ch44-p012"
+          ]
+        },
+        {
+          "severity": "material",
+          "answer_excerpt": "This means owner earnings are typically less than reported earnings",
+          "problem": "Capex exceeding depreciation does not establish c greater than the complete b. The 2004 Berkshire-specific capex expectation is also generalized to businesses.",
+          "primary_paragraph_ids": [
+            "cnbc-meeting-2004-afternoon-ch28-p017",
+            "berkshire-letter-1986:u0286",
+            "berkshire-letter-1986:u0290"
+          ]
+        },
+        {
+          "severity": "material",
+          "answer_excerpt": "project distributable cash over a period (say, 20 years) and then estimate a terminal value",
+          "problem": "Turns an audience calculation into a prescribed step-by-step method. The reply accepts general cash valuation but questions variables; it does not validate a 20-year horizon or perpetual-coupon assumption.",
+          "primary_paragraph_ids": [
+            "cnbc-meeting-2004-afternoon-ch28-p009",
+            "cnbc-meeting-2004-afternoon-ch28-p014",
+            "cnbc-meeting-2004-afternoon-ch28-p019",
+            "cnbc-meeting-2004-afternoon-ch28-p020"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "result_sha256": "1f4a58293ba42d259250ba5e2501906f08c8fa9a965b84cce5c997a59af5baa7",
+      "model": "DeepSeek-V4-Flash",
+      "prompt_version": "english-originals-2-with-source-caveats",
+      "acceptance": "not_accepted_as_written",
+      "assessment": "Useful full owner-earnings formula and correct working-capital subtraction. Not accepted as written: later explanation still contradicts the full formula and misstates the EBITDA exception.",
+      "selected_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "applicable_caveat_ids": [
+        "owner-earnings-components",
+        "audience-valuation-assumptions",
+        "discount-rate-source-formulation"
+      ],
+      "source_event_integrity_checks": [
+        {
+          "context_id": "letter-1986-0154-0297",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "letter-2000-pdf-p12-p3-through-p13-p9",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "cnbc-meeting-1998-afternoon-ch08",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "cnbc-meeting-1998-afternoon-ch44",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "chapter:cnbc-meeting-2004-afternoon-ch28",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        }
+      ],
+      "findings": [
+        {
+          "severity": "material",
+          "answer_excerpt": "old company’s depreciation (b) of $8.3 million",
+          "problem": "Narrows complete noncash component b to depreciation, then repeats this narrowed comparator for the oil-industry claim. Correct full formula elsewhere does not repair the contradiction.",
+          "primary_paragraph_ids": [
+            "berkshire-letter-1986:u0286",
+            "berkshire-letter-1986:u0289",
+            "berkshire-letter-1986:u0290"
+          ]
+        },
+        {
+          "severity": "material",
+          "answer_excerpt": "EBITDA is essentially (a) + (b) without subtracting (c)",
+          "problem": "Conflates EBITDA with reported earnings plus all specified noncash addbacks; then transfers the limited cash-flow shorthand exception to EBITDA under the same heading.",
+          "primary_paragraph_ids": [
+            "berkshire-letter-1986:u0291",
+            "berkshire-letter-1986:u0292",
+            "cnbc-meeting-1998-afternoon-ch08-p019"
+          ]
+        },
+        {
+          "severity": "material",
+          "answer_excerpt": "A business that requires little or no capital to grow",
+          "problem": "The See’s example cited is maintenance expenditure exceeding depreciation by $500,000–$1m, not evidence of capital required for growth or of higher owner earnings relative to reported profit.",
+          "primary_paragraph_ids": [
+            "berkshire-letter-1986:u0295"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "result_sha256": "9f961fd7b47e4b21568a95f077c706f2594d154a98bacb07f2fc6658c7bff1ca",
+      "model": "DeepSeek-V4-Flash",
+      "prompt_version": "english-originals-2-with-source-caveats",
+      "acceptance": "not_accepted_as_written",
+      "assessment": "Useful product/enterprise distinction and restored exact Berkshire-credit uncertainty. Not accepted as written: universalizes Berkshire preferences and adds a wrong-company attribution.",
+      "selected_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "applicable_caveat_ids": [
+        "competence-uncertainty",
+        "historical-inevitables"
+      ],
+      "source_event_integrity_checks": [
+        {
+          "context_id": "meeting-2002-boundary",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "letter-1992-0074-0085",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "cnbc-meeting-1998-afternoon-ch44",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "letter-1996-0098-0118",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        },
+        {
+          "context_id": "meeting-2014-self-assessment",
+          "complete_paragraph_count_match": true,
+          "paragraph_text_and_speaker_match": true
+        }
+      ],
+      "findings": [
+        {
+          "severity": "material",
+          "answer_excerpt": "simplicity and stability are prerequisites for understanding",
+          "problem": "Transforms Berkshire’s self-described limitations/preferences into a universal prerequisite. The final checklist similarly says the user cannot understand a changing business and must establish decades of competitive strength.",
+          "primary_paragraph_ids": [
+            "berkshire-letter-1992:u0084",
+            "berkshire-letter-1996:u0101",
+            "berkshire-letter-1996:u0109"
+          ]
+        },
+        {
+          "severity": "material",
+          "answer_excerpt": "Buffett uses Coca-Cola as an example",
+          "problem": "Combines the Coke passage with the adjacent See’s statement about purchase motivations unchanged since the 1920s, thereby assigning the latter claim to the wrong company.",
+          "primary_paragraph_ids": [
+            "berkshire-letter-1996:u0103",
+            "berkshire-letter-1996:u0104"
+          ]
+        },
+        {
+          "severity": "material",
+          "answer_excerpt": "he did not regard the whole enterprise as within his circle of competence",
+          "problem": "The full quotation usefully restores uncertainty about Berkshire credit, but the following paraphrase again drops necessarily. Keep the qualified whole-enterprise judgment.",
+          "primary_paragraph_ids": [
+            "cnbc-meeting-2002-afternoon-ch18-p011",
+            "cnbc-meeting-2002-afternoon-ch18-p012"
+          ]
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "accepted_as_written": 0,
+    "cases": 3,
+    "useful_but_materially_defective": 3,
+    "note_or_original_changes": false,
+    "model_or_network_calls": 0
+  },
+  "limits": [
+    "Selected original paragraphs and speaker fields mechanically matched packet; this does not establish transcript/audio accuracy.",
+    "Source-specific notes do not guarantee obedience or semantic correctness.",
+    "No model ranking inferred from these three convenience-sample outputs."
+  ]
+}

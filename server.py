@@ -39,6 +39,12 @@ from starlette.concurrency import run_in_threadpool
 
 app = FastAPI()
 
+# The focused English pilot reuses the backend and gateways, with its own source
+# collection. The existing application remains the default unless opted in.
+if os.environ.get("ENGLISH_PILOT_ENABLED", "false").lower() == "true":
+    from english_qa import router as english_router
+    app.include_router(english_router)
+
 
 @app.middleware("http")
 async def protect_deployed_model_settings(request, call_next):
@@ -371,6 +377,8 @@ async def react_app(rest: str = ""):
 @app.get("/", response_class=HTMLResponse)
 @app.get("/index.html", response_class=HTMLResponse)
 async def read_root():
+    if os.environ.get("ENGLISH_PILOT_ENABLED", "false").lower() == "true":
+        return (frontend_dir / "english.html").read_text(encoding="utf-8")
     with open(frontend_dir / "index.html", "r", encoding="utf-8") as f:
         return f.read()
 

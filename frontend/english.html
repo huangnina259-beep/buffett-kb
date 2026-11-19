@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>The Compounder · 复利国</title>
+<style>
+:root {
+  --paper:#f8f9f5; --white:#fff; --ink:#1e342b; --text:#303e36; --muted:#59695e;
+  --line:#dbe2da; --green:#28563f; --soft:#edf3eb; --amber:#815d25; --red:#884131;
+  font-family:Arial,Helvetica,sans-serif; color-scheme:light;
+}
+* { box-sizing:border-box }
+body { margin:0; background:var(--paper); color:var(--text); font-size:1rem; line-height:1.55 }
+button,input,textarea { font:inherit }
+button,a,summary { touch-action:manipulation }
+button { cursor:pointer; border:0; background:none; color:inherit }
+button:disabled { cursor:default; opacity:.55 }
+a { color:var(--green) }
+h1,h2,h3,p { margin:0 }
+summary { cursor:pointer }
+button:focus-visible,a:focus-visible,summary:focus-visible,textarea:focus-visible,[tabindex="0"]:focus-visible { outline:2px solid #548366; outline-offset:3px }
+[hidden] { display:none!important }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
+.skip { position:fixed; left:1rem; top:-5rem; padding:.5rem; z-index:10; background:white }.skip:focus{top:.5rem}
+.shell { width:min(100%,78rem); min-height:100svh; margin:auto; padding:0 clamp(1rem,4vw,3.75rem) 1.5rem }
+header { position:relative; z-index:4; display:flex; align-items:center; justify-content:space-between; gap:.8rem; min-height:4.75rem; border-bottom:1px solid var(--line) }
+.brand { display:flex; align-items:center; gap:.63rem; padding:0; color:var(--ink) }
+.mark { display:grid; place-items:center; width:2.1rem; height:2.25rem; border-radius:.5rem; background:var(--green); color:white; font:1.75rem/1 Georgia,serif }
+.brand-wordmark { display:grid; gap:.12rem; text-align:left }
+.brand-name { font:1.15rem/1.05 Georgia,serif }.brand-chinese { font:.75rem/1.2 'PingFang SC',sans-serif; letter-spacing:.12em; color:var(--muted) }
+.header-right { display:flex; align-items:center; gap:.8rem }.header-right button,.about>summary { font-size:.875rem; min-height:2.6rem; display:inline-flex; align-items:center; padding:.3rem .55rem; color:var(--green) }
+.new-chat { border:1px solid var(--line); border-radius:.55rem }.shell:not(.conversation) .new-chat { display:none }
+.about>summary { list-style:none }.about>summary::-webkit-details-marker { display:none }.about>summary:hover,.mobile-chats:hover { text-decoration:underline }
+.about-panel,.rail { position:absolute; right:0; top:calc(100% + .4rem); z-index:5; width:min(23rem,100%); max-height:65dvh; overflow:auto; background:white; border:1px solid var(--line); border-radius:.9rem; padding:1.2rem; box-shadow:0 12px 34px #23362a20 }
+.about-panel { font-size:.875rem }.about-panel h2 { font:1.35rem/1.3 Georgia,serif }.about-panel p,.rail h2 { margin-top:.6rem }
+.rail { display:none }.rail.mobile-open { display:block }.rail h2 { margin:0 0 .55rem; font-size:1rem }.empty-chats { color:var(--muted); font-size:.875rem }
+.chat-nav { list-style:none; padding:0; margin:0 }.chat-nav li { display:flex; align-items:center; border-radius:.4rem }
+.chat-nav li.current,.chat-nav li:hover { background:var(--soft) }
+.chat-title { flex:1; min-width:0; text-align:left; padding:.58rem .5rem; font-size:.875rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.delete-chat { width:2.6rem; min-height:2.5rem; font-size:1.25rem; color:var(--muted) }
+main { width:min(100%,52rem); margin:auto; padding:clamp(2.25rem,6.4vh,4.5rem) 0 0 }
+.hero { text-align:center; margin:0 auto 1.6rem }
+.hero h1 { color:var(--ink); font:400 clamp(2.25rem,5vw,3.65rem)/1.09 Georgia,'Times New Roman',serif; letter-spacing:-.042em; text-wrap:balance }
+.hero p { max-width:37rem; margin:.75rem auto 0; line-height:1.55; color:var(--muted); text-wrap:pretty }
+.workspace { background:var(--white); border:1px solid #c9d5cb; border-radius:1.2rem; box-shadow:0 4px 20px #263b3008 }
+.composer { background:var(--white); border-radius:inherit; padding:.85rem 1.1rem .65rem }.workspace:focus-within { border-color:#9bb3a3 }
+textarea { display:block; resize:vertical; width:100%; border:0; color:var(--ink); background:transparent; outline:none; font-size:1rem; line-height:1.5 }
+#question { resize:none; min-height:3.4rem; max-height:8rem; padding:.15rem 0; }.composer textarea:focus-visible { outline:none }textarea::placeholder { opacity:1; color:#617268 }
+.actions,.action-buttons { display:flex; align-items:center; gap:.65rem }.actions{justify-content:space-between}.key-hint,.scope-note { color:var(--muted);font-size:.8125rem }
+.scope-note { text-align:center; margin:.65rem 0 0 }.scope-note a { text-underline-offset:.15rem }
+.primary,.stop { min-height:2.6rem; padding:.45rem 1.05rem; border-radius:.65rem; font-size:.875rem }
+.primary { background:var(--green); color:white; font-weight:600 }.primary:not(:disabled):hover { background:#193f2d }.stop { border:1px solid var(--line); background:var(--white) }
+.text-button,.jump-cited { color:var(--green); text-decoration:underline; text-underline-offset:.2rem; padding:.4rem 0; font-size:.875rem }
+.starters { margin:2.3rem auto 0 }.discovery-heading { display:flex; align-items:baseline; justify-content:space-between; gap:.7rem }
+.discovery-heading h2 { font:400 1.62rem/1.2 Georgia,serif; letter-spacing:-.03em; color:var(--ink) }
+.discovery-more { color:var(--green); text-decoration:underline; text-underline-offset:.18rem; font-size:.875rem; padding:.4rem .1rem }
+.topic-filters { display:flex; flex-wrap:wrap; gap:.35rem; margin: .8rem 0 }
+.topic-filters button { font-size:.875rem; border:1px solid var(--line); border-radius:2rem; padding:.35rem .75rem;color:var(--green) }
+.topic-filters button[aria-pressed="true"] { background:var(--green); color:white; border-color:var(--green) }.topic-filters button[aria-pressed="false"]:hover { background:var(--soft) }
+.discovery-list { list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 2rem }
+.discovery-item { display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; padding:.7rem 0 .55rem; border-top:1px solid var(--line) }
+.discovery-question { flex:1; color:var(--ink); text-align:left; padding:.12rem 0; font-size:1rem; line-height:1.4 }
+.discovery-question:hover,.discovery-source:hover { text-decoration:underline; text-underline-offset:.18rem }
+.discovery-source { text-align:left; font-size:.8125rem; color:#486554; padding:.24rem 0 .12rem; text-decoration:underline; text-underline-offset:.18rem; text-decoration-color:#9bada0 }
+#transcript { display:none }
+.conversation { height:100vh; height:100dvh; min-height:0; display:flex; flex-direction:column; padding-bottom:max(.8rem,env(safe-area-inset-bottom)) }
+.conversation header { flex:none }.conversation .chat-layout { display:flex; flex:1; min-height:0 }
+.conversation main { display:flex; flex-direction:column; width:min(100%,56rem); min-height:0; margin:0 auto; align-self:stretch; padding-top:.95rem }
+.conversation .hero,.conversation .starters,.conversation .scope-note { display:none }
+.conversation .workspace { display:grid; grid-template-rows:minmax(0,1fr) auto; flex:1; min-height:0; overflow:hidden; border-color:var(--line) }
+.conversation #transcript { display:block; min-height:0; overflow:auto; overscroll-behavior:contain; scrollbar-gutter:stable; padding:clamp(1.1rem,3.7vw,2.25rem) clamp(1.1rem,4.3vw,3.25rem) .65rem }
+.conversation .composer { border-radius:0; border-top:1px solid var(--line); padding:.6rem clamp(1.1rem,4.3vw,3.25rem) .65rem; background:#fbfcf9 }
+.conversation .composer form { display:flex; align-items:flex-end; gap:.65rem }.conversation .composer textarea { flex:1; min-width:0 }
+.conversation #question { min-height:2.75rem; field-sizing:content; max-height:20dvh; padding:.55rem .7rem; border:1px solid var(--line); border-radius:.65rem; background:white }
+.conversation #question:focus { border-color:var(--green); outline:1px solid var(--green) }
+.queue-note { margin:.3rem 0; font-size:.8125rem; color:var(--green) }
+.conversation .key-hint,.shell:not(.conversation) .transcript-heading { display:none }
+.answer-wrap { margin:0 auto 1.25rem }.thread-archive:empty {display:none}.archived-turn { margin-bottom:2.2rem }
+.question-row { margin:0 0 1.45rem; display:flex; flex-direction:column; align-items:flex-end; gap:.32rem }
+.message-author { color:var(--muted); font-size:.8125rem; font-weight:600 }
+.asked-question { color:var(--ink); background:var(--soft); max-width:90%; padding:.7rem 1rem; border-radius:1rem 1rem .25rem 1rem; font:500 1rem/1.55 Arial,sans-serif; overflow-wrap:anywhere; scroll-margin-top:.5rem }
+.asked-question:focus { outline:none }
+.answer-meta { display:flex; align-items:center; gap:.65rem; flex-wrap:wrap; margin:0 0 .7rem }
+.answer-meta .message-author { font:600 .875rem/1.35 Arial,sans-serif; color:var(--ink) }
+.badge { font-size:.75rem; color:#43634b; background:#f0f4ee; padding:.12rem .5rem; border-radius:.35rem }
+.badge.draft { color:#735419; background:#f8f2e2 }.badge.review { color:#803f2d; background:#faeee7 }
+.answer { color:var(--text); font:1.1rem/1.7 Georgia,'Times New Roman',serif; overflow-wrap:anywhere }
+.answer p { margin:0 0 .8rem; white-space:pre-wrap }.answer h2,.answer h3 { margin:1.25rem 0 .45rem; font:500 1.4rem/1.34 Georgia,serif; color:var(--ink) }
+.answer h3 {font-size:1.2rem}.answer li+li { margin-top:.45rem }.answer ul,.answer ol { padding-left:1.5rem }
+.answer code { font:.875rem ui-monospace,monospace; background:var(--soft); padding:.1rem .3rem; border-radius:.2rem }
+.citation,.source-number { display:inline-flex; justify-content:center; align-items:center; min-width:1.5rem; min-height:1.5rem; font:.75rem Arial,sans-serif; border-radius:.35rem; color:var(--green); background:var(--soft) }
+.citation { margin:0 .12rem; vertical-align:baseline }.citation:hover { background:#d9e6d9 }
+.sources,.answer-details { margin-top:.65rem; font-size:.875rem }.sources summary,.answer-details summary {width:fit-content; color:var(--green); padding:.15rem 0 }
+.sources ol { list-style:none; margin:.35rem 0; padding:0 }.sources button { display:flex; align-items:center; gap:.6rem; text-align:left; padding:.3rem 0 }
+.source-number { flex-shrink:0 }.validation-note,.timings { color:var(--muted); font-size:.8125rem; margin:.6rem 0 0 }
+.validation-issues { color:var(--red); font-size:.875rem; padding-left:1.35rem; margin:.5rem 0 }
+.feedback { margin-top:.7rem; font-size:.875rem }.feedback fieldset {border:0; margin:0; padding:0}
+.feedback-choice { display:inline-flex; align-items:center; gap:.3rem; padding-right:.8rem; min-height:2.5rem; cursor:pointer }.feedback input{accent-color:var(--green)}
+.feedback-note { display:block; margin:.4rem 0 }.feedback-note textarea { resize:vertical; min-height:3.7rem; border:1px solid var(--line); border-radius:.45rem; padding:.4rem }
+.feedback-status { color:var(--green) }.related-questions { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.85rem }.related-questions h3 { width:100%; font-size:.8125rem; font-weight:500; color:var(--muted) }
+.related-questions button { font-size:.875rem; border:1px solid var(--line); border-radius:.55rem; padding:.35rem .65rem; text-align:left; color:var(--green) }
+.related-questions button:hover { background:var(--soft) }
+.progress { display:flex; align-items:center; gap:.6rem; margin:.35rem 0 .8rem; color:var(--muted); font-size:.875rem }.elapsed { margin-left:auto; font-size:.8125rem }
+.working-dot { width:.45rem; height:.45rem; border-radius:50%; background:#668260; animation:pulse 1.5s ease-in-out infinite }
+.error,.storage-error { margin:.7rem 0; color:var(--red); font-size:.875rem }.error h2 { font-size:1rem }.missing-citation { color:var(--red); font-size:.8125rem }
+.confirm-dialog { width:min(23rem,90vw); border:1px solid var(--line); border-radius:.8rem; padding:1.3rem; color:var(--ink) }.confirm-dialog h2{font-size:1.15rem}.confirm-dialog p{overflow-wrap:anywhere}
+.confirm-actions { display:flex; justify-content:flex-end; gap:.5rem; margin-top:1rem }
+.source-dialog {position:fixed;inset:0 0 0 auto;width:min(39rem,100%);max-width:100%;height:100dvh;max-height:100dvh;margin:0;padding:0;border:0;border-left:1px solid var(--line);background:#fff;color:var(--text);overflow:auto}.source-dialog::backdrop,.confirm-dialog::backdrop {background:#20342952}
+.source-dialog {scroll-padding-top:4.3rem;overscroll-behavior:contain}
+.source-inner{padding:0 clamp(1.1rem,4vw,2rem) 2rem}.drawer-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.5rem 0;margin-bottom:.8rem;background:var(--white);border-bottom:1px solid var(--line)}.eyebrow,.source-metadata,.source-verification,.source-intro,.source-context-note,.source-loading,.speaker,.locator{font-size:.8125rem;color:var(--muted)}
+.close{min-height:2.75rem;padding:.45rem .85rem;color:var(--green);font-size:.875rem;font-weight:600;border:1px solid var(--line);border-radius:.6rem}.close:hover{background:var(--soft)}.source-dialog h2{font:1.7rem/1.3 Georgia,serif;color:var(--ink)}.source-metadata{display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-top:.8rem}.source-verification,.source-context-note,.source-loading,.source-error{margin-top:.75rem}.publisher{display:inline-block;font-size:.875rem;margin-top:.85rem}.source-body{margin-top:1.1rem}.source-intro{margin-bottom:.6rem}.original-paragraph{padding:.8rem 0;border-top:1px solid var(--line)}.original-paragraph.highlighted{background:var(--soft);border-radius:.5rem;padding:.75rem;margin:.35rem 0}.speaker{font-weight:600;margin-bottom:.3rem}.original-text{font:1.05rem/1.7 Georgia,serif;white-space:pre-wrap;overflow-wrap:anywhere}.locator{margin-top:.3rem;overflow-wrap:anywhere}.source-error{color:var(--red)}
+#source-details {margin-top:.75rem;font-size:.875rem;color:var(--muted)}#source-details summary {width:fit-content;color:var(--green)}
+@keyframes pulse {50%{opacity:.4}}
+@media(max-width:640px) {
+  .shell {padding:0 1rem 1.2rem} header{min-height:4rem;gap:.3rem}.brand{gap:.38rem}.mark{width:1.65rem;height:1.9rem;font-size:1.45rem}
+  .brand-name{font-size:1rem}.brand-chinese{font-size:.75rem}.header-right{gap:.1rem}.header-right button,.about>summary{padding:.25rem .43rem}
+  main{padding-top:2.1rem}.hero{margin-bottom:1.25rem}.hero h1{font-size:clamp(2.05rem,8.8vw,2.75rem)}.hero p{margin-top:.65rem}
+  .composer{padding:.7rem .85rem .55rem}#question{min-height:2.7rem}.key-hint{font-size:0}.scope-note{line-height:1.45}
+  .starters{margin-top:1.65rem}.discovery-heading h2{font-size:1.4rem}.discovery-list{grid-template-columns:1fr}
+  .discovery-item{padding:.52rem 0 .43rem}.discovery-question{line-height:1.35}.topic-filters{gap:.35rem .3rem}.topic-filters button{padding:.27rem .57rem}
+  .conversation{padding-bottom:0}.conversation main{width:100%;padding:0}.conversation .chat-layout{margin-inline:-1rem}
+  .conversation .workspace{border:0;border-radius:0;background:white}
+  .conversation #transcript{padding:1rem 1rem .5rem}.conversation .composer{padding:.5rem 1rem max(.5rem,env(safe-area-inset-bottom))}
+  .answer{font-size:1.05rem}.question-row{margin-bottom:1rem}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important}}
+@media print {
+  header,.composer,.scope-note,.progress,.error,.feedback,.follow-up,.storage-error {display:none!important}
+  .shell.conversation,.conversation .chat-layout,.conversation main,.conversation .workspace,.conversation #transcript{display:block;height:auto;overflow:visible;padding:0;max-width:none;width:100%;border:0;box-shadow:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#question">Skip to your question</a>
+<div class="shell" id="shell">
+  <header>
+    <button class="brand" id="home" type="button">
+      <span class="mark" aria-hidden="true">C</span>
+      <span class="brand-wordmark"><span class="brand-name">The Compounder</span><span class="brand-chinese" lang="zh-Hans">复利国</span></span>
+      <span class="sr-only">New question</span>
+    </button>
+    <div class="header-right"><button class="new-chat" type="button" id="new-question">New chat</button><button class="mobile-chats" id="mobile-chats" type="button" aria-controls="chat-rail" aria-expanded="false">Chats</button><details class="about" id="about"><summary>About</summary><div class="about-panel"><h2>About this archive</h2><p>This English research preview uses 14 selected original-source contexts. It does not cover the whole Buffett archive.</p><p>The answer appears as a draft while it is streaming. Its final label reports the server’s reference check. A reference check does not establish that every claim is supported or suitable today.</p><p>Open a citation to read the complete original context. Speaker labels and source-verification limits are preserved; an unidentified speaker is shown as unidentified.</p><p>Chats are saved in this browser. Each follow-up uses up to three recent question-and-answer pairs in the current chat. You can return to a chat or delete its local copy from the history.</p><p>Your question and relevant conversation are sent to this service to prepare an answer. Please leave out personal or confidential information.</p></div></details></div>
+
+    <aside class="rail" id="chat-rail" aria-label="Chat history">
+
+      <h2>Recent chats</h2><ul class="chat-nav" id="chat-list"></ul><p class="empty-chats" id="empty-chats">Your conversations will appear here.</p>
+    </aside>
+  </header>
+  <div class="chat-layout">
+
+  <main>
+    <section class="hero"><h1>Ask the Buffett archive</h1><p>Explore how Buffett and Munger evaluate businesses. Ask follow-ups and read the original passages from shareholder letters and annual meetings.</p></section>
+    <h1 class="sr-only transcript-heading">Current conversation</h1>
+    <div class="workspace" id="conversation-workspace">
+      <div id="transcript" role="region" aria-label="Conversation messages" tabindex="0">
+    <div class="thread-archive" id="thread-archive"></div>
+    <section class="answer-wrap" id="answer-wrap" aria-labelledby="asked-question" hidden><div class="question-row"><span class="message-author">You</span><h2 class="asked-question" id="asked-question" tabindex="-1"></h2></div><div class="answer-meta"><span class="message-author">The Compounder</span><span class="badge draft" id="answer-status">Draft · still streaming</span></div><div class="progress" id="progress" hidden><span class="working-dot" aria-hidden="true"></span><p id="progress-message" role="status">Submitting your question…</p><span class="elapsed" id="elapsed"></span></div>
+    <article class="answer" id="answer" aria-label="Answer" aria-busy="false"></article><ul class="validation-issues" id="validation-issues" hidden></ul><details class="sources" id="sources" hidden><summary id="sources-summary">Sources for this answer</summary><ol id="source-list"></ol></details><details class="answer-details" id="answer-details"><summary>Answer details</summary><p class="validation-note" id="validation-note"></p><p class="timings" id="timings" hidden></p><form class="feedback" id="feedback" hidden>
+      <fieldset id="feedback-fields"><legend>Was this helpful?</legend>
+        <label class="feedback-choice"><input type="radio" name="helpful" id="feedback-yes" required>Yes</label>
+        <label class="feedback-choice"><input type="radio" name="helpful" id="feedback-no" required>No</label>
+        <label class="feedback-note" id="feedback-note-label" hidden>What was missing? (optional)<textarea id="feedback-note" maxlength="500" rows="2"></textarea></label>
+        <button type="submit" class="stop">Send feedback</button>
+      </fieldset><p class="feedback-status" id="feedback-status" role="status"></p>
+    </form></details><div class="follow-up" id="follow-up" hidden></div></section>
+    <section class="error" id="error" role="alert" hidden><h2 id="error-title">The answer could not be completed</h2><p id="error-message"></p><button class="text-button" type="button" id="error-edit">Return to your question</button></section>
+      </div>
+    <section class="composer" aria-label="Ask a question">
+
+      <p id="queue-note" class="queue-note" hidden>Queued for the next reply. Editing cancels the send.</p>
+      <form id="question-form"><label class="sr-only" for="question">Your question</label><textarea id="question" rows="1" minlength="3" maxlength="2000" required placeholder="Ask a question about investing and understanding businesses…" aria-describedby="question-help scope-note"></textarea><div class="actions"><p class="key-hint" id="question-help">Enter to send · Shift + Enter for a new line<span class="sr-only">. Enter 3 to 2,000 characters.</span></p><div class="action-buttons"><button type="button" class="stop" id="stop" hidden>Stop</button><button type="submit" class="primary" id="ask" disabled>Send</button><button type="button" class="primary" id="unqueue" hidden>Undo send</button></div></div></form>
+    </section>
+    </div>
+    <p class="scope-note" id="scope-note">Questions and feedback are saved for pilot review. Please omit personal or confidential details.</p>
+    <section class="starters" id="starters" aria-label="Explore questions"></section>
+    <p class="storage-error" id="storage-error" role="status" hidden></p>
+  </main>
+  </div>
+
+</div>
+<dialog class="confirm-dialog" id="delete-dialog" aria-labelledby="delete-label"><form method="dialog"><h2 id="delete-label">Delete chat?</h2><p id="delete-title"></p><p>This removes the conversation from this browser.</p><div class="confirm-actions"><button type="submit" class="stop" value="cancel" autofocus>Cancel</button><button type="submit" class="primary" value="delete">Delete</button></div></form></dialog>
+<dialog class="source-dialog" id="source-dialog" aria-labelledby="source-title">
+  <div class="source-inner">
+    <div class="drawer-head"><p class="eyebrow" id="source-label">Original excerpt</p><button type="button" class="close" id="source-close">Back to questions</button></div>
+    <h2 id="source-title">Original excerpt</h2>
+    <div class="source-metadata" id="source-metadata"></div>
+    <a class="publisher" id="source-link" target="_blank" rel="noopener noreferrer" hidden>Read at the original publisher</a>
+    <details id="source-details"><summary>Source notes</summary><p class="source-context-note" id="source-boundary"></p><p class="source-verification" id="source-verification"></p></details>
+    <p class="source-context-note" id="source-context-note"></p>
+    <button type="button" class="jump-cited" id="jump-cited" hidden>Jump to search match</button>
+    <p class="source-loading" id="source-loading" role="status" hidden>Loading the original excerpt…</p>
+    <p class="source-error" id="source-error" role="alert" hidden></p>
+    <div class="source-body" id="source-body"></div>
+  </div>
+</dialog>
+<div class="sr-only" id="announcement" role="status" aria-live="polite"></div>
+<noscript><p class="error">Please enable JavaScript to ask questions and open original sources.</p></noscript>
+<script id="meeting-questions">
+// Short editorial versions of audience questions from the indexed CNBC transcripts.
+// Editorial study prompts link directly to the relevant letter or meeting excerpt.
+(() => {
+  'use strict';
+
+  const topics = ['Circle of competence', 'Valuation', 'Cash & growth'];
+  const library = {
+    limits: {
+      kind: 'meeting', context: 'meeting-2014-self-assessment',
+      title: '2014 afternoon meeting · chapter 7',
+      url: 'https://buffett.cnbc.com/video/2014/05/03/afternoon-session---2014-berkshire-hathaway-annual-meeting.html',
+      topic: 'Circle of competence',
+      question: 'How do I know where my circle of competence ends?',
+      next: ['retail', 'expansion'],
+    },
+    expansion: {
+      kind: 'meeting', context: 'meeting-2019-expansion',
+      title: '2019 afternoon meeting · chapter 31',
+      url: 'https://buffett.cnbc.com/video/2019/05/06/afternoon-session---2019-berkshire-hathaway-annual-meeting.html',
+      topic: 'Circle of competence',
+      question: 'Should I expand my circle of competence as the world changes?',
+      next: ['learning', 'limits'],
+    },
+    learning: {
+      kind: 'meeting', context: 'meeting-2019-learning',
+      title: '2019 afternoon meeting · chapter 8',
+      url: 'https://buffett.cnbc.com/video/2019/05/06/afternoon-session---2019-berkshire-hathaway-annual-meeting.html',
+      topic: 'Circle of competence',
+      question: 'Should I study many businesses or specialize in one industry?',
+      next: ['expansion', 'retail'],
+    },
+    value: {
+      kind: 'meeting', context: 'chapter:cnbc-meeting-2004-afternoon-ch28',
+      title: '2004 afternoon meeting · chapter 28',
+      url: 'https://buffett.cnbc.com/video/2004/05/01/afternoon-session---2004-berkshire-hathaway-annual-meeting.html',
+      topic: 'Valuation',
+      question: 'How did Buffett assess a shareholder’s method for valuing Berkshire?',
+      next: ['risk', 'currentCash'],
+    },
+    risk: {
+      kind: 'meeting', context: 'cnbc-meeting-1998-afternoon-ch44',
+      title: '1998 afternoon meeting · chapter 44',
+      url: 'https://buffett.cnbc.com/video/1998/05/04/afternoon-session---1998-berkshire-hathaway-annual-meeting.html',
+      topic: 'Valuation',
+      question: 'How did Buffett compare businesses with different risks using the same discount rate?',
+      next: ['value', 'limits'],
+    },
+    growth: {
+      kind: 'meeting', context: 'cnbc-meeting-1998-afternoon-ch08',
+      title: '1998 afternoon meeting · chapter 8',
+      url: 'https://buffett.cnbc.com/video/1998/05/04/afternoon-session---1998-berkshire-hathaway-annual-meeting.html',
+      topic: 'Cash & growth',
+      question: 'How do I value a business that spends its cash opening new stores?',
+      next: ['ownerCash', 'currentCash'],
+    },
+    currentCash: {
+      kind: 'meeting', context: 'cnbc-meeting-1994-morning-ch13',
+      title: '1994 morning meeting · chapter 13',
+      url: 'https://buffett.cnbc.com/video/1994/04/25/morning-session---1994-berkshire-hathaway-annual-meeting.html',
+      topic: 'Cash & growth',
+      question: 'Did Buffett require a minimum cash yield in the first year?',
+      next: ['growth', 'risk'],
+    },
+    coke: {
+      kind: 'meeting', context: 'meeting-2002-boundary', title: '2002 afternoon meeting · chapters 16–18',
+      url: 'https://buffett.cnbc.com/video/2002/05/04/afternoon-session---2002-berkshire-hathaway-annual-meeting.html',
+      topic: 'Cash & growth', question: 'Did shifting investment to its bottlers flatter Coca-Cola’s profits?',
+      next: ['ownerCash', 'durability'],
+    },
+    ownerCash: {
+      kind: 'letter', context: 'letter-1986-0154-0297', title: '1986 shareholder letter · Owner earnings',
+      url: 'https://www.berkshirehathaway.com/letters/1986.html', topic: 'Cash & growth', next: ['growth', 'currentCash'],
+      question: 'How much of a company’s earnings can its owners actually take out?',
+    },
+    incremental: {
+      kind: 'letter', context: 'letter-1992-0074-0085', title: '1992 shareholder letter · Growth and value',
+      url: 'https://www.berkshirehathaway.com/letters/1992.html', topic: 'Cash & growth',
+      question: 'When can faster growth leave shareholders worse off?', next: ['growth', 'ownerCash'],
+    },
+    bookValue: {
+      kind: 'letter', context: 'letter-1994-0013-0026', title: '1994 shareholder letter · Book value and intrinsic value',
+      url: 'https://www.berkshirehathaway.com/letters/1994.html', topic: 'Valuation',
+      question: 'Why was Berkshire’s textile business worth less than its book value?', next: ['value', 'ownerCash'],
+    },
+    durability: {
+      kind: 'letter', context: 'letter-1996-0098-0118', title: '1996 shareholder letter · Common stock investments',
+      url: 'https://www.berkshirehathaway.com/letters/1996.html', topic: 'Circle of competence',
+      question: 'What made Coca-Cola’s future easier to judge than that of other market leaders?', next: ['coke', 'limits'],
+    },
+    range: {
+      kind: 'letter', context: 'letter-2000-pdf-p12-p3-through-p13-p9', title: '2000 shareholder letter · Estimating future cash flows',
+      url: 'https://www.berkshirehathaway.com/letters/2000pdf.pdf', topic: 'Valuation',
+      question: 'When is a range of valuations too wide to be useful?', next: ['risk', 'value'],
+    },
+    farm: {
+      kind: 'letter', context: 'letter-2013-investing-p001-p040', title: '2013 shareholder letter · Some thoughts about investing',
+      url: 'https://www.berkshirehathaway.com/letters/2013ltr.pdf', topic: 'Valuation',
+      question: 'How did Buffett value a Nebraska farm before buying it?', next: ['ownerCash', 'range'],
+    },
+  };
+  const questions = {
+    ...library,
+    retail: {
+      ...library.limits,
+      question: 'What did Buffett’s Baltimore department store experience teach him about his limits in retail?',
+      next: ['expansion', 'learning'],
+    },
+  };
+  const featured = ['limits', 'farm', 'ownerCash', 'learning', 'value', 'growth'];
+  const ordered = [...featured, ...Object.keys(library).filter(key => !featured.includes(key))].map(key => library[key]);
+
+  function element(tag, text, className) {
+    const node = document.createElement(tag);
+    if (text) node.textContent = text;
+    if (className) node.className = className;
+    return node;
+  }
+
+  function questionButton(item, ask, className) {
+    const button = element('button', item.question, className);
+    button.type = 'button';
+    button.addEventListener('click', () => ask(item.question, item.context));
+    return button;
+  }
+
+  function renderStarters(container, ask, previewSource) {
+    const heading = element('h2', 'Explore questions');
+    heading.id = 'starter-title';
+    const more = element('button', '', 'discovery-more');
+    more.type = 'button';
+    more.setAttribute('aria-controls', 'discovery-questions');
+    const header = element('div', '', 'discovery-heading');
+    header.append(heading, more);
+    const filters = element('div', '', 'topic-filters');
+    filters.setAttribute('role', 'group');
+    filters.setAttribute('aria-label', 'Filter questions by topic');
+    const list = element('ul', '', 'discovery-list');
+    list.id = 'discovery-questions';
+    list.setAttribute('aria-labelledby', 'starter-title');
+    const count = element('p', '', 'sr-only');
+    count.setAttribute('role', 'status');
+    const filterButtons = new Map();
+    let topic = 'All topics';
+    let expanded = false;
+
+    function show() {
+      const visible = expanded ? ordered : ordered.slice(0, featured.length);
+      const items = topic === 'All topics' ? visible : ordered.filter(item => item.topic === topic);
+      const allShown = items.length === ordered.length;
+      more.textContent = allShown ? 'Show featured' : 'See all ' + ordered.length + ' questions';
+      for (const [name, button] of filterButtons) button.setAttribute('aria-pressed', String(name === topic));
+      const rows = items.map(item => {
+        const year = item.title.slice(0, 4);
+        const isMeeting = item.kind === 'meeting';
+        const source = element(previewSource ? 'button' : 'a', year + (isMeeting ? ' meeting question' : ' letter · study question'), 'discovery-source');
+        const label = isMeeting ? 'Paraphrased shareholder question' : 'Editorial study question';
+        source.title = label + ' · ' + item.title;
+        source.setAttribute('aria-label', 'Read the original: ' + item.title + '. ' + label + '.');
+        if (previewSource) {
+          source.type = 'button';
+          source.addEventListener('click', () => previewSource(item, source));
+        } else {
+          source.href = item.url;
+          source.target = '_blank';
+          source.rel = 'noopener noreferrer';
+        }
+        const row = element('li', '', 'discovery-item');
+        row.append(questionButton(item, ask, 'discovery-question'), source);
+        return row;
+      });
+      list.replaceChildren(...rows);
+      count.textContent = items.length + ' of ' + ordered.length + ' questions shown. ' + topic + '.';
+    }
+
+    for (const name of ['All topics', ...topics]) {
+      const button = element('button', name);
+      button.type = 'button';
+      button.setAttribute('aria-controls', list.id);
+      button.addEventListener('click', () => { topic = name; expanded = name === 'All topics'; show(); });
+      filterButtons.set(name, button);
+      filters.append(button);
+    }
+    more.addEventListener('click', () => {
+      expanded = !(topic === 'All topics' && expanded);
+      topic = 'All topics';
+      show();
+    });
+    container.replaceChildren(header, filters, list, count);
+    show();
+  }
+
+  function followups(turn) {
+    const known = Object.values(questions);
+    const exact = known.find(item => item.question === turn.question);
+    if (exact) return exact.next.map(key => questions[key]);
+
+    // Base a free-form question's suggestions on the passages actually cited in the answer.
+    const sources = new Map((turn.sources || []).map(source => [source.id, source.context_id]));
+    const citations = String(turn.answer || '').matchAll(/\[(\d+)\]/g);
+    for (const match of citations) {
+      const contextId = sources.get(Number(match[1]));
+      const item = known.find(candidate => candidate.context === contextId);
+      if (item) return item.next.map(key => questions[key]);
+    }
+    return [];
+  }
+
+  function renderFollowups(container, turn, ask) {
+    const items = followups(turn);
+    container.hidden = items.length === 0;
+    container.replaceChildren();
+    if (!items.length) return;
+    const related = element('div', '', 'related-questions');
+    related.append(element('h3', 'Keep exploring'));
+    for (const item of items) related.append(questionButton(item, ask));
+    container.append(related);
+  }
+
+  window.CompounderQuestions = { renderStarters, renderFollowups };
+})();
+</script>
+<script>
+'use strict';
+(() => {
+  const $ = id => document.getElementById(id);
+  const state = { busy: false, controller: null, sourceController: null, history: [], lastQuestion: '', draft: '', sources: new Map(), renderTimer: null, elapsedTimer: null, stopped: false, completed: false, activeCitation: null, request: null };
+  const node = (tag, className, text) => { const item = document.createElement(tag); if (className) item.className = className; if (text !== undefined) item.textContent = text; return item; };
+  const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+  const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function announce(message) { $('announcement').textContent = message; }
+  function safeURL(value) { try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password ? url.href : null; } catch { return null; } }
+  const chatPrefix = 'the-compounder.chat.v1.';
+  const selectedKey = 'the-compounder.selected.v1';
+  const chats = new Map();
+  let currentChat = null;
+  let deleteId = null;
+  let queuedQuestion = null;
+  let composerRevision = 0;
+
+  function storageWarning(message) {
+    $('storage-error').textContent = message;
+    $('storage-error').hidden = false;
+  }
+  function rememberCurrent(id) {
+    try {
+      if (id) window.sessionStorage.setItem(selectedKey, id);
+      else window.sessionStorage.removeItem(selectedKey);
+    } catch { /* Chat history can still be opened from the sidebar. */ }
+  }
+  function readChat(value) {
+    try {
+      const chat = JSON.parse(value);
+      if (!chat || typeof chat.id !== 'string' || !Array.isArray(chat.turns) || !chat.turns.length) return null;
+      const valid = chat.turns.every(turn => turn && typeof turn.id === 'string' &&
+        typeof turn.question === 'string' && typeof turn.answer === 'string' &&
+        ['references_checked','needs_review'].includes(turn.validation?.status) && Array.isArray(turn.sources));
+      return valid ? chat : null;
+    } catch { return null; }
+  }
+  function restoreLibrary() {
+    let selected;
+    try {
+      const storage = window.localStorage;
+      for (let i = 0; i < storage.length; i++) {
+        const key = storage.key(i);
+        if (!key?.startsWith(chatPrefix)) continue;
+        const chat = readChat(storage.getItem(key));
+        if (chat && key === chatPrefix + chat.id) chats.set(chat.id, chat);
+      }
+      selected = window.sessionStorage.getItem(selectedKey);
+    } catch { storageWarning('This browser could not load chat history. You can still ask questions here.'); }
+    if (selected && chats.has(selected)) openChat(chats.get(selected));
+    else renderSidebar();
+  }
+  function saveTurn(turn) {
+    const chat = currentChat || { id: crypto.randomUUID(), turns: [] };
+    try {
+      const newer = readChat(window.localStorage.getItem(chatPrefix + chat.id));
+      if (newer) {
+        const turns = new Map(newer.turns.map(item => [item.id, item]));
+        for (const item of chat.turns) turns.set(item.id, item);
+        chat.turns = [...turns.values()].sort((a, b) => a.created - b.created);
+      }
+      // A copy deleted in another tab must stay deleted. Continue in a new chat.
+      else if (chat.turns.length && !unsavedChats.has(chat.id)) {
+        chat.id = crypto.randomUUID();
+        chat.turns = [];
+      }
+    } catch { /* The in-memory conversation remains available. */ }
+    chat.turns.push(turn);
+    chat.updated = turn.created;
+    chats.set(chat.id, chat);
+    currentChat = chat;
+    try {
+      window.localStorage.setItem(chatPrefix + chat.id, JSON.stringify(chat));
+      unsavedChats.delete(chat.id);
+      if (!unsavedChats.size) $('storage-error').hidden = true;
+    } catch {
+      unsavedChats.add(chat.id);
+      storageWarning('This browser could not save the latest answer. It remains available in this tab until you leave.');
+    }
+    rememberCurrent(chat.id);
+    updateHistory();
+    renderSidebar();
+    renderArchive(chat.turns.slice(0,-1));
+  }
+  const unsavedChats = new Set();
+  function updateHistory() {
+    state.history = (currentChat?.turns || []).slice(-3).flatMap(turn => [
+      {role:'user',content:turn.question},{role:'assistant',content:turn.answer.slice(0,12000)}
+    ]);
+  }
+  function renderSidebar() {
+    const list = $('chat-list');
+    list.replaceChildren();
+    $('empty-chats').hidden = chats.size > 0;
+    for (const chat of [...chats.values()].sort((a,b) => b.updated - a.updated)) {
+      const label = chat.turns[0].question;
+      const li = node('li', currentChat?.id === chat.id ? 'current' : '');
+      const select = node('button', 'chat-title', label);
+      select.type = 'button'; select.title = label; select.disabled = state.busy;
+      if (currentChat?.id === chat.id) select.setAttribute('aria-current', 'true');
+      select.addEventListener('click', () => openChat(chat));
+      const remove = node('button', 'delete-chat', '×');
+      remove.type = 'button'; remove.disabled = state.busy;
+      remove.setAttribute('aria-label', 'Delete chat: ' + label);
+      remove.addEventListener('click', () => {
+        if (state.busy) return;
+        deleteId = chat.id;
+        $('delete-title').textContent = label;
+        $('delete-dialog').returnValue = 'cancel';
+        $('delete-dialog').showModal();
+      });
+      li.append(select,remove); list.append(li);
+    }
+  }
+  function renderArchive(turns) {
+    const archive = $('thread-archive');
+    archive.replaceChildren();
+    for (const turn of turns) {
+      const section = node('section', 'answer-wrap archived-turn');
+      const question = node('div', 'question-row');
+      question.append(node('span', 'message-author', 'You'), node('h2', 'asked-question', turn.question));
+      const checked = turn.validation.status === 'references_checked';
+      const badge = node('span', checked ? 'badge' : 'badge review', checked ? 'References checked' : 'Needs review');
+      const meta = node('div', 'answer-meta'); meta.append(node('span', 'message-author', 'The Compounder'), badge);
+      const content = node('article', 'answer');
+      const sources = new Map(turn.sources.map(source => [source.id, source]));
+      renderAnswer(turn.answer, content, sources);
+      section.append(question, meta, content);
+      if (turn.validation.issues?.length) {
+        const issues = node('ul', 'validation-issues');
+        for (const issue of turn.validation.issues) issues.append(node('li','',typeof issue === 'string' ? issue : issue.message || JSON.stringify(issue)));
+        section.append(issues);
+      }
+      if (sources.size) {
+        const details = node('details', 'sources');
+        const list = node('ol'); fillSourceList(list, sources);
+        details.append(node('summary', '', 'Sources for this answer · ' + sources.size), list);
+        section.append(details);
+      }
+      const details = node('details', 'answer-details');
+      details.append(node('summary', '', 'Answer details'),
+        node('p', 'validation-note', validationLabel(checked)));
+      const timing = timingLabel(turn.timings);
+      if (timing) details.append(node('p', 'timings', timing));
+      if (turn.feedback_available && $('feedback').cloneNode) details.append(historicalFeedback(turn));
+      section.append(details);
+      archive.append(section);
+    }
+  }
+  function historicalFeedback(turn) {
+    const form = $('feedback').cloneNode(true);
+    const withId = [form, ...form.querySelectorAll('[id]')];
+    const controls = new Map(withId.map(el => [el.id,el]));
+    withId.forEach(el => el.removeAttribute('id'));
+    const fieldset = controls.get('feedback-fields'), note = controls.get('feedback-note');
+    const yes = controls.get('feedback-yes'), no = controls.get('feedback-no');
+    yes.name = no.name = 'helpful-' + turn.id;
+    const noteLabel = controls.get('feedback-note-label'), status = controls.get('feedback-status');
+    form.hidden = false; form.reset(); fieldset.disabled = false; noteLabel.hidden = true; status.textContent = '';
+    form.addEventListener('input', () => { noteLabel.hidden = !no.checked; status.textContent = ''; });
+    form.addEventListener('submit', async event => {
+      event.preventDefault(); if (fieldset.disabled || (!yes.checked && !no.checked)) return;
+      fieldset.disabled = true; status.textContent = 'Sending feedback…';
+      status.textContent = await postFeedback(turn.id, yes.checked, yes.checked ? '' : note.value.trim());
+      fieldset.disabled = false;
+    });
+    return form;
+  }
+  function openChat(chat) {
+    if (state.busy || !chat) return;
+    currentChat = chat; rememberCurrent(chat.id); updateHistory();
+    const last = chat.turns[chat.turns.length - 1];
+    renderArchive(chat.turns.slice(0, -1));
+    $('asked-question').textContent = last.question;
+    state.sources = new Map(last.sources.map(source => [source.id, source]));
+    refreshSources(); $('sources').open = false;
+    resetFeedback(); state.request = {id:last.id};
+    showFinished(last);
+    $('question').value = ''; $('error').hidden = true; $('progress').hidden = true;
+    renderSidebar(); updateControls(); closeRail();
+    $('answer-details').open = false;
+    focusTurn();
+  }
+  function focusTurn() {
+    const heading = $('asked-question');
+    heading.focus({ preventScroll: true });
+    heading.scrollIntoView?.({block:'start'});
+  }
+  function closeRail() {
+    $('chat-rail').classList.toggle('mobile-open', false);
+    $('mobile-chats').setAttribute('aria-expanded','false');
+  }
+  $('mobile-chats').addEventListener('click', () => {
+    const open = $('mobile-chats').getAttribute('aria-expanded') !== 'true';
+    $('chat-rail').classList.toggle('mobile-open',open);
+    $('mobile-chats').setAttribute('aria-expanded',String(open));
+    if (open) $('about').open = false;
+  });
+  window.addEventListener('pointerdown', event => {
+    if (!$('delete-dialog').open && $('mobile-chats').getAttribute('aria-expanded') === 'true' &&
+        !$('chat-rail').contains(event.target) && !$('mobile-chats').contains(event.target)) closeRail();
+  });
+  window.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !$('delete-dialog').open &&
+        $('mobile-chats').getAttribute('aria-expanded') === 'true') {
+      closeRail(); $('mobile-chats').focus();
+    }
+  });
+  $('delete-dialog').addEventListener('close', () => {
+    const id = deleteId; deleteId = null;
+    if (!id || $('delete-dialog').returnValue !== 'delete' || state.busy) return;
+    try { window.localStorage.removeItem(chatPrefix + id); }
+    catch {
+      if (!unsavedChats.has(id)) {
+        storageWarning('This browser could not delete the saved chat. Please try again.');
+        return;
+      }
+    }
+    chats.delete(id); unsavedChats.delete(id);
+    if (currentChat?.id === id) resetQuestion();
+    else renderSidebar();
+  });
+  window.addEventListener('storage', event => {
+    if (!event.key?.startsWith(chatPrefix) || event.storageArea !== window.localStorage) return;
+    const id = event.key.slice(chatPrefix.length);
+    const chat = readChat(event.newValue);
+    if (chat && chat.id === id) chats.set(id, chat); else chats.delete(id);
+    if (currentChat?.id === id && !state.busy) {
+      if (chat) {
+        const draft = $('question').value;
+        openChat(chat);
+        $('question').value = draft;
+        updateControls();
+      } else resetQuestion();
+    } else renderSidebar();
+  });
+  function updateControls() {
+    const length = $('question').value.trim().length;
+    $('ask').disabled = length < 3 || length > 2000 || queuedQuestion !== null;
+    $('ask').textContent = state.busy ? 'Send next' : 'Send';
+    $('ask').hidden = queuedQuestion !== null || (state.busy && !length);
+    $('unqueue').hidden = $('queue-note').hidden = queuedQuestion === null;
+    $('stop').hidden = !state.busy;
+    $('home').disabled = state.busy;
+    $('new-question').disabled = state.busy;
+    document.querySelectorAll('[data-question]').forEach(button => { button.disabled = state.busy; });
+    document.querySelectorAll('.chat-nav button').forEach(button => { button.disabled = state.busy; });
+    $('question').placeholder = state.busy ? 'Write your next question…' : state.history.length ? 'Ask a follow-up or a new question…' : 'Ask a question about investing…';
+    $('shell').classList.toggle('conversation', state.busy || !$('answer-wrap').hidden || !$('error').hidden || Boolean(state.history.length));
+  }
+  function resetQuestion() {
+    if (state.busy) return;
+    resetFeedback(); state.request = null;
+    state.history = []; state.lastQuestion = ''; state.draft = ''; state.sources.clear(); state.completed = false;
+    currentChat = null; rememberCurrent(null); $('thread-archive').replaceChildren(); renderSidebar(); closeRail();
+    $('question').value = ''; $('answer-wrap').hidden = true; $('error').hidden = true; $('progress').hidden = true;
+    $('about').open = false; updateControls(); $('question').focus(); announce('New chat. Your previous chats are in Recent chats.');
+  }
+  function citation(number, sources) {
+    const source = sources.get(number);
+    if (!source) return node('span', 'missing-citation', '[' + number + ']');
+    const button = node('button', 'citation', String(number)); button.type = 'button'; button.dataset.citation = String(number);
+    button.setAttribute('aria-label', 'Source ' + number + ': ' + (source.title || 'Original context'));
+    button.addEventListener('click', () => openSource(source, button)); return button;
+  }
+  function inline(parent, text, sources) {
+    // Only this small syntax is rendered. All remaining text, including HTML and links,
+    // is a text node. Model output never reaches innerHTML or an executable URL.
+    const pattern = /(`[^`\n]+`|\*\*[^*\n]+\*\*|\*[^*\n]+\*|\[\d{1,3}\])/g;
+    let at = 0, match;
+    while ((match = pattern.exec(text))) {
+      if (match.index > at) parent.append(document.createTextNode(text.slice(at, match.index)));
+      const value = match[0];
+      if (/^\[\d+\]$/.test(value)) parent.append(citation(Number(value.slice(1, -1)), sources));
+      else if (value.startsWith('`')) parent.append(node('code', '', value.slice(1, -1)));
+      else if (value.startsWith('**')) { const strong = node('strong'); inline(strong, value.slice(2, -2), sources); parent.append(strong); }
+      else parent.append(node('em', '', value.slice(1, -1)));
+      at = match.index + value.length;
+    }
+    if (at < text.length) parent.append(document.createTextNode(text.slice(at)));
+  }
+  function renderAnswer(text, target = $('answer'), sources = state.sources) {
+    const fragment = document.createDocumentFragment();
+    const lines = text.replace(/\r\n?/g, '\n').split('\n');
+    let paragraph = [], list = null;
+    function flush() { if (paragraph.length) { const item = node('p'); inline(item, paragraph.join('\n'), sources); fragment.append(item); paragraph = []; } }
+    for (const line of lines) {
+      const heading = line.match(/^#{1,3}\s+(.+)$/);
+      const bullet = line.match(/^\s*(?:[-*]\s+|\d+[.)]\s+)(.+)$/);
+      if (!line.trim()) { flush(); list = null; continue; }
+      if (heading) { flush(); list = null; const item = node(line.startsWith('###') ? 'h3' : 'h2'); inline(item, heading[1], sources); fragment.append(item); }
+      else if (bullet) { flush(); const ordered = /^\s*\d/.test(line); const tag = ordered ? 'OL' : 'UL'; if (!list || list.tagName !== tag) { list = node(ordered ? 'ol' : 'ul'); fragment.append(list); } const item = node('li'); inline(item, bullet[1], sources); list.append(item); }
+      else { list = null; paragraph.push(line); }
+    }
+    flush(); target.replaceChildren(fragment);
+  }
+  function renderStreamingText() {
+    const transcript = $('transcript');
+    const atEnd = transcript.scrollHeight - transcript.clientHeight - transcript.scrollTop < 36;
+    renderAnswer(state.draft);
+    if (atEnd) transcript.scrollTop = transcript.scrollHeight;
+  }
+  function queueRender() { if (state.renderTimer === null) state.renderTimer = window.setTimeout(() => { state.renderTimer = null; renderStreamingText(); }, 60); }
+  function flushRender() { if (state.renderTimer !== null) { clearTimeout(state.renderTimer); state.renderTimer = null; } renderAnswer(state.draft); }
+  function fillSourceList(list, sources) {
+    list.replaceChildren();
+    [...sources.values()].sort((a, b) => a.id - b.id).forEach(source => {
+      const li = node('li'), button = node('button'); button.type = 'button';
+      button.append(node('span', 'source-number', String(source.id)), node('span', '', (source.title || 'Original context') + (source.report_year ? ' · ' + source.report_year + ' letter' : source.event_date ? ' · ' + source.event_date : source.year ? ' · ' + source.year : '')));
+      button.addEventListener('click', () => openSource(source, button)); li.append(button); list.append(li);
+    });
+  }
+  function refreshSources() {
+    fillSourceList($('source-list'), state.sources);
+    $('sources').hidden = !state.sources.size;
+    $('sources-summary').textContent = 'Sources for this answer · ' + state.sources.size;
+  }
+  function paragraphIDs(source) {
+    // Search matches locate retrieval hits; they do not certify an answer's claims.
+    const values = Array.isArray(source.matched_paragraph_ids) ? source.matched_paragraph_ids : [];
+    return new Set(values.map(value => typeof value === 'string' ? value : isObject(value) ? value.id || value.paragraph_id || value.unit_id : null).filter(value => typeof value === 'string'));
+  }
+  function locatorText(locator) {
+    if (!isObject(locator)) return '';
+    const labels = { physical_pdf_page: 'PDF page', printed_page: 'Printed page', paragraph_on_page: 'Paragraph on page', paragraph: 'HTML paragraph', chapter_number: 'Chapter', paragraph_index: 'Transcript paragraph', html_line_start: 'HTML line start', html_line_end: 'HTML line end', timestamp_seconds: 'Chapter timestamp (seconds)', publisher_start_seconds: 'Chapter start (seconds)' };
+    const parts = Object.entries(labels).filter(([key]) => locator[key] !== undefined && locator[key] !== null).map(([key, label]) => label + ': ' + String(locator[key]));
+    if (typeof locator.timestamp_status === 'string' && locator.timestamp_status.includes('not_audio_verified')) parts.push('Chapter-level timing; not verified against audio');
+    else if (typeof locator.timestamp_status === 'string') parts.push('Timing status: ' + locator.timestamp_status.replaceAll('_', ' '));
+    return parts.join(' · ');
+  }
+  function addMeta(label, value) { if (value !== undefined && value !== null && value !== '') $('source-metadata').append(node('span', '', label + ': ' + String(value))); }
+  async function openSource(source, trigger) {
+    state.sourceController?.abort(); const controller = new AbortController(); state.sourceController = controller;
+    state.activeCitation = trigger; $('about').open = false; $('source-details').open = false;
+    const fromAnswer = Number.isInteger(source.id);
+    $('source-dialog').returnValue = '';
+    $('source-close').value = fromAnswer ? 'chat' : 'discovery';
+    $('source-close').textContent = fromAnswer ? 'Back to chat' : 'Back to questions';
+    $('source-label').textContent = fromAnswer ? 'Source ' + source.id + ' · Original excerpt' : 'Original excerpt';
+    $('source-title').textContent = source.title || 'Original excerpt';
+    $('source-metadata').replaceChildren(); $('source-verification').textContent = ''; $('source-boundary').textContent = ''; $('source-context-note').textContent = ''; $('source-body').replaceChildren();
+    $('source-link').hidden = true; $('jump-cited').hidden = true; $('source-error').hidden = true; $('source-loading').hidden = false;
+    if (!$('source-dialog').open) $('source-dialog').showModal();
+    try {
+      if (typeof source.context_id !== 'string' || !source.context_id) throw new Error('This citation has no available original-context identifier.');
+      const response = await fetch('/api/english/sources/' + encodeURIComponent(source.context_id), { signal: controller.signal, credentials: 'same-origin' });
+      if (!response.ok) throw new Error('The original excerpt could not be loaded. Close this panel and try again.');
+      const context = await response.json();
+      if (!isObject(context) || !Array.isArray(context.paragraphs)) throw new Error('The source response did not contain a readable original context.');
+      if (controller.signal.aborted) return;
+      $('source-title').textContent = context.title || source.title || 'Original context';
+      const dateKind = context.date_kind || context.datekind;
+      addMeta(dateKind === 'signature_date' ? 'Signed' : dateKind === 'event_date' ? 'Event date' : 'Date', context.date || context.event_date || context.signature_date || context.publication_date);
+      addMeta('Report year', context.report_year);
+      if (context.title_kind) addMeta('Title', String(context.title_kind).replaceAll('_', ' '));
+      $('source-boundary').textContent = [typeof context.boundary === 'string' ? 'Stored context: ' + context.boundary : '', typeof context.embedded_quotation_note === 'string' ? context.embedded_quotation_note : '', typeof context.title_note === 'string' ? context.title_note : ''].filter(Boolean).join(' ');
+      const verification = context.verification_scope ?? source.verification_scope;
+      $('source-verification').textContent = typeof verification === 'string' ? verification : verification ? JSON.stringify(verification) : 'Source verification scope is not specified.';
+      const url = safeURL(context.source_url || context.publisher_url || context.url || source.url);
+      if (url) { $('source-link').href = url; $('source-link').hidden = false; }
+      const cited = paragraphIDs(source); let first = null, matching = 0;
+      for (const paragraph of context.paragraphs) {
+        if (!isObject(paragraph)) continue;
+        const id = typeof paragraph.id === 'string' ? paragraph.id : typeof paragraph.unit_id === 'string' ? paragraph.unit_id : '';
+        const text = typeof paragraph.reading_text === 'string' ? paragraph.reading_text : typeof paragraph.text === 'string' ? paragraph.text : '';
+        if (!text) continue;
+        const section = node('section', 'original-paragraph');
+        const matched = cited.has(id); if (matched) { section.classList.add('highlighted'); matching++; if (!first) first = section; }
+        const speaker = typeof paragraph.speaker === 'string' && paragraph.speaker.trim() ? paragraph.speaker : 'Speaker not identified in source';
+        section.append(node('p', 'speaker', speaker), node('p', 'original-text', text));
+        const locator = [id, locatorText(paragraph.locator)].filter(Boolean).join(' · '); if (locator) section.append(node('p', 'locator', locator));
+        $('source-body').append(section);
+      }
+      if (!$('source-body').childElementCount) throw new Error('No readable original paragraphs were returned.');
+      $('source-context-note').textContent = matching
+        ? matching + ' search-match paragraph' + (matching === 1 ? ' is' : 's are') + ' highlighted. Read the surrounding text to check the claim.'
+        : cited.size ? 'The search matches could not be located within this excerpt.' : '';
+      if (first) { $('jump-cited').hidden = false; $('jump-cited').onclick = () => first.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' }); first.scrollIntoView({ block: 'start', behavior: 'auto' }); }
+      else $('source-dialog').scrollTop = 0;
+    } catch (error) {
+      if (!controller.signal.aborted) { $('source-error').textContent = error instanceof Error ? error.message : 'The original context could not be loaded.'; $('source-error').hidden = false; }
+    } finally { if (state.sourceController === controller) $('source-loading').hidden = true; }
+  }
+  function resetFeedback() {
+    $('feedback').hidden = true;
+    $('feedback').reset();
+    $('feedback-fields').disabled = false;
+    $('feedback-note-label').hidden = true;
+    $('feedback-status').textContent = '';
+  }
+  function feedbackChanged() {
+    $('feedback-note-label').hidden = !$('feedback-no').checked;
+    $('feedback-status').textContent = '';
+  }
+  async function sendFeedback(event) {
+    event.preventDefault();
+    const answerRequest = state.request;
+    if (!state.completed || !answerRequest || $('feedback').hidden || $('feedback-fields').disabled) return;
+    const helpful = $('feedback-yes').checked;
+    if (!helpful && !$('feedback-no').checked) return;
+    const note = helpful ? '' : $('feedback-note').value.trim();
+    $('feedback-fields').disabled = true;
+    $('feedback-status').textContent = 'Sending feedback…';
+    const message = await postFeedback(answerRequest.id, helpful, note);
+    if (state.request === answerRequest) {
+      $('feedback-status').textContent = message;
+      $('feedback-fields').disabled = false;
+    }
+  }
+  async function postFeedback(id, helpful, note) {
+    try {
+      const response = await fetch('/api/english/feedback', {
+        method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ request_id: id, helpful, note })
+      });
+      if (!response.ok) throw new Error();
+      return 'Feedback sent. Thank you.';
+    } catch {
+      return 'Could not send feedback. Please try again.';
+    }
+  }
+  function recordDeparture(event) {
+    const pending = state.request;
+    if (!state.busy || state.completed || !pending || pending.left) return;
+    pending.left = true;
+    const body = JSON.stringify({ request_id: pending.id, event, elapsed_ms: Math.min(2147483647, Math.round(performance.now() - pending.started)) });
+    try {
+      if (navigator.sendBeacon?.('/api/english/left', new Blob([body], { type: 'application/json' }))) return;
+    } catch {}
+    void fetch('/api/english/left', {
+      method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+      body, keepalive: true
+    }).catch(() => {});
+  }
+  function formatMs(value) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? (value / 1000).toFixed(value < 10000 ? 1 : 0) + 's' : null; }
+  function finishAnswer(event, question) {
+    if (typeof event.answer !== 'string' || !event.answer.trim() || !isObject(event.validation) || !['references_checked', 'needs_review'].includes(event.validation.status)) throw new Error('The service did not return a complete answer with a validation status.');
+    const turn = { id: state.request.id, question, answer: event.answer, sources: [...state.sources.values()].map(source => {
+      const {id, context_id, title, event_date, report_year, year, matched_paragraph_ids} = source;
+      return {id, context_id, title, event_date, report_year, year, matched_paragraph_ids};
+    }), validation: event.validation,
+      timings: event.timings || {}, feedback_available: event.feedback_available === true, created: Date.now() };
+    saveTurn(turn);
+    showFinished(turn);
+    announce('Answer complete. You can ask another question below.');
+  }
+  function validationLabel(checked) {
+    return checked ? 'Citation numbers and quoted passages were checked. Read the cited sources to assess the explanation.' : 'Check the listed issues and read the cited passages when using this answer.';
+  }
+  function timingLabel(timings = {}) {
+    return [['Sources', timings.retrieval_ms], ['First text', timings.first_token_ms], ['Total', timings.total_ms]]
+      .map(([label, value]) => { const time = formatMs(value); return time ? label + ' ' + time : null; })
+      .filter(Boolean).join(' · ');
+  }
+  function showFinished(event) {
+    state.draft = event.answer; flushRender(); state.completed = true;
+    $('answer-wrap').hidden = false; $('answer').setAttribute('aria-busy', 'false');
+    const checked = event.validation.status === 'references_checked';
+    $('answer-status').className = 'badge' + (checked ? '' : ' review'); $('answer-status').textContent = checked ? 'References checked' : 'Needs review';
+    $('validation-note').textContent = validationLabel(checked);
+    $('validation-issues').replaceChildren();
+    const issues = Array.isArray(event.validation.issues) ? event.validation.issues : [];
+    issues.slice(0, 50).forEach(issue => { const text = typeof issue === 'string' ? issue : isObject(issue) && typeof issue.message === 'string' ? issue.message : JSON.stringify(issue); $('validation-issues').append(node('li', '', text)); });
+    $('validation-issues').hidden = !issues.length;
+    const timing = timingLabel(event.timings || {});
+    $('timings').textContent = timing; $('timings').hidden = !timing;
+    state.lastQuestion = event.question; $('follow-up').hidden = false;
+    $('follow-up').replaceChildren();
+    window.CompounderQuestions?.renderFollowups($('follow-up'), event, askQuestion);
+    $('feedback').hidden = event.feedback_available !== true;
+  }
+  async function ask(question, selectedContextId) {
+    if (state.busy) return;
+    const revisionAtSend = composerRevision;
+    if (state.completed && currentChat) renderArchive(currentChat.turns);
+    const controller = new AbortController(); state.controller = controller; state.busy = true; state.stopped = false; state.completed = false; state.draft = ''; state.sources.clear();
+    resetFeedback(); state.request = null;
+    $('about').open = false; $('error').hidden = true; $('answer-wrap').hidden = false; $('answer').replaceChildren(); $('asked-question').textContent = question;
+    $('answer-status').className = 'badge draft'; $('answer-status').textContent = 'Draft · still streaming'; $('validation-note').textContent = 'This is a partial draft. Its final reference check has not completed.';
+    $('validation-issues').hidden = true; $('follow-up').hidden = true; $('timings').hidden = true; $('sources').hidden = true; $('sources').open = false;
+    $('answer').setAttribute('aria-busy', 'true'); $('progress').hidden = false; $('progress-message').textContent = 'Submitting your question…'; $('elapsed').textContent = '';
+    const started = performance.now();
+    let lastActivity = started;
+    let timedOut = false;
+    // The review stage can legitimately be silent for its 180-second deadline.
+    state.elapsedTimer = window.setInterval(() => {
+      const now = performance.now();
+      $('elapsed').textContent = Math.floor((now - started) / 1000) + 's';
+      if (now - lastActivity > 210000 && !controller.signal.aborted) {
+        timedOut = true;
+        controller.abort();
+      }
+    }, 1000);
+    updateControls();
+    $('answer-details').open = false; closeRail();
+    if (document.activeElement === $('question') || document.activeElement === $('ask') || document.activeElement === $('unqueue')) {
+      $('asked-question').scrollIntoView?.({block:'start'});
+      $('question').focus({preventScroll:true});
+    } else focusTurn();
+    let reader;
+    try {
+      state.request = { id: crypto.randomUUID(), started, left: false };
+      const response = await fetch('/api/english/ask', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' }, signal: controller.signal,
+        body: JSON.stringify({ question, request_id: state.request.id, history: state.history, entrypoint: 'english_form', selected_context_id: selectedContextId }) });
+      if (!response.ok) { let message = 'The service could not answer this question (' + response.status + ').'; try { const detail = await response.json(); if (typeof detail.message === 'string') message = detail.message; else if (typeof detail.error === 'string') message = detail.error; else if (typeof detail.detail === 'string') message = detail.detail; } catch {} throw new Error(message); }
+      if (!response.body || !response.headers.get('content-type')?.toLowerCase().includes('text/event-stream')) throw new Error('The service did not return an answer stream. Your question has been kept.');
+      reader = response.body.getReader(); const decoder = new TextDecoder('utf-8', { fatal: true }); let buffer = '', bytes = 0;
+      function handle(block) {
+        lastActivity = performance.now();
+        const data = block.split(/\r?\n/).filter(line => line.startsWith('data:')).map(line => line.slice(5).trimStart()).join('\n'); if (!data) return;
+        let event; try { event = JSON.parse(data); } catch { throw new Error('The answer stream contained unreadable data. Your draft has not been validated.'); }
+        if (!isObject(event) || typeof event.type !== 'string') throw new Error('The answer stream contained an unrecognized event.');
+        if (state.completed) return;
+        if (event.type === 'status' && typeof event.message === 'string') { $('progress-message').textContent = event.message; if (event.message.startsWith('Checking the answer')) { $('answer-status').textContent = 'Draft · checking sources'; $('validation-note').textContent = 'This draft is being checked against the selected originals and may change.'; } }
+        else if (event.type === 'sources' && Array.isArray(event.sources)) { for (const source of event.sources) if (isObject(source) && Number.isInteger(source.id) && source.id > 0 && typeof source.context_id === 'string') state.sources.set(source.id, source); refreshSources(); if (state.draft) queueRender(); }
+        else if (event.type === 'token' && typeof event.text === 'string') { state.draft += event.text; if (state.draft.length > 200000) throw new Error('The answer exceeded the display limit. The partial draft has not been validated.'); $('answer-wrap').hidden = false; queueRender(); }
+        else if (event.type === 'done') finishAnswer(event, question);
+        else if (event.type === 'error') throw new Error(typeof event.message === 'string' ? event.message : 'The answer could not be completed.');
+      }
+      while (!state.completed) { const chunk = await reader.read(); if (controller.signal.aborted) throw new DOMException('Stopped', 'AbortError'); if (chunk.done) { buffer += decoder.decode(); break; } bytes += chunk.value.byteLength; if (bytes > 4194304) throw new Error('The answer stream exceeded the display limit.'); buffer += decoder.decode(chunk.value, { stream: true }); let boundary; while ((boundary = /\r?\n\r?\n/.exec(buffer))) { handle(buffer.slice(0, boundary.index)); buffer = buffer.slice(boundary.index + boundary[0].length); } }
+      if (buffer.trim() && !state.completed) handle(buffer);
+      if (!state.completed) throw new Error('The connection ended before a complete answer was received. The partial draft has not been validated.');
+    } catch (error) {
+      state.request = null;
+      flushRender();
+      if (composerRevision === revisionAtSend && !$('question').value) $('question').value = question;
+      $('answer').setAttribute('aria-busy', 'false');
+      if (state.draft) { $('answer-wrap').hidden = false; $('answer-status').className = 'badge review'; $('answer-status').textContent = state.stopped ? 'Stopped · incomplete draft' : 'Incomplete draft'; $('validation-note').textContent = 'This partial draft did not receive a completed reference check.'; }
+      else {
+        $('answer-status').className = 'badge review';
+        $('answer-status').textContent = state.stopped ? 'Stopped' : 'Incomplete';
+        $('validation-note').textContent = 'No completed answer was returned.';
+      }
+      $('error-title').textContent = state.stopped ? 'Stopped' : 'The answer could not be completed';
+      $('error-message').textContent = timedOut ? 'The connection stopped responding. You can send a question again.' : state.stopped ? 'The reply was stopped. You can edit or send your question below.' : (error instanceof Error && error.name !== 'AbortError' ? error.message : 'The request was interrupted. You can edit or send your question below.');
+      if (queuedQuestion !== null) $('error-message').textContent += ' Your next question is still in the box. Press Send when ready.';
+      $('error').hidden = false; announce($('error-message').textContent);
+    } finally {
+      const sendNext = queuedQuestion !== null && queuedQuestion === $('question').value.trim() && state.completed;
+      queuedQuestion = null;
+      window.clearInterval(state.elapsedTimer); state.elapsedTimer = null; $('progress').hidden = true; $('answer').setAttribute('aria-busy', 'false'); state.busy = false; state.controller = null; updateControls();
+      if (reader) {
+        void reader.cancel().catch(() => {});
+        reader.releaseLock();
+      }
+      if (sendNext) submitComposer();
+      else if (document.activeElement === $('asked-question') && window.matchMedia('(pointer:fine)').matches) {
+        $('question').focus({preventScroll:true});
+      }
+    }
+  }
+  function submitComposer() {
+    const question = $('question').value.trim();
+    if (question.length < 3 || question.length > 2000 || queuedQuestion !== null) return;
+    if (state.busy) {
+      queuedQuestion = question;
+      updateControls();
+      announce('Your question will send after this reply.');
+      return;
+    }
+    $('question').value = '';
+    void ask(question);
+  }
+  $('question-form').addEventListener('submit', event => { event.preventDefault(); submitComposer(); });
+  $('question').addEventListener('input', () => {
+    composerRevision++;
+    if (queuedQuestion !== null) announce('Queued send cancelled. Your edited draft is in the box.');
+    queuedQuestion = null;
+    updateControls();
+  });
+  $('unqueue').addEventListener('click', () => {
+    queuedQuestion = null;
+    updateControls();
+    $('question').focus();
+    announce('Queued send cancelled. Your draft is in the box.');
+  });
+  $('question').addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey && !event.isComposing && event.keyCode !== 229) { event.preventDefault(); submitComposer(); } });
+  function askQuestion(question, selectedContextId) {
+    if (state.busy) return;
+    void ask(question, selectedContextId);
+  }
+  window.CompounderQuestions?.renderStarters($('starters'), askQuestion, (item, trigger) =>
+    openSource({context_id: item.context, title: item.title}, trigger));
+  $('feedback').addEventListener('submit', sendFeedback);
+  $('feedback').addEventListener('input', feedbackChanged);
+  window.addEventListener('pagehide', () => recordDeparture('pagehide'));
+  $('stop').addEventListener('click', () => { recordDeparture('stop'); state.stopped = true; state.controller?.abort(); });
+  $('new-question').addEventListener('click', resetQuestion); $('home').addEventListener('click', resetQuestion);
+  $('error-edit').addEventListener('click', () => $('question').focus());
+  $('source-close').addEventListener('click', () => {
+    const destination = $('source-close').value;
+    $('source-dialog').close(destination);
+    // Focus on the tap itself so a phone can open its software keyboard.
+    if (destination === 'chat') $('question').focus({preventScroll:true});
+  });
+  $('source-dialog').addEventListener('click', event => { if (event.target === event.currentTarget) $('source-dialog').close(); });
+  $('source-dialog').addEventListener('close', () => {
+    const dialog = $('source-dialog');
+    if (dialog.open) return;
+    state.sourceController?.abort();
+    if (dialog.returnValue !== 'chat') {
+      const target = state.activeCitation?.isConnected ? state.activeCitation : $('question');
+      target.focus({preventScroll:true});
+    }
+    state.activeCitation = null;
+  });
+  $('about').addEventListener('keydown', event => { if (event.key === 'Escape') { $('about').open = false; $('about').querySelector('summary').focus(); } });
+  restoreLibrary();
+  updateControls();
+})();
+</script>
+</body>
+</html>

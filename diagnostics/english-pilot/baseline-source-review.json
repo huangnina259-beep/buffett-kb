@@ -1,0 +1,146 @@
+{
+  "schema_version": "bounded-source-review-1",
+  "reviewed_on": "2026-11-18",
+  "scope": "Actual V0,V1,O1,C1 source events and original 14-context packet; citation locator format excluded as requested.",
+  "status": "independent_agent_source_review_not_semantic_guarantee",
+  "model_api_calls": 0,
+  "originals_changed": false,
+  "cases": [
+    {
+      "id": "V0",
+      "question": "how to evaluate a stock",
+      "result_sha256": "facffd96f2616f41b9dc80278527746523ac5d658253e631e2f286e43ea43b05",
+      "selected_context_ids": [
+        "letter-1992-0074-0085",
+        "letter-1996-0098-0118",
+        "letter-2013-investing-p001-p040",
+        "letter-1994-0013-0026",
+        "letter-2000-pdf-p12-p3-through-p13-p9"
+      ],
+      "assessment": "Useful broad starting explanation; needs historical framing. Citation locator format excluded from semantic assessment.",
+      "issues": [
+        {
+          "excerpt": "companies like Coca-Cola and Gillette that dominate their fields",
+          "issue": "Unqualified present-tense use of a 1996 forecast; retain dated operating requirements, leadership uncertainty and overpayment warning.",
+          "paragraph_ids": [
+            "berkshire-letter-1996:u0107",
+            "berkshire-letter-1996:u0109",
+            "berkshire-letter-1996:u0110"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "result_sha256": "b5699e6f28fa35cfc31b2cdfebb3e4a98e5fc1af7cec8afb9c30b501125d503b",
+      "selected_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "assessment": "Useful cash-flow, uncertainty and per-share explanation; not accepted as written.",
+      "issues": [
+        {
+          "excerpt": "plus a risk premium appropriate for the business",
+          "issue": "Unsupported added valuation rule; 1998 packet discussion rejects higher discount rates as compensation for ignorance. That 1998 context was not selected for V1; notes cannot replace the missing original.",
+          "paragraph_ids": [
+            "cnbc-meeting-1998-afternoon-ch08-p005",
+            "cnbc-meeting-1998-afternoon-ch44-p012",
+            "cnbc-meeting-1998-afternoon-ch44-p015"
+          ]
+        },
+        {
+          "excerpt": "Buffett accepted as a reasonable framework",
+          "issue": "Overstates response to audience assumptions. General cash-distribution approach was accepted with doubts about variables/lower growth; 20-year/7% inputs were not validated.",
+          "paragraph_ids": [
+            "cnbc-meeting-2004-afternoon-ch28-p009",
+            "cnbc-meeting-2004-afternoon-ch28-p014",
+            "cnbc-meeting-2004-afternoon-ch28-p020"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "result_sha256": "6f23c5d31c1098dd871acdeb3001fc9b1697d37ae94a86dcde4668187f68f847",
+      "selected_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "assessment": "Main formula and working-capital subtraction are useful and correct, but later statements contradict the full formula; not accepted as written.",
+      "issues": [
+        {
+          "excerpt": "When maintenance capex exceeds depreciation",
+          "issue": "Replaces c > full b with capex > depreciation, and extends inequality across sectors merely because c is significant. Inserting depreciation as the meaning of b changes the source.",
+          "paragraph_ids": [
+            "berkshire-letter-1986:u0286",
+            "berkshire-letter-1986:u0290",
+            "berkshire-letter-1986:u0292"
+          ]
+        },
+        {
+          "excerpt": "EBITDA adds back all",
+          "issue": "Conflates EBITDA with all noncash addbacks. Also transfers the 1986 a+b cash-flow shorthand exception for some businesses into an EBITDA endorsement.",
+          "paragraph_ids": [
+            "berkshire-letter-1986:u0286",
+            "berkshire-letter-1986:u0291",
+            "berkshire-letter-1986:u0292",
+            "cnbc-meeting-1998-afternoon-ch08-p019"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "result_sha256": "5f4e68c275c500e83c0244881cd8891ddaa4ad5719a9a3754abed47230ba9d20",
+      "selected_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "assessment": "Helpful product/enterprise distinction and finance-company example; not accepted as written because certainty tests and universal conditions overstate the sources.",
+      "issues": [
+        {
+          "excerpt": "genuine understanding produces a feeling of certainty",
+          "issue": "Reverses the warning: doubt is reason to stay out, but absence of doubt/feeling certain does not prove competence. Most reliable test is unsupported.",
+          "paragraph_ids": [
+            "cnbc-meeting-2002-afternoon-ch18-p003",
+            "cnbc-meeting-2014-afternoon-ch07-p011"
+          ]
+        },
+        {
+          "excerpt": "If you cannot describe why the business will still be strong a decade from now, you do not understand it",
+          "issue": "Turns a preference for highly predictable investments into a universal definition of understanding; historical company judgments also lose their date/conditions.",
+          "paragraph_ids": [
+            "berkshire-letter-1996:u0101",
+            "berkshire-letter-1996:u0107",
+            "berkshire-letter-1996:u0109"
+          ]
+        },
+        {
+          "excerpt": "did not regard the whole enterprise as within his competence",
+          "issue": "Drops necessarily and the specific uncertainty about funding independently of Berkshire credit. Generic funding needs does not preserve that condition.",
+          "paragraph_ids": [
+            "cnbc-meeting-2002-afternoon-ch18-p011",
+            "cnbc-meeting-2002-afternoon-ch18-p012"
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Not a whole-corpus audit, controlled model comparison, user test or certification.",
+    "No new online/audio verification.",
+    "Correct formula in one paragraph does not cure contradictory claims elsewhere."
+  ]
+}

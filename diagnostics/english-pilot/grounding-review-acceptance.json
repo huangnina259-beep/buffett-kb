@@ -1,0 +1,346 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-11-18",
+  "status": "bounded_final_V1_O1_C1_review_complete_not_strict_exemplar_acceptance",
+  "scope": "Independent bounded human-style source review of actual final corrected outputs from writer plus grounding-review calls. No APIs or source/caveat edits.",
+  "source_packet_sha256": "34aecaaf607ddcf2532a382e7f6955aeae1892f1f43541eb27c9dd89dcf9b53f",
+  "reading_notes_sha256": "226c1294f1702ae68c975e4b52e4aaf29415cb2687923e4f8703e2aa7da9cb90",
+  "cases": [
+    {
+      "id": "V1",
+      "result_file": "work/buffett-kb-integration/grounding-review-results/V1.json",
+      "result_sha256": "bc520511185291f75729365b7fe232fcfa70d1438170b8c881d321d21399f8e4",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "client_first_token_ms": 6952,
+      "client_total_ms": 65007,
+      "timings": {
+        "retrieval_ms": 676,
+        "first_token_ms": 6935,
+        "writer_ms": 18954,
+        "reviewer_start_ms": 19638,
+        "reviewer_ms": 45340,
+        "total_ms": 64985
+      },
+      "usage": {
+        "type": "usage",
+        "input_tokens": 38342,
+        "output_tokens": 3957
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 18545,
+          "output_tokens": 1279
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 19797,
+          "output_tokens": 2678
+        }
+      },
+      "original_paragraph_mismatches": [],
+      "verdict": "Useful, improved and suitable for a clearly qualified draft preview; still needs a specific book-value context correction before being treated as a fully source-faithful exemplar.",
+      "material_errors": [
+        {
+          "severity": "material_scope_loss_not_core_valuation_error",
+          "claim": "The letter concludes book value is meaningless as an indicator and useful only as a rough significantly understated tracking measure.",
+          "anchors": [
+            "berkshire-letter-1994:u0020",
+            "berkshire-letter-1994:u0022",
+            "berkshire-letter-1994:u0024",
+            "berkshire-letter-1994:u0025",
+            "berkshire-letter-1994:u0026"
+          ],
+          "finding": "The answer combines two differently scoped claims: the final meaningless sentence concludes the education-cost example; the rough significantly understated tracking measure specifically describes Berkshire at the time. Book value is not a substitute for intrinsic valuation is well supported, but the combined blanket formulation drops these scopes. Preserve the concrete historical Berkshire comparison without generalizing the two claims."
+        }
+      ],
+      "moderate_ambiguities": [
+        {
+          "claim": "Discounted cash stream values the whole business; dividing by shares gives an equity share.",
+          "anchors": [
+            "berkshire-letter-1994:u0023",
+            "cnbc-meeting-2004-afternoon-ch28-p011",
+            "cnbc-meeting-2004-afternoon-ch28-p015",
+            "cnbc-meeting-2004-afternoon-ch28-p016"
+          ],
+          "finding": "This is defensible arithmetic synthesis if whole-business value means the aggregate value of cash distributable to its common owners, consistent with the answer’s framing. It never expressly defines an unlevered enterprise-value stream, and it now explicitly separates audience liability subtraction from prescribed inputs. Do not call this a demonstrated enterprise-to-equity error. It should specify cash available to the relevant equity owners so the division is not misread as applying to every cash-flow basis.",
+          "counted_as_material_failure": false
+        }
+      ],
+      "minor_points": [
+        {
+          "claim": "The finance company was set aside.",
+          "anchors": [
+            "cnbc-meeting-2002-afternoon-ch18-p011",
+            "cnbc-meeting-2002-afternoon-ch18-p012"
+          ],
+          "finding": "The source reports a call and uncertainty, rather than an explicit completed rejection. This slightly overstates the outcome, but the answer preserves the decisive uncertainty/funding explanation; not independently a rejection reason."
+        }
+      ],
+      "improvements": [
+        "Removes the high draft’s instruction not to inspect the balance sheet.",
+        "Explicitly says subtracting liabilities was an audience assumption rather than prescribed input.",
+        "Preserves historical farm no-downside scope and does not present it as a general safety rule.",
+        "No invented current discount rate or risk-premium rule.",
+        "Unnamed 2004 paragraphs are attributed to the discussion rather than a verified speaker."
+      ],
+      "strict_exemplar_acceptance": false,
+      "severe_calculation_or_advice_error_found": false
+    },
+    {
+      "id": "O1",
+      "result_file": "work/buffett-kb-integration/grounding-review-results/O1.json",
+      "result_sha256": "ccdabbc47ffaa4426109a84c3e0da6aacefe5a3c585b60f7c173e0aafc40d2eb",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "client_first_token_ms": 15763,
+      "client_total_ms": 91405,
+      "timings": {
+        "retrieval_ms": 10080,
+        "first_token_ms": 15758,
+        "writer_ms": 17245,
+        "reviewer_start_ms": 27335,
+        "reviewer_ms": 64047,
+        "total_ms": 91397
+      },
+      "usage": {
+        "type": "usage",
+        "input_tokens": 36856,
+        "output_tokens": 5307
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 17878,
+          "output_tokens": 1050
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 18978,
+          "output_tokens": 4257
+        }
+      },
+      "validation": {
+        "status": "needs_review",
+        "issues": [
+          "A quotation could not be matched exactly to an original cited in its paragraph."
+        ],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "raw_evidence_read": [
+        {
+          "source_id": "berkshire-letter-1986",
+          "raw_path": "outputs/巴菲特知识库/letters/raw/berkshire-letter-1986.html",
+          "raw_sha256": "7a1c77d00cd18b0ce312eae72c95bf45c8da7d0169451f4ed67924dbff2562e8",
+          "matches_result_source_hash": true,
+          "actually_read_scope": "Purchase-accounting example, recurring charges, full owner-earnings equation, working-capital and LIFO qualifiers, maintenance spending, cash-flow exception and Berkshire/See's comparison (units 209–210, 277–297)."
+        },
+        {
+          "source_id": "cnbc-meeting-1998-afternoon",
+          "raw_path": "outputs/巴菲特知识库/meetings/raw/cnbc-meeting-1998-afternoon.html",
+          "raw_sha256": "09023725652764529d729b77dcf6ce4b50d18dc9e86fc7ccd8939f8a35cbbea4",
+          "matches_result_source_hash": true,
+          "actually_read_scope": "Chapter 8: question, gross versus net cash, productive reinvestment, best/second-best/worst business contrast, Munger cash-return warning and EBITDA discussion."
+        },
+        {
+          "source_id": "cnbc-meeting-2004-afternoon",
+          "raw_path": "outputs/巴菲特知识库/meetings/raw/cnbc-meeting-2004-afternoon.html",
+          "raw_sha256": "deeca3d138e99fc849178849d602496b5eca1679b1fa0c92c708f932df915708",
+          "matches_result_source_hash": true,
+          "actually_read_scope": "Chapter 28: audience model and reply, with focus on depreciation/CAPEX, retained earnings and the limited general-approach endorsement."
+        }
+      ],
+      "verification_scope": "Actual done answer and cited source-event paragraph contexts reviewed, with key substantive passages re-read in hash-matching archived original HTML. This is a bounded semantic source review, not a complete fresh extraction audit, audio verification, current-site comparison, or entire-corpus review. Raw HTML contains whitespace differences around inline markup and reversible historical character mojibake; source wording was checked without writing or changing the originals.",
+      "material_errors": [],
+      "severe_calculation_or_advice_error_found": false,
+      "semantic_draft_acceptable": true,
+      "strict_exemplar_acceptance": false,
+      "verdict": "Substantially improved and useful as a qualified draft. No severe owner-earnings calculation, practical-advice or attribution error found in the checked evidence. One genuinely nonverbatim quotation must be repaired or paraphrased before strict exemplar acceptance.",
+      "quotation_findings": [
+        {
+          "severity": "minor_exact_quotation_defect",
+          "claim": "A company spending money as it comes in 'doesn't get credit for gross cash flow, they get credit for whatever net cash is left every year'.",
+          "anchors": [
+            "cnbc-meeting-1998-afternoon-ch08-p005"
+          ],
+          "finding": "The archived original says 'they don't get credit', whereas the answer uses 'doesn't get credit' inside quotation marks. Meaning is preserved but exact-copy compliance is not. This explains the reported needs_review; it is not evidence of a fabricated economic claim.",
+          "required_correction": "Use the original continuous wording, or remove quotation marks and paraphrase."
+        }
+      ],
+      "moderate_ambiguities": [],
+      "minor_points": [
+        {
+          "claim": "Reinvestment distinction in the 1998 context.",
+          "anchors": [
+            "cnbc-meeting-1998-afternoon-ch08-p006",
+            "cnbc-meeting-1998-afternoon-ch08-p008"
+          ],
+          "finding": "The answer correctly limits (c) to maintaining competitive position and volume, but its best/worst-business contrast omits the intermediate good business that reinvests at satisfactory returns. Adding that line would help prevent a reader interpreting all reinvestment as undesirable; this omission does not reverse the formula or make the actual answer false."
+        }
+      ],
+      "improvements": [
+        "Required additional working capital is explicitly subtracted, with the LIFO/unchanged-volume exception retained.",
+        "Non-cash add-backs include depreciation, depletion, amortization and certain other charges; they are not narrowed to depreciation.",
+        "Scott Fetzer purchase-accounting effects, amounts and recurring horizons are consistent with the original.",
+        "The (c) versus (b) relationship is conditional, and the historical Berkshire/See's qualification prevents a universal maintenance-exceeds-depreciation rule.",
+        "2004 audience assumptions remain audience assumptions; the reply endorses the general valuation approach rather than the exact numerical inputs.",
+        "Unnamed meeting paragraphs are described as discussion, and Munger's explicitly named warning is separately attributed."
+      ],
+      "not_verified": [
+        "Retrieved 2000 letter source [2] is not cited in the final O1 answer. Its packet uses a PDF raw hash; this review did not verify that PDF and does not treat the separate HTML file as the same source.",
+        "O1 source [4] is not cited in its final answer; its relevant 1998 chapter 44 context is checked under C1."
+      ]
+    },
+    {
+      "id": "C1",
+      "result_file": "work/buffett-kb-integration/grounding-review-results/C1.json",
+      "result_sha256": "99acd22ad0cba6f1b99cde4bd187f9a6456ea1955d9a457f8a09a2a9b203c27c",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "model": "GLM-5.3-Flash-W8A8",
+      "prompt_version": "english-originals-3-qualified-synthesis-verification-1",
+      "client_first_token_ms": 8008,
+      "client_total_ms": 43739,
+      "timings": {
+        "retrieval_ms": 335,
+        "first_token_ms": 8005,
+        "writer_ms": 20187,
+        "reviewer_start_ms": 20531,
+        "reviewer_ms": 23188,
+        "total_ms": 43732
+      },
+      "usage": {
+        "type": "usage",
+        "input_tokens": 34632,
+        "output_tokens": 3596
+      },
+      "usage_by_stage": {
+        "answer": {
+          "type": "usage",
+          "input_tokens": 16712,
+          "output_tokens": 1350
+        },
+        "grounding_review": {
+          "type": "usage",
+          "input_tokens": 17920,
+          "output_tokens": 2246
+        }
+      },
+      "validation": {
+        "status": "needs_review",
+        "issues": [
+          "A quotation could not be matched exactly to an original cited in its paragraph."
+        ],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "raw_evidence_read": [
+        {
+          "source_id": "cnbc-meeting-2002-afternoon",
+          "raw_path": "outputs/巴菲特知识库/meetings/raw/cnbc-meeting-2002-afternoon.html",
+          "raw_sha256": "0c0a56f279f90bfcee56f7918df7d7dfef17194e0e2901bbf0acec0d1cb9126b",
+          "matches_result_source_hash": true,
+          "actually_read_scope": "Chapter 18 question and answer: doubt, GM/Walmart valuation distinction, finance-company funding and whole-enterprise limits, Munger boundary/practice remarks."
+        },
+        {
+          "source_id": "berkshire-letter-1992",
+          "raw_path": "outputs/巴菲特知识库/letters/raw/berkshire-letter-1992.html",
+          "raw_sha256": "281218259801b95b4fad83f3e92a3e7bfbc15389b8f308b4f5992730f19cdde8",
+          "matches_result_source_hash": true,
+          "actually_read_scope": "Units 81–85: future coupons, Berkshire simplicity/stability preference and margin of safety."
+        },
+        {
+          "source_id": "cnbc-meeting-1998-afternoon",
+          "raw_path": "outputs/巴菲特知识库/meetings/raw/cnbc-meeting-1998-afternoon.html",
+          "raw_sha256": "09023725652764529d729b77dcf6ce4b50d18dc9e86fc7ccd8939f8a35cbbea4",
+          "matches_result_source_hash": true,
+          "actually_read_scope": "Chapter 44: question, uncertainty as a go/no-go condition and discount-rate discussion; unattributed response paragraphs remain unattributed."
+        },
+        {
+          "source_id": "berkshire-letter-1996",
+          "raw_path": "outputs/巴菲特知识库/letters/raw/berkshire-letter-1996.html",
+          "raw_sha256": "8518b0b6a2c2586cb46fe2507cf2bbf22ce3b557e9989e0ffe93d43e05980ced",
+          "matches_result_source_hash": true,
+          "actually_read_scope": "Units 101–104 and 113–118, including own-portfolio condition and index-fund alternative around the cited investor guidance."
+        },
+        {
+          "source_id": "cnbc-meeting-2014-afternoon",
+          "raw_path": "outputs/巴菲特知识库/meetings/raw/cnbc-meeting-2014-afternoon.html",
+          "raw_sha256": "081ede52f52ae6fb609a6dc39b45f763c217cf80d289de64ef7b67f66bbd4f10",
+          "matches_result_source_hash": true,
+          "actually_read_scope": "Chapter 7 full question and answer, including retail error, Mrs. B, friends' feedback and Munger's separate remarks."
+        }
+      ],
+      "verification_scope": "Actual done answer and cited source-event paragraph contexts reviewed, with key substantive passages re-read in hash-matching archived original HTML. This is a bounded semantic source review, not a complete fresh extraction audit, audio verification, current-site comparison, or entire-corpus review. Raw HTML contains whitespace differences around inline markup and reversible historical character mojibake; source wording was checked without writing or changing the originals.",
+      "material_errors": [],
+      "severe_calculation_or_advice_error_found": false,
+      "semantic_draft_acceptable": true,
+      "strict_exemplar_acceptance": false,
+      "verdict": "Useful and substantially source-supported as a qualified draft. No severe factual, attribution or advice error found in the bounded review. needs_review combines typography/case mismatches with an editorial question, so it must not be summarized as evidence that the answer fabricated its main claims. Improve exact quotation and scope wording before strict exemplar acceptance.",
+      "quotation_findings": [
+        {
+          "severity": "minor_capitalization_difference",
+          "claim": "\"you may not be able to value it\"",
+          "anchors": [
+            "cnbc-meeting-2002-afternoon-ch18-p005"
+          ],
+          "finding": "Original begins \"You may not be able to value it.\" The lower-case initial letter causes exact matching to fail; the words and meaning are otherwise supported.",
+          "required_correction": "Preserve the original capital Y, or paraphrase."
+        },
+        {
+          "severity": "minor_nested_punctuation_difference",
+          "claim": "\"must himself estimate the future 'coupons,'\"",
+          "anchors": [
+            "berkshire-letter-1992:u0081"
+          ],
+          "finding": "The raw original uses double quotation marks around coupons and a period, while the answer uses nested single marks and a comma to fit the surrounding sentence. This is a quotation-format mismatch, not a changed valuation concept.",
+          "required_correction": "Prefer a short exact span without nested punctuation, or paraphrase."
+        },
+        {
+          "severity": "mechanical_false_positive_for_editorial_question",
+          "claim": "\"can I say with reasonable confidence what this business's competitive position and earnings will look like far into the future?\"",
+          "anchors": [
+            "berkshire-letter-1992:u0084",
+            "berkshire-letter-1996:u0101",
+            "berkshire-letter-1996:u0116"
+          ],
+          "finding": "This appears after \"So the practical question is\" and is recognizably the answer's synthesized self-question, not introduced as Buffett's spoken wording. The checker treats all sufficiently long double-quoted strings as source quotations. It cannot distinguish this editorial use.",
+          "required_correction": "Use italic text or expressly label the question as editorial synthesis to remove ambiguity; do not call this invented Buffett wording."
+        }
+      ],
+      "moderate_ambiguities": [
+        {
+          "claim": "\"Stability and predictability are what make evaluation possible\" and the far-future competence self-question.",
+          "anchors": [
+            "berkshire-letter-1992:u0084",
+            "berkshire-letter-1996:u0101",
+            "berkshire-letter-1996:u0113",
+            "berkshire-letter-1996:u0114",
+            "berkshire-letter-1996:u0116"
+          ],
+          "finding": "The body expressly frames simplicity/stability and ten- or twenty-year competitive strength as Berkshire's preference. Read in that context, this is a defensible investment-evaluation synthesis, not a demonstrated false rule that every person must have Berkshire's holding horizon to possess competence. The heading is broader than the evidence; qualify it as Berkshire's approach. When quoting the 1996 stock-selection guidance, retain \"if you choose to construct your own portfolio\"; it follows the index-fund alternative. The current answer uses the excerpt to explain understanding and does not issue an individual buy recommendation.",
+          "counted_as_material_failure": false
+        }
+      ],
+      "minor_points": [],
+      "improvements": [
+        "Clearly treats doubt as a one-way disqualifier, without claiming lack of doubt proves competence.",
+        "Preserves the distinction between understanding individual transactions and evaluating/funding the whole finance company.",
+        "Explicitly distinguishes understanding a business in general from being able to value it.",
+        "Munger's competence/practice remarks are separately attributed.",
+        "1998 risk/discount-rate remarks are presented as a meeting discussion with unattributed turns, rather than assigning an inferred speaker.",
+        "2014 errors and friends' feedback remain cautions about self-assessment, not a guaranteed checklist."
+      ]
+    }
+  ],
+  "provisional_summary": "All three corrected answers are materially improved over the earlier single-pass failures. V1 retains the documented book-value scope conflation. O1 and C1 have no severe calculation/advice/attribution error identified in this bounded independent review, but exact-quotation cleanup and limited wording qualifications remain. needs_review is a quotation/reference check outcome, not itself a semantic-failure verdict. These three cases do not establish general model or production reliability.",
+  "limitations": [
+    "This is not an automatic pass from having a second model call.",
+    "Reference/quotation checker results do not establish semantic support.",
+    "No claim of complete corpus or production acceptance.",
+    "O1/C1 raw evidence scope is specified per case; not every retrieved source or entire raw document was freshly read.",
+    "No API calls, new model tests, repository/code changes or source edits were performed by this reviewer.",
+    "The existing V1 case and its source judgment were preserved without re-review."
+  ]
+}

@@ -1,3 +1,5 @@
+> **English original-source pilot:** [Run the focused Q&A preview](docs/english-pilot.md). This branch is experimental: it includes 14 original-source contexts, source readers, live question tests, and recorded answer-quality failures. It is not a production acceptance or a full-library migration.
+
 # 复利国 · The Compounder
 
 复利国是一套面向价值投资学习、研究和复盘的 AI 工作台。项目把巴菲特股东信、查理·芒格著述、Howard Marks 备忘录、李录演讲与相关书籍整理为本地知识库，并通过 RAG 和对话式教学帮助用户理解投资原则、分析公司和记录投资思考。

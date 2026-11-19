@@ -1,0 +1,361 @@
+{
+  "schema_version": "editorial-review-notes-1",
+  "created_on": "2026-11-18",
+  "status": "source_checked_editorial_guardrails_not_semantic_certification",
+  "purpose": "Short reading caveats to accompany original contexts for one generator. These are not answers, quotations, new evidence, or a substitute for reading originals.",
+  "source_packet": {
+    "path": "data/source_contexts.json",
+    "sha256": "34aecaaf607ddcf2532a382e7f6955aeae1892f1f43541eb27c9dd89dcf9b53f",
+    "manifest": {
+      "input_name": "live-evidence-packets.json",
+      "input_sha256": "c23730df1c75c2f77bdcce3e67b9e43dd49e180a6d2fb46b4deab4fcd69e437e",
+      "input_version": "english-live-evidence-v3.1",
+      "input_bundle_hash": "1736557437379611ff04e6bb0c927d9c0271e282923db91d792d48e2f4854fe1",
+      "input_source_hashes": {
+        "competence_packet": "bbad99a1058cbc817094e899add9b8256f5c6669483d331de8cc6625f6205368",
+        "intrinsic_value_dossier": "6d2a6cee17c5a300c3bff1a851e9e912bb3516c741c55aaaa80c46833f90503f"
+      },
+      "input_scope": "Selected complete bounded primary contexts for business understanding, economics, management, owner earnings, intrinsic value, price and safety. Query retrieval over original paragraphs; not complete Buffett coverage, an authoritative fixed investment process, current company research or a source of current buy recommendations.",
+      "input_review_status": "First eight contexts and five reused valuation contexts inherit their documented prior review limits; three additional full letter sections have original-source checks and a separately reported independent boundary/text review. Three compact selections preserve all original paragraph objects and require independent selection-boundary review before live evaluation. This packet does not validate generated answers.",
+      "included_context_ids": [
+        "letter-1992-0074-0085",
+        "letter-1996-0098-0118",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "meeting-2002-boundary",
+        "meeting-2014-self-assessment",
+        "meeting-2019-learning",
+        "meeting-2019-expansion",
+        "letter-2013-investing-p001-p040",
+        "letter-1994-0013-0026",
+        "letter-1986-0154-0297",
+        "cnbc-meeting-1994-morning-ch13",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "supplemental_inputs": [
+        {
+          "input_name": "cnbc-meeting-2004-afternoon.ts",
+          "input_sha256": "cb27682678b72d61ceaac8d5588d5d55961f61de3258fcef338e016b0b21ecf0",
+          "context_ids": [
+            "chapter:cnbc-meeting-2004-afternoon-ch28"
+          ],
+          "context_sha256": "604e1ed1688522f0d811b882d22c2ce5415ee7dafeb961689f9562df1b4afb56",
+          "verification_scope": "Source extraction; complete semantic and audio review not established.",
+          "decode_policy": "Decode one generated base64/gzip JSON literal; no TypeScript execution and no source object rewriting."
+        }
+      ],
+      "context_count": 14,
+      "paragraph_count": 477,
+      "contexts_sha256": "647770ac0071503211509a6f25a714e3b7b8c047fc1cff54f5babc9fa88ec8d8",
+      "context_sha256": {
+        "letter-1992-0074-0085": "a9a952d4d0f4e8c0ebdf65b2a47566210f1ee8a527f99e953e41cd284999228a",
+        "letter-1996-0098-0118": "1fa7221a4c1e7ecee19eab4c7adb5b968ffde98216ef8d843212486f9e48d946",
+        "letter-2000-pdf-p12-p3-through-p13-p9": "396697160189af4997c65fb42cad4b98f2e44863aa22144f4a01ca3adfb9895e",
+        "meeting-2002-boundary": "e313ee6eaa6dff13b08dbb7adb476a5e97c1af50bdc148a2abef83e84d5e833f",
+        "meeting-2014-self-assessment": "f2e2efc034c86e392232a359908bf59b48a81148e7e1c428209c72972a312315",
+        "meeting-2019-learning": "700450e2bec20891d5bb4ef9ab09fcd2b4696f20c31f42442dc3ddb4654d820d",
+        "meeting-2019-expansion": "9e19bebfc9ee87368a34157370387717da57c5edb90153e3478ce4af892be6f7",
+        "letter-2013-investing-p001-p040": "aca98bfbbcc4f41f858f3e1faee2a404399014faeb1a881ffff649a7742a35d4",
+        "letter-1994-0013-0026": "3def372d223182b8bc42cce9ff13296c75ccbd2be937799c9b6694f878f09256",
+        "letter-1986-0154-0297": "da6cf655f97f5f7f44cfa9c1bd951af17e721ef92440449259d1092b143e6639",
+        "cnbc-meeting-1994-morning-ch13": "c9827f52f9e0ba67445737c2a954fc0e3cf4ab38e2a009f04a549377ddabdaa8",
+        "cnbc-meeting-1998-afternoon-ch08": "63f651b9efc5128fd63fc77040c59972b69b3d67b4de290fccb52088b26df64c",
+        "cnbc-meeting-1998-afternoon-ch44": "784ea646cd536cf864e8efb5962020c7c630bf3a0bc46f9ac3fc468180559c48",
+        "chapter:cnbc-meeting-2004-afternoon-ch28": "604e1ed1688522f0d811b882d22c2ce5415ee7dafeb961689f9562df1b4afb56"
+      },
+      "object_policy": "Original selected context objects and ordered paragraph objects copied exactly; no editorial answers, translations, speaker inference or text rewriting imported.",
+      "selection_policy": "Explicit thirteen-context packet allowlist, optionally supplemented by the complete 2004 afternoon chapter28 on valuation. Later compact selections requiring independent selection-boundary review are excluded. Existing verification limits remain unchanged."
+    },
+    "originals_changed": false
+  },
+  "usage_rules": [
+    "Apply a note only when its corresponding original context is supplied.",
+    "Cite original paragraph IDs, never these editorial notes.",
+    "Preserve original speaker metadata and uncertainty; a note does not resolve null attribution.",
+    "Do not insert a caveat merely to fill a template; use it when making the claim it qualifies.",
+    "These five bounded agent-reviewed caveats do not establish whole-corpus accuracy or guarantee generated-answer correctness."
+  ],
+  "notes": [
+    {
+      "id": "owner-earnings-components",
+      "kind": "editorial_source_specific_caveat",
+      "context_ids": [
+        "letter-1986-0154-0297"
+      ],
+      "source_ids": [
+        "berkshire-letter-1986"
+      ],
+      "paragraph_ids": [
+        "berkshire-letter-1986:u0286",
+        "berkshire-letter-1986:u0287",
+        "berkshire-letter-1986:u0290",
+        "berkshire-letter-1986:u0292"
+      ],
+      "note": "When using this formula, retain all of (b): depreciation, depletion, amortization and certain other noncash charges. Required additional working capital enters subtracted (c), so it reduces owner earnings. Preserve the LIFO/unchanged-unit-volume exception if discussing that point. GAAP overstates owner earnings when (c) exceeds the full (b), not merely depreciation; significant maintenance spending alone does not prove that inequality. Estimates of (c) remain uncertain. The limited shorthand exception in u0292 refers to the discussed cash-flow measure, not an endorsement of EBITDA; do not equate EBITDA with all noncash addbacks.",
+      "anchors": [
+        {
+          "context_id": "letter-1986-0154-0297",
+          "source_id": "berkshire-letter-1986",
+          "paragraph_id": "berkshire-letter-1986:u0286",
+          "exact_anchor": "depreciation, depletion, amortization, and certain other non-cash charges",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "12f5de664fb43b38a71bad9fb5636833a76641a60fc07af5b2e09744ba6ab834"
+        },
+        {
+          "context_id": "letter-1986-0154-0297",
+          "source_id": "berkshire-letter-1986",
+          "paragraph_id": "berkshire-letter-1986:u0286",
+          "exact_anchor": "the increment also should be included in ( c)",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "12f5de664fb43b38a71bad9fb5636833a76641a60fc07af5b2e09744ba6ab834"
+        },
+        {
+          "context_id": "letter-1986-0154-0297",
+          "source_id": "berkshire-letter-1986",
+          "paragraph_id": "berkshire-letter-1986:u0286",
+          "exact_anchor": "businesses following the LIFO inventory method usually do not require additional working capital if unit volume does not change",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "12f5de664fb43b38a71bad9fb5636833a76641a60fc07af5b2e09744ba6ab834"
+        },
+        {
+          "context_id": "letter-1986-0154-0297",
+          "source_id": "berkshire-letter-1986",
+          "paragraph_id": "berkshire-letter-1986:u0287",
+          "exact_anchor": "must be a guess",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "48c54cb3e8bfc13fa0109c784ef9a6bf0961b3d67ba3ccadf87f13166e583f49"
+        },
+        {
+          "context_id": "letter-1986-0154-0297",
+          "source_id": "berkshire-letter-1986",
+          "paragraph_id": "berkshire-letter-1986:u0290",
+          "exact_anchor": "when ( c) exceeds (b)",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "07177c63662b8a93272b9392214e8abdb4c268a3e932a6e6d9ef1b13f46c317e"
+        },
+        {
+          "context_id": "letter-1986-0154-0297",
+          "source_id": "berkshire-letter-1986",
+          "paragraph_id": "berkshire-letter-1986:u0292",
+          "exact_anchor": "may serve as a shorthand of some utility in descriptions of certain real estate businesses",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "e52725e995b645af3c3602d37bba1491b4c16846e7f49aff5b40431b138ee1bb"
+        }
+      ]
+    },
+    {
+      "id": "competence-uncertainty",
+      "kind": "editorial_source_specific_caveat",
+      "context_ids": [
+        "meeting-2002-boundary"
+      ],
+      "source_ids": [
+        "cnbc-meeting-2002-afternoon"
+      ],
+      "paragraph_ids": [
+        "cnbc-meeting-2002-afternoon-ch18-p003",
+        "cnbc-meeting-2002-afternoon-ch18-p011",
+        "cnbc-meeting-2002-afternoon-ch18-p012"
+      ],
+      "note": "Preserve the direction of the warning: doubt is a reason not to count something inside the circle; absence of doubt is not proof of competence. In the finance-company example, Buffett understood individual transactions but was uncertain about the whole enterprise and whether he could continually fund it independently of Berkshire’s credit. Retain that named funding condition and the qualified word necessarily; do not assert inability, universal dependence on outside credit, or guaranteed self-assessment.",
+      "anchors": [
+        {
+          "context_id": "meeting-2002-boundary",
+          "source_id": "cnbc-meeting-2002-afternoon",
+          "paragraph_id": "cnbc-meeting-2002-afternoon-ch18-p003",
+          "exact_anchor": "if you have doubts about something being into your circle of competence, it isn't",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "fbc8845309e94363d7dad29d16901e4fd4b185d3569a07df520cc31fe824b504"
+        },
+        {
+          "context_id": "meeting-2002-boundary",
+          "source_id": "cnbc-meeting-2002-afternoon",
+          "paragraph_id": "cnbc-meeting-2002-afternoon-ch18-p011",
+          "exact_anchor": "I don't understand everything that's going on within it",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "18b7c4b7d45506e4a5292f3649fe23c33146d856a972d14c01c0e43370224fc8"
+        },
+        {
+          "context_id": "meeting-2002-boundary",
+          "source_id": "cnbc-meeting-2002-afternoon",
+          "paragraph_id": "cnbc-meeting-2002-afternoon-ch18-p011",
+          "exact_anchor": "whether I can continually fund it, you know, on a basis, independent from using Berkshire's credit",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "18b7c4b7d45506e4a5292f3649fe23c33146d856a972d14c01c0e43370224fc8"
+        },
+        {
+          "context_id": "meeting-2002-boundary",
+          "source_id": "cnbc-meeting-2002-afternoon",
+          "paragraph_id": "cnbc-meeting-2002-afternoon-ch18-p012",
+          "exact_anchor": "necessarily as being within my circle of competence",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "220bbb239fa4aaba3b2a5c1a023275b0fe56de28041c5d6356a6e8dca8528f7f"
+        }
+      ]
+    },
+    {
+      "id": "audience-valuation-assumptions",
+      "kind": "editorial_source_specific_caveat",
+      "context_ids": [
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "source_ids": [
+        "cnbc-meeting-2004-afternoon"
+      ],
+      "paragraph_ids": [
+        "cnbc-meeting-2004-afternoon-ch28-p009",
+        "cnbc-meeting-2004-afternoon-ch28-p011",
+        "cnbc-meeting-2004-afternoon-ch28-p014",
+        "cnbc-meeting-2004-afternoon-ch28-p020"
+      ],
+      "note": "The 15%/10% growth, 7% discount rate, liability adjustment and share-count calculation were the audience member’s assumptions, not Buffett’s prescribed inputs. The reply agrees with the general distributable-cash approach but questions variables and expects lower earnings gains. Do not claim endorsement of the full audience model or use those historical numbers as current inputs. Keep total-business/equity amounts distinct from per-share amounts; the audience calculation is an example, not a universal rule to subtract all liabilities.",
+      "anchors": [
+        {
+          "context_id": "chapter:cnbc-meeting-2004-afternoon-ch28",
+          "source_id": "cnbc-meeting-2004-afternoon",
+          "paragraph_id": "cnbc-meeting-2004-afternoon-ch28-p009",
+          "exact_anchor": "I've assumed that Berkshire can grow its look-through earnings at 15 percent",
+          "speaker_as_supplied": null,
+          "paragraph_text_sha256": "b9c695d6c2bb9ed4fd523abf9bb2723b8ad51481ce8e4ce878f79a75d5b8599d"
+        },
+        {
+          "context_id": "chapter:cnbc-meeting-2004-afternoon-ch28",
+          "source_id": "cnbc-meeting-2004-afternoon",
+          "paragraph_id": "cnbc-meeting-2004-afternoon-ch28-p011",
+          "exact_anchor": "I divided by 1,537,000 shares",
+          "speaker_as_supplied": null,
+          "paragraph_text_sha256": "bf16f0ad26b23d6e0cc8010572daeb07d31a6d1bf87cdeb0d454ef04a2cba47e"
+        },
+        {
+          "context_id": "chapter:cnbc-meeting-2004-afternoon-ch28",
+          "source_id": "cnbc-meeting-2004-afternoon",
+          "paragraph_id": "cnbc-meeting-2004-afternoon-ch28-p014",
+          "exact_anchor": "The line of thinking is correct, it just depends on what variables you plug in",
+          "speaker_as_supplied": null,
+          "paragraph_text_sha256": "137b8564529ef0b1552a609c47b2bbc266c09c36d75e10b0a007f95cf154f455"
+        },
+        {
+          "context_id": "chapter:cnbc-meeting-2004-afternoon-ch28",
+          "source_id": "cnbc-meeting-2004-afternoon",
+          "paragraph_id": "cnbc-meeting-2004-afternoon-ch28-p020",
+          "exact_anchor": "we might settle for lower numbers on earnings gains than you postulated",
+          "speaker_as_supplied": null,
+          "paragraph_text_sha256": "8739cc438cda536658018fdb674ac533029d4c1d72ac548520d29243c58d3012"
+        }
+      ]
+    },
+    {
+      "id": "historical-inevitables",
+      "kind": "editorial_source_specific_caveat",
+      "context_ids": [
+        "letter-1996-0098-0118"
+      ],
+      "source_ids": [
+        "berkshire-letter-1996"
+      ],
+      "paragraph_ids": [
+        "berkshire-letter-1996:u0099",
+        "berkshire-letter-1996:u0107",
+        "berkshire-letter-1996:u0109",
+        "berkshire-letter-1996:u0110"
+      ],
+      "note": "Treat the 1996 Coke/Gillette inevitability discussion as a dated judgment with conditions, not a present-day fact or a label for every leading company. It retains continuing manufacturing/distribution/product work, limits the number identifiable, warns that leadership alone is no certainty and that even the best business can be overpriced. Preserve sensible purchase price and monitoring; do not infer immunity from change, guaranteed returns or automatic suitability today.",
+      "anchors": [
+        {
+          "context_id": "letter-1996-0098-0118",
+          "source_id": "berkshire-letter-1996",
+          "paragraph_id": "berkshire-letter-1996:u0099",
+          "exact_anchor": "Thereafter, you need only monitor whether these qualities are being preserved",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "2bb12d670e8c1a3490fe8e242a2c957476f8ef1ad5d364ba0f12290f0c329a5f"
+        },
+        {
+          "context_id": "letter-1996-0098-0118",
+          "source_id": "berkshire-letter-1996",
+          "paragraph_id": "berkshire-letter-1996:u0107",
+          "exact_anchor": "the vital work that these companies must continue to carry out",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "b9daf4aea58ba3907a26ae0eceb4e052696a4d0995e5a2f9f15784119f302aa0"
+        },
+        {
+          "context_id": "letter-1996-0098-0118",
+          "source_id": "berkshire-letter-1996",
+          "paragraph_id": "berkshire-letter-1996:u0109",
+          "exact_anchor": "Leadership alone provides no certainties",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "2cc219438e131a3bb3865b224361d1c3d87184b91355b2bd5cebfdc78774ae40"
+        },
+        {
+          "context_id": "letter-1996-0098-0118",
+          "source_id": "berkshire-letter-1996",
+          "paragraph_id": "berkshire-letter-1996:u0110",
+          "exact_anchor": "You can, of course, pay too much for even the best of businesses",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "ac1014a28220dc82985e6b201774d386b331efed40529dca09e7dcacd9edd924"
+        }
+      ]
+    },
+    {
+      "id": "discount-rate-source-formulation",
+      "kind": "editorial_source_specific_caveat",
+      "context_ids": [
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44"
+      ],
+      "source_ids": [
+        "cnbc-meeting-1998-afternoon"
+      ],
+      "paragraph_ids": [
+        "cnbc-meeting-1998-afternoon-ch08-p005",
+        "cnbc-meeting-1998-afternoon-ch08-p010",
+        "cnbc-meeting-1998-afternoon-ch44-p010",
+        "cnbc-meeting-1998-afternoon-ch44-p012",
+        "cnbc-meeting-1998-afternoon-ch44-p015"
+      ],
+      "note": "Use the source’s formulation: the long rate/long-term Treasury rate is a common measurement yardstick; calculated present value is not automatically the amount to pay. The risk discussion uses understanding as a go/no-go condition and expressly rejects compensating for not knowing the future by choosing a higher discount rate. Do not add a risk premium, a universal required return, or today’s Treasury yield. Keep the historical setting and supplied speaker labels; this note does not resolve null-speaker paragraphs.",
+      "anchors": [
+        {
+          "context_id": "cnbc-meeting-1998-afternoon-ch08",
+          "source_id": "cnbc-meeting-1998-afternoon",
+          "paragraph_id": "cnbc-meeting-1998-afternoon-ch08-p005",
+          "exact_anchor": "we discount at the long rate just to have a standard of measurement across all businesses",
+          "speaker_as_supplied": "Warren Buffett",
+          "paragraph_text_sha256": "a4ac1aa1d451c11e54448563fe2f59e880bed7ba1ec21e570367fadbd3d558b5"
+        },
+        {
+          "context_id": "cnbc-meeting-1998-afternoon-ch08",
+          "source_id": "cnbc-meeting-1998-afternoon",
+          "paragraph_id": "cnbc-meeting-1998-afternoon-ch08-p010",
+          "exact_anchor": "That doesn't mean that you pay the amount that that present value calculation leads to",
+          "speaker_as_supplied": null,
+          "paragraph_text_sha256": "aa28cd9bbe369c3690ffca93599beb655d65c09a93c6080c91ed83811b7ed826"
+        },
+        {
+          "context_id": "cnbc-meeting-1998-afternoon-ch44",
+          "source_id": "cnbc-meeting-1998-afternoon",
+          "paragraph_id": "cnbc-meeting-1998-afternoon-ch44-p010",
+          "exact_anchor": "sort of a go/no-go valve",
+          "speaker_as_supplied": null,
+          "paragraph_text_sha256": "0d0ed487f4aa11bcfe3e5c9f941e47a3f8664f4ff9c45c5f7100e73f9fcfdeac"
+        },
+        {
+          "context_id": "cnbc-meeting-1998-afternoon-ch44",
+          "source_id": "cnbc-meeting-1998-afternoon",
+          "paragraph_id": "cnbc-meeting-1998-afternoon-ch44-p012",
+          "exact_anchor": "we'll discount it at 9 percent instead of 7 percent",
+          "speaker_as_supplied": null,
+          "paragraph_text_sha256": "6d7662daf8eb7a4c38d3f5b60a93d1c26e5b67b5a26c4fe3a41d6441ea7f3840"
+        },
+        {
+          "context_id": "cnbc-meeting-1998-afternoon-ch44",
+          "source_id": "cnbc-meeting-1998-afternoon",
+          "paragraph_id": "cnbc-meeting-1998-afternoon-ch44-p015",
+          "exact_anchor": "we don't think you can compensate for that by having a higher discount rate",
+          "speaker_as_supplied": null,
+          "paragraph_text_sha256": "baa4ab3654a238c768801790aad02a8b515ee9932fa3b9e1971a45486db4d3a5"
+        }
+      ]
+    }
+  ]
+}

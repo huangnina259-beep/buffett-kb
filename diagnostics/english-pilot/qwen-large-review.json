@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-11-18",
+  "scope": "Independent bounded manual source-based review of three recorded Qwen answers; no model or network calls, no changes to originals or caveats.",
+  "source_packet_sha256": "34aecaaf607ddcf2532a382e7f6955aeae1892f1f43541eb27c9dd89dcf9b53f",
+  "reading_notes_sha256": "226c1294f1702ae68c975e4b52e4aaf29415cb2687923e4f8703e2aa7da9cb90",
+  "cases": [
+    {
+      "id": "V1",
+      "question": "How would I work out what a company is worth before deciding whether its shares are a bargain?",
+      "result_file": "work/buffett-kb-integration/qwen-large-results/V1.json",
+      "result_sha256": "ad57008decd7caaf385ae5c2010af3547ca237bfe1c1ef9d23b3ae6852d2cd7b",
+      "model": "Qwen3-VL-235B-A22B-Instruct-W8A8",
+      "prompt_version": "english-originals-2-with-source-caveats",
+      "client_first_token_ms": 4859,
+      "client_total_ms": 18556,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 18295,
+        "output_tokens": 1470
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "chapter:cnbc-meeting-2004-afternoon-ch28",
+        "letter-1994-0013-0026",
+        "letter-2013-investing-p001-p040",
+        "meeting-2014-self-assessment"
+      ],
+      "assessment": "Useful framework; moderate contextual and provenance corrections required. No major arithmetic method or risk-premium fabrication like the earlier answer.",
+      "severe_economic_blocker": false,
+      "improvements": [
+        "Correctly separates audience growth and liability inputs from the reply; does not endorse the specific 15%/10% projections.",
+        "Keeps subjective cash-flow valuation, bottom-boundary comparison, competence and model-input limitations.",
+        "Does not repeat the earlier general claim that capex exceeding depreciation necessarily makes owner earnings lower than reported earnings."
+      ],
+      "issues": [
+        {
+          "severity": "material_qualification",
+          "claim": "General warning that book value is meaningless as an indicator of intrinsic value.",
+          "evidence": [
+            "berkshire-letter-1994:u0020",
+            "berkshire-letter-1994:u0022",
+            "berkshire-letter-1994:u0024",
+            "berkshire-letter-1994:u0025",
+            "berkshire-letter-1994:u0026"
+          ],
+          "finding": "The quoted sentence concludes the education example. The answer omits the same section calling Berkshire book value a rough understated tracking measure, and attaches the education conclusion to the 1964 company example. Distinguish book value not being a sufficient substitute from it having no indicator value generally."
+        },
+        {
+          "severity": "moderate_support_gap",
+          "claim": "The discount rate is your required return.",
+          "evidence": [
+            "cnbc-meeting-2004-afternoon-ch28-p015",
+            "cnbc-meeting-2004-afternoon-ch28-p016"
+          ],
+          "finding": "The selected passage leaves the rate open and discusses cash retention exceeding it; it does not define the rate as the investor required return. This is an unlabelled finance gloss, not the previous explicit invented risk-premium rule."
+        },
+        {
+          "severity": "provenance_blocker_under_project_rules",
+          "claim": "Named Buffett quotations and confirmations from 2004 continuation paragraphs.",
+          "evidence": [
+            "cnbc-meeting-2004-afternoon-ch28-p014",
+            "cnbc-meeting-2004-afternoon-ch28-p015",
+            "cnbc-meeting-2004-afternoon-ch28-p016",
+            "cnbc-meeting-2004-afternoon-ch28-p017",
+            "cnbc-meeting-2004-afternoon-ch28-p019",
+            "cnbc-meeting-2004-afternoon-ch28-p020"
+          ],
+          "finding": "These originals have speaker=null. Content is mostly faithful, but assigning the text to Buffett exceeds verified attribution; speaker remains unconfirmed unless separately checked."
+        },
+        {
+          "severity": "source_discrepancy_not_model_fabrication",
+          "claim": "Audience capital expenditure exceeded depreciation by $173 million.",
+          "evidence": [
+            "cnbc-meeting-2004-afternoon-ch28-p007"
+          ],
+          "finding": "The answer repeats the transcript amount, but the same source says $1.2b capex and $829m depreciation, which do not subtract to $173m. Preserve as an audience statement with unresolved source numerical conflict; do not present as verified financial arithmetic."
+        }
+      ],
+      "not_counted_as_failure": [
+        "No worked per-share calculation is supplied; the opening comparison is underspecified about company value versus share price, but it does not actually compare incompatible numerical units.",
+        "Audience forecasts are described as examples and challenged rather than adopted as universal assumptions."
+      ]
+    },
+    {
+      "id": "O1",
+      "question": "What makes reported profit different from cash an owner can actually take out of a business?",
+      "result_file": "work/buffett-kb-integration/qwen-large-results/O1.json",
+      "result_sha256": "d6d0dfce38835ddade6b2914334233d1b833ed4a31463e801caad547341d4761",
+      "model": "Qwen3-VL-235B-A22B-Instruct-W8A8",
+      "prompt_version": "english-originals-2-with-source-caveats",
+      "client_first_token_ms": 4418,
+      "client_total_ms": 17319,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 17530,
+        "output_tokens": 1276
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "letter-1986-0154-0297",
+        "letter-2000-pdf-p12-p3-through-p13-p9",
+        "cnbc-meeting-1998-afternoon-ch08",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "chapter:cnbc-meeting-2004-afternoon-ch28"
+      ],
+      "assessment": "Economically useful and materially improved; no severe owner-earnings error found. One source-attribution repair remains.",
+      "severe_economic_blocker": false,
+      "improvements": [
+        "Full a+b-c definition retained; b includes all listed noncash charges; additional required working capital is subtracted in c.",
+        "Does not equate EBITDA with a+b or transfer the cash-flow shorthand exception to EBITDA.",
+        "Separates maintenance spending from growth reinvestment and does not misdescribe the See’s maintenance example as growth.",
+        "Scott Fetzer purchase-price figures, equal cash economics, taxes and expense totals agree with the packet."
+      ],
+      "issues": [
+        {
+          "severity": "provenance_blocker_under_project_rules",
+          "claim": "As Buffett said in 1998, reinvested cash must yield large later figures.",
+          "evidence": [
+            "cnbc-meeting-1998-afternoon-ch08-p011"
+          ],
+          "finding": "The passage content supports the explanation but the original paragraph has speaker=null; a named attribution requires separate verification."
+        }
+      ],
+      "not_counted_as_failure": [
+        {
+          "claim": "Old company depreciation of $8.3m versus new company $19.9m total noncash charges.",
+          "evidence": [
+            "berkshire-letter-1986:u0170",
+            "berkshire-letter-1986:u0171",
+            "berkshire-letter-1986:u0286",
+            "berkshire-letter-1986:u0289"
+          ],
+          "finding": "This is accurate for this specific Scott Fetzer table: old-company depreciation is $8.301m and is its b amount here. The answer states the full b definition elsewhere, so this is not the prior erroneous general narrowing of b to depreciation."
+        },
+        {
+          "claim": "Noncash expenses do not remove cash, whereas maintenance capex does.",
+          "finding": "The answer immediately accounts for replacement spending and required working capital; do not treat the introductory simplification as saying depreciation has no economic counterpart."
+        }
+      ]
+    },
+    {
+      "id": "C1",
+      "question": "How can I tell whether I really understand a business, rather than just know its products?",
+      "result_file": "work/buffett-kb-integration/qwen-large-results/C1.json",
+      "result_sha256": "e06b4f287de37b704dca5551da05117b5b7a77eeb84d82bc900de49d31f88e10",
+      "model": "Qwen3-VL-235B-A22B-Instruct-W8A8",
+      "prompt_version": "english-originals-2-with-source-caveats",
+      "client_first_token_ms": 4163,
+      "client_total_ms": 18798,
+      "usage": {
+        "type": "usage",
+        "input_tokens": 16462,
+        "output_tokens": 1627
+      },
+      "original_paragraph_mismatches": [],
+      "source_context_ids": [
+        "meeting-2002-boundary",
+        "letter-1992-0074-0085",
+        "cnbc-meeting-1998-afternoon-ch44",
+        "letter-1996-0098-0118",
+        "meeting-2014-self-assessment"
+      ],
+      "assessment": "Not acceptable as written: useful whole-enterprise example, but a false sufficient-condition rule and source reversals compromise the answer.",
+      "severe_economic_blocker": true,
+      "improvements": [
+        "The finance-company quotation preserves both the Berkshire-credit issue and necessarily.",
+        "The 1920s persistence example is correctly attached to See’s, not Coca-Cola.",
+        "Explicitly notes self-assessment can fail."
+      ],
+      "issues": [
+        {
+          "severity": "critical_reasoning",
+          "claim": "You do not need to prove you understand a business; check whether you have any doubt. Opening and closing treat no doubt as an understanding test.",
+          "evidence": [
+            "cnbc-meeting-2002-afternoon-ch18-p003",
+            "cnbc-meeting-2002-afternoon-ch18-p008",
+            "cnbc-meeting-2014-afternoon-ch07-p008",
+            "cnbc-meeting-2014-afternoon-ch07-p011"
+          ],
+          "finding": "Doubt is a reason to stay outside; the absence of doubt is not proof of competence. The answer inverts the implication even while later acknowledging overconfidence."
+        },
+        {
+          "severity": "material_factual",
+          "claim": "Buffett said being self-realistic is partly innate.",
+          "evidence": [
+            "cnbc-meeting-2014-afternoon-ch07-p011"
+          ],
+          "finding": "The original explicitly says I don’t know whether that’s innate. This reverses stated uncertainty."
+        },
+        {
+          "severity": "material_factual",
+          "claim": "Munger made the edge-of-competence/Bobby Fischer point in 2014.",
+          "evidence": [
+            "cnbc-meeting-2002-afternoon-ch18-p014",
+            "cnbc-meeting-2002-afternoon-ch18-p016"
+          ],
+          "finding": "These quoted paragraphs belong to the 2002 meeting, not 2014."
+        },
+        {
+          "severity": "material_qualification",
+          "claim": "All real understanding requires decades of strong economics; if the business is complex or constantly changing you cannot estimate its cash flows.",
+          "evidence": [
+            "berkshire-letter-1996:u0101",
+            "berkshire-letter-1996:u0103",
+            "berkshire-letter-1992:u0084"
+          ],
+          "finding": "The sources describe Berkshire’s preferred investment characteristics and their own forecasting limitations. The final checklist universalizes these into necessary conditions for every person’s competence."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "content_assessment": "O1 is economically sound on inspected material; V1 useful with moderate scope/support corrections; C1 has critical reasoning and factual defects.",
+    "strict_release_status": "No answer is fully acceptable under the current project requirements: V1 and O1 still assert unverified named speakers, while C1 has material content errors. This is not 0/3 economically useful.",
+    "comparison": "A real improvement over the DeepSeek-with-notes run: major O1 errors are absent and V1 handles audience parameters better. C1 remains a blocker.",
+    "recommendation": "Keep severity separate from style. Enforce speaker-null handling and preserve scope, but evaluate the next actual outputs rather than assuming prompt edits guarantee correction."
+  },
+  "limits": [
+    "Human review of these three answers and supplied primary passages only; not semantic verification of the corpus or all claims.",
+    "Exact-quotation validator reports needs_review for all three; formatting/string mismatches alone were not counted as semantic failures."
+  ]
+}

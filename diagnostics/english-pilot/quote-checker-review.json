@@ -1,0 +1,119 @@
+{
+  "scope": "Bounded offline review of O1/C1 final answers against their supplied full_context originals and src/english_qa.py reference_checks. No API calls; no source, prompt, answer-record, or production-code changes.",
+  "conclusion": "No proven parser bug. O1 contains one real word-level quote alteration. C1 has two typographic adaptations rejected by literal matching and one editorial self-question formatted as a long direct quote. Preserve needs_review on both unchanged records; these flags are not evidence that all claims are false or that all other claims have been verified.",
+  "code_changed": false,
+  "reason_no_code_change": "The extractor pairs quotes correctly in both samples. Its advertised scope is explicit long double-quoted spans; it does not infer authorial intent. Broadening capitalization, nested-quotation punctuation, or editorial-intent matching is unnecessary for delivery and would change that contract. Never normalize actual word changes.",
+  "cases": [
+    {
+      "case": "O1",
+      "input_path": "../grounding-review-results/O1.json",
+      "input_sha256": "ccdabbc47ffaa4426109a84c3e0da6aacefe5a3c585b60f7c173e0aafc40d2eb",
+      "long_double_quoted_spans_checked": 7,
+      "recorded_validation": {
+        "status": "needs_review",
+        "issues": [
+          "A quotation could not be matched exactly to an original cited in its paragraph."
+        ],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "recomputed_validation": {
+        "status": "needs_review",
+        "issues": [
+          "A quotation could not be matched exactly to an original cited in its paragraph."
+        ],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "diagnostic_only_after_exact_quote_and_editorial_format_repairs": {
+        "status": "references_checked",
+        "issues": [],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      }
+    },
+    {
+      "case": "C1",
+      "input_path": "../grounding-review-results/C1.json",
+      "input_sha256": "99acd22ad0cba6f1b99cde4bd187f9a6456ea1955d9a457f8a09a2a9b203c27c",
+      "long_double_quoted_spans_checked": 11,
+      "recorded_validation": {
+        "status": "needs_review",
+        "issues": [
+          "A quotation could not be matched exactly to an original cited in its paragraph."
+        ],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "recomputed_validation": {
+        "status": "needs_review",
+        "issues": [
+          "A quotation could not be matched exactly to an original cited in its paragraph."
+        ],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      },
+      "diagnostic_only_after_exact_quote_and_editorial_format_repairs": {
+        "status": "references_checked",
+        "issues": [],
+        "scope": "Reference IDs and explicit quotations only; source support is not automatically established."
+      }
+    }
+  ],
+  "findings": [
+    {
+      "case": "O1",
+      "paragraph": 4,
+      "kind": "real_changed_quote",
+      "answer_quote": "doesn't get credit for gross cash flow, they get credit for whatever net cash is left every year",
+      "original_span": "they don't get credit for gross cash flow, they get credit for whatever net cash is left every year",
+      "source_reference": 3,
+      "source_context": "cnbc-meeting-1998-afternoon-ch08",
+      "original_paragraph": "cnbc-meeting-1998-afternoon-ch08-p005",
+      "speaker": "Warren Buffett (explicit source label)",
+      "assessment": "The answer changes the original grammatical subject and verb from they do not to does not; the statement is still broadly similar, but this is not an exact quotation. Checker flag is valid.",
+      "repair": "Restore the exact original words and adjust surrounding prose if used in a future edited answer."
+    },
+    {
+      "case": "C1",
+      "paragraph": 2,
+      "kind": "capitalization_adaptation",
+      "answer_quote": "you may not be able to value it",
+      "original_span": "You may not be able to value it.",
+      "source_reference": 1,
+      "original_paragraph": "cnbc-meeting-2002-afternoon-ch18-p005",
+      "assessment": "No lexical alteration; lowercasing the first letter causes the literal-match failure. It is a formatting false positive if interpreting the flag as a substantive misquotation, but does not prove a parser defect under the exact-span contract.",
+      "repair": "Restore original initial capital or paraphrase without quotation marks."
+    },
+    {
+      "case": "C1",
+      "paragraph": 2,
+      "kind": "nested_quote_punctuation_adaptation",
+      "answer_quote": "must himself estimate the future 'coupons,'",
+      "original_span": "must himself estimate the future \"coupons.\"",
+      "source_reference": 2,
+      "original_paragraph": "berkshire-letter-1992:u0081",
+      "assessment": "Words are preserved, but inner double quotation marks were changed to single quotation marks and the period to a comma. Literal comparison rejects this; no evidence of changed substantive wording.",
+      "repair": "Preserve the original interior punctuation using curly outer quotation marks, or paraphrase without quotation marks."
+    },
+    {
+      "case": "C1",
+      "paragraph": 4,
+      "kind": "editorial_self_question_in_double_quotes",
+      "answer_quote": "can I say with reasonable confidence what this business's competitive position and earnings will look like far into the future?",
+      "source_references_in_paragraph": [
+        2,
+        4
+      ],
+      "assessment": "This is an editorial practical question, not a continuous span of the supplied originals. The mechanical checker intentionally cannot distinguish a proposed self-question from an attributed quote. Do not make it pass by weakening source matching.",
+      "repair": "Mark clearly as editorial synthesis and avoid direct-quotation formatting; source support for the broad recommendation remains a separate semantic-review issue."
+    }
+  ],
+  "verification": {
+    "command": "../.venv/bin/python -m unittest discover -s tests -p test_english_qa.py -v",
+    "working_directory": "work/buffett-kb-integration/repository",
+    "tests_run": 10,
+    "result": "PASS",
+    "new_tests_added": false,
+    "diagnostic": "Both complete original records were rechecked offline. In-memory exact-word/typography repairs and removing quote marks from the editorial self-question produce references_checked in both, with the checker unchanged. Diagnostic strings were not saved over recorded answers.",
+    "semantic_limit": "Passing reference_checks only establishes citation ID resolution and matching of checked long double-quoted spans; it does not establish source support, speaker attribution, or completeness."
+  },
+  "files_changed": [
+    "work/buffett-kb-integration/staged/quote-checker-review.json"
+  ]
+}
