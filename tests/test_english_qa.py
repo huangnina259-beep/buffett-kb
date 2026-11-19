@@ -1,3 +1,4 @@
+import hashlib
 import json
 import sys
 import tempfile
@@ -85,6 +86,20 @@ class EnglishQATests(unittest.TestCase):
             self.assertEqual(calls, [1])
             payload["question"] = "A different question"
             self.assertEqual(self.client.post("/api/english/ask", json=payload).status_code, 409)
+
+    def test_source_selection_validates_before_claim_and_preserves_legacy_replay_key(self):
+        payload = {"question": "How do I know my limits?", "request_id": str(uuid4())}
+        old_key = hashlib.sha256(json.dumps({"q": payload["question"], "h": []}, sort_keys=True).encode()).hexdigest()
+        prior = {"status": "completed", "result": json.dumps({"sources": [], "answer": "Cached answer."})}
+        context_id = "meeting-2014-self-assessment"
+        with patch.object(qa, "claim", return_value=prior) as claim:
+            self.assertEqual(self.client.post("/api/english/ask", json={**payload, "selected_context_id": "missing"}).status_code, 422)
+            claim.assert_not_called()
+            self.assertEqual(self.client.post("/api/english/ask", json=payload).status_code, 200)
+            self.assertEqual(claim.call_args.args[1], old_key)
+            pinned = self.client.post("/api/english/ask", json={**payload, "selected_context_id": context_id})
+            self.assertEqual(pinned.status_code, 200)
+            self.assertNotEqual(claim.call_args.args[1], old_key)
 
     def test_incomplete_stream_is_not_a_finished_answer(self):
         class Gateway:

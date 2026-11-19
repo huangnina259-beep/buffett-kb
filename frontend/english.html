@@ -19,6 +19,29 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
 @keyframes pulse{50%{opacity:.3}}@media(max-width:650px){.shell{padding:20px 19px 16px}.brand{font-size:12px;gap:8px}.mark{width:26px;height:30px;font-size:24px}.header-right{gap:13px}.lab{font-size:8px;max-width:71px;line-height:1.5}.about>summary{font-size:11px}.about{position:static}.about-panel{top:calc(100% + 10px);width:100%;padding:20px}.hero h1{font-size:35px;letter-spacing:-1.2px}.hero p{font-size:12px;max-width:290px;margin:15px auto 0}.hero{margin-bottom:25px}main{padding-top:67px}.composer{padding:16px 17px 12px;border-radius:18px}textarea{font-size:16px;min-height:85px}.key-hint{visibility:hidden}.primary{min-height:41px;min-width:76px;font-size:12px}.scope-note{font-size:11px;max-width:340px;margin:11px auto 0}.starter-list{grid-template-columns:1fr;gap:8px;max-width:335px;margin:auto}.starter-list button{font-size:11px;padding:10px 13px}.starters{margin-top:24px}.starters h2{font-size:10px}.conversation main{padding-top:28px}.composer-head h2{font-size:11px}.context{font-size:10px}.answer-wrap{margin-top:29px}.asked-question{font-size:28px}.answer{font-size:16px;line-height:1.85}.answer h2{font-size:23px}.answer h3{font-size:21px}.source-inner{padding:23px 23px 35px}.source-dialog h2{font-size:26px}.original-text{font-size:16px}.validation-note{font-size:10px}.timings{font-size:9px}footer{font-size:9px;margin-top:40px}.progress{font-size:11px}.elapsed{font-size:9px;white-space:nowrap}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}@media print{header,.composer,.scope-note,.progress,.error,.follow-up,footer{display:none}.shell{display:block;padding:0}.conversation main{padding-top:0}.answer-wrap{max-width:none;margin:0}.answer{font-size:12pt}.citation{border:0}}
 .feedback{margin:22px 0 0;font-size:13px;color:var(--ink)}.feedback fieldset{border:0;margin:0;padding:0}.feedback legend{font-weight:600;margin-bottom:5px}.feedback-choice{display:inline-flex;align-items:center;min-height:40px;padding-right:12px;gap:5px;cursor:pointer}.feedback input{accent-color:var(--green)}.feedback-note{display:block;margin:8px 0}.feedback-note textarea{margin-top:5px;min-height:65px;padding:8px 10px;border:1px solid #b9c8ae;border-radius:7px;background:var(--white);font-size:14px}.feedback input:focus-visible,.feedback-note textarea:focus-visible{outline:2px solid var(--green);outline-offset:2px}.feedback-status{font-size:12px;color:var(--green)}.feedback .stop{margin-left:4px}@media print{.feedback{display:none}}
+
+.chat-layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:clamp(22px,4vw,62px);flex:1}
+.rail{padding:32px 10px 14px 0;align-self:start;position:sticky;top:0;max-height:96svh;overflow:auto}
+.rail h2{margin:24px 0 9px 8px;font-size:12px;color:var(--muted);font-weight:500}
+.new-chat,.mobile-chats{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #ccd6c6;border-radius:9px;background:var(--white);color:var(--green);font-size:13px}
+.chat-nav{list-style:none;padding:0;margin:0}.chat-nav li{display:flex;align-items:center;gap:2px;border-radius:8px}
+.chat-nav li.current{background:#e9eee4}.chat-nav li:hover{background:#eff2ea}
+.chat-title{padding:9px 8px;text-align:left;font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.delete-chat{padding:6px 8px;color:#62725e;font-size:17px}.empty-chats,.local-note{font-size:11px;color:#6e796a;margin:8px}
+.mobile-chats{display:none}.thread-archive:empty{display:none}.chat-layout main{min-width:0}
+.conversation .answer-wrap{max-width:none;margin:0 0 25px}.archived-turn{border-bottom:1px solid var(--line);padding-bottom:26px}
+.conversation .composer{position:sticky;bottom:max(8px,env(safe-area-inset-bottom));z-index:2;margin-top:16px;padding:13px 17px;box-shadow:0 4px 22px #29452f16}.conversation .composer textarea{min-height:48px;max-height:min(25dvh,150px)}
+.conversation .scope-note{text-align:left}.conversation .asked-question{margin-top:15px}
+.follow-up:empty{display:none}.progress,.error{margin:12px 0 18px}.storage-error{color:var(--red);font-size:12px;margin:10px 0}
+.confirm-dialog{max-width:min(360px,90vw);border:1px solid var(--line);border-radius:14px;background:var(--white);color:var(--ink);padding:22px}
+.confirm-dialog p{overflow-wrap:anywhere}.confirm-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+@media(max-width:800px){.chat-layout{display:block}.mobile-chats{display:inline-flex}.rail{display:none}
+.rail.mobile-open{display:block;position:relative;max-height:48svh;padding:14px;background:var(--white);border:1px solid var(--line);border-radius:12px;margin-top:12px}.header-right{gap:10px}.lab{display:none}}
+@media print{.rail,.mobile-chats,.follow-up{display:none}.chat-layout{display:block}}
+.question-explorer{margin:14px auto;text-align:left;max-width:680px}.question-explorer>summary{text-align:center;font-size:13px;color:var(--green);padding:9px}.question-explorer section{margin:12px 0}
+.question-explorer p{font-size:12px;color:var(--muted);margin:12px 0}.question-choices .question-choice{display:flex;flex-direction:column;align-items:flex-start;gap:2px;max-width:100%;margin-bottom:4px}.question-choice a{margin:0 6px}.question-explorer h3,.related-questions h3{font:500 12px/1.5 Arial,sans-serif;color:var(--muted);margin:12px 0 6px}.question-choices,.related-questions{display:flex;flex-wrap:wrap;gap:7px}.related-questions h3{width:100%}
+.question-choices button,.related-questions button{border:1px solid var(--line);border-radius:9px;font-size:13px;line-height:1.5;text-align:left;padding:8px 11px;background:var(--white)}.source-label{display:block;font-size:10px;color:#657461;margin-top:4px}
+.starter-list button{display:block}.starter-list button:hover,.question-choices button:hover,.related-questions button:hover{background:var(--soft)}
 </style>
 </head>
 <body>
@@ -30,17 +53,16 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
       <span class="brand-wordmark"><span class="brand-name">The Compounder</span><span class="brand-chinese" lang="zh-Hans">复利国</span></span>
       <span class="sr-only">New question</span>
     </button>
-    <div class="header-right"><span class="lab">Source lab · 14 contexts</span><details class="about" id="about"><summary>About</summary><div class="about-panel"><h2>Close to the originals.</h2><p>This English research preview uses 14 selected original-source contexts. It does not cover the whole Buffett archive.</p><p>The answer appears as a draft while it is streaming. Its final label reports the server’s reference check. A reference check does not establish that every claim is supported or suitable today.</p><p>Open a citation to read the complete original context. Speaker labels and source-verification limits are preserved; an unidentified speaker is shown as unidentified.</p><p>Follow-ups include up to three completed question-and-answer pairs from this page. New question clears that context. Reloading clears this page’s conversation.</p><p>Your question and relevant conversation are sent to this service to prepare an answer. Please leave out personal or confidential information.</p></div></details></div>
+    <div class="header-right"><button class="mobile-chats" id="mobile-chats" type="button" aria-controls="chat-rail" aria-expanded="false">Chats</button><span class="lab">14 source excerpts</span><details class="about" id="about"><summary>About</summary><div class="about-panel"><h2>Close to the originals.</h2><p>This English research preview uses 14 selected original-source contexts. It does not cover the whole Buffett archive.</p><p>The answer appears as a draft while it is streaming. Its final label reports the server’s reference check. A reference check does not establish that every claim is supported or suitable today.</p><p>Open a citation to read the complete original context. Speaker labels and source-verification limits are preserved; an unidentified speaker is shown as unidentified.</p><p>Chats are saved in this browser. Each follow-up uses up to three recent question-and-answer pairs in the current chat. You can return to a chat or delete its local copy from the history.</p><p>Your question and relevant conversation are sent to this service to prepare an answer. Please leave out personal or confidential information.</p></div></details></div>
   </header>
+  <div class="chat-layout">
+    <aside class="rail" id="chat-rail" aria-label="Chat history">
+      <button class="new-chat" type="button" id="new-question"><span aria-hidden="true">＋</span> New chat</button>
+      <h2>Recent chats</h2><ul class="chat-nav" id="chat-list"></ul><p class="empty-chats" id="empty-chats">Your conversations will appear here.</p>
+    </aside>
   <main>
     <section class="hero"><h1>What would you like to understand?</h1><p>Ask about Buffett’s shareholder letters and annual meetings. Read the passages behind each answer.</p></section>
-    <section class="composer" aria-label="Ask a question">
-      <div class="composer-head" id="composer-head" hidden><h2 id="composer-title">Ask a follow-up</h2><button class="text-button" type="button" id="new-question">New question</button></div>
-      <p class="context" id="context" hidden>Following up on: <span id="context-question"></span></p>
-      <form id="question-form"><label class="sr-only" for="question">Your question</label><textarea id="question" rows="2" minlength="3" maxlength="2000" required placeholder="Ask a question about investing and understanding businesses…" aria-describedby="question-help scope-note"></textarea><div class="actions"><p class="key-hint" id="question-help">⌘ / Ctrl + Enter<span class="sr-only"> to ask. Enter 3 to 2,000 characters.</span></p><div class="action-buttons"><button type="button" class="stop" id="stop" hidden>Stop</button><button type="submit" class="primary" id="ask" disabled>Ask <span aria-hidden="true">↑</span></button></div></div></form>
-    </section>
-    <p class="scope-note" id="scope-note">This preview covers 14 original-source contexts. We save submitted questions and feedback for pilot review. Please leave out personal or confidential information.</p>
-    <section class="starters" id="starters" aria-labelledby="starter-title"><h2 id="starter-title">Start with a question</h2><div class="starter-list"><button type="button" data-question="How should I evaluate a stock?">How should I evaluate a stock?<span aria-hidden="true">↗</span></button><button type="button" data-question="How does Buffett distinguish earnings from cash available to owners?">Earnings or cash for owners?<span aria-hidden="true">↗</span></button><button type="button" data-question="When does growth create value, and when can it destroy value?">When does growth create value?<span aria-hidden="true">↗</span></button></div></section>
+    <div class="thread-archive" id="thread-archive"></div>
     <div class="progress" id="progress" hidden><span class="working-dot" aria-hidden="true"></span><p id="progress-message" role="status">Submitting your question…</p><span class="elapsed" id="elapsed"></span></div>
     <section class="error" id="error" role="alert" hidden><h2 id="error-title">The answer could not be completed</h2><p id="error-message"></p><button class="text-button" type="button" id="error-edit">Return to your question</button></section>
     <section class="answer-wrap" id="answer-wrap" aria-labelledby="asked-question" hidden><h1 class="asked-question" id="asked-question"></h1><div class="answer-meta"><span class="badge draft" id="answer-status">Draft · still streaming</span></div><article class="answer" id="answer" aria-label="Answer" aria-busy="false"></article><p class="validation-note" id="validation-note"></p><ul class="validation-issues" id="validation-issues" hidden></ul><details class="sources" id="sources" hidden><summary id="sources-summary">Sources for this answer</summary><ol id="source-list"></ol></details><p class="timings" id="timings" hidden></p><form class="feedback" id="feedback" hidden>
@@ -50,13 +72,189 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
         <label class="feedback-note" id="feedback-note-label" hidden>What was missing? (optional)<textarea id="feedback-note" maxlength="500" rows="2"></textarea></label>
         <button type="submit" class="stop">Send feedback</button>
       </fieldset><p class="feedback-status" id="feedback-status" role="status"></p>
-    </form><div class="follow-up" id="follow-up" hidden><button type="button" id="follow-up-button">Ask a follow-up <span aria-hidden="true">↑</span></button></div></section>
+    </form><div class="follow-up" id="follow-up" hidden></div></section>
+    <section class="composer" aria-label="Ask a question">
+      <div class="composer-head" id="composer-head" hidden><h2 id="composer-title">Ask a follow-up</h2></div>
+
+      <form id="question-form"><label class="sr-only" for="question">Your question</label><textarea id="question" rows="2" minlength="3" maxlength="2000" required placeholder="Ask a question about investing and understanding businesses…" aria-describedby="question-help scope-note"></textarea><div class="actions"><p class="key-hint" id="question-help">Enter to send · Shift + Enter for a new line<span class="sr-only">. Enter 3 to 2,000 characters.</span></p><div class="action-buttons"><button type="button" class="stop" id="stop" hidden>Stop</button><button type="submit" class="primary" id="ask" disabled>Ask <span aria-hidden="true">↑</span></button></div></div></form>
+    </section>
+    <p class="scope-note" id="scope-note">Answers draw on 14 selected meeting and letter excerpts. We save submitted questions and feedback for pilot review. Please leave out personal or confidential information.</p>
+    <section class="starters" id="starters" aria-label="Explore questions"></section>
+    <p class="storage-error" id="storage-error" role="status" hidden></p>
   </main>
+  </div>
   <footer>AI-generated explanations can miss context.<br>Read the sources and keep historical conditions in view.</footer>
 </div>
+<dialog class="confirm-dialog" id="delete-dialog" aria-labelledby="delete-label"><form method="dialog"><h2 id="delete-label">Delete chat?</h2><p id="delete-title"></p><p>This removes the conversation from this browser.</p><div class="confirm-actions"><button type="submit" class="stop" value="cancel" autofocus>Cancel</button><button type="submit" class="primary" value="delete">Delete</button></div></form></dialog>
 <dialog class="source-dialog" id="source-dialog" aria-labelledby="source-title"><div class="source-inner"><div class="drawer-head"><p class="eyebrow" id="source-label">Original context</p><button type="button" class="close" id="source-close" aria-label="Close original context">×</button></div><h2 id="source-title">Original context</h2><div class="source-metadata" id="source-metadata"></div><p class="source-verification" id="source-verification"></p><a class="publisher" id="source-link" target="_blank" rel="noopener noreferrer" hidden>Read at the original publisher <span aria-hidden="true">↗</span></a><p class="source-context-note" id="source-boundary"></p><p class="source-context-note" id="source-context-note"></p><button type="button" class="jump-cited" id="jump-cited" hidden>Jump to search match</button><p class="source-loading" id="source-loading" role="status" hidden>Loading the complete original context…</p><p class="source-error" id="source-error" role="alert" hidden></p><div class="source-body" id="source-body"></div></div></dialog>
 <div class="sr-only" id="announcement" role="status" aria-live="polite"></div>
 <noscript><p class="error">Please enable JavaScript to ask questions and open original sources.</p></noscript>
+<script id="meeting-questions">
+// Short editorial versions of audience questions from the indexed CNBC transcripts.
+// Study prompts derived from an answer or a letter appear only as follow-ups.
+(() => {
+  'use strict';
+
+  const meetings = {
+    limits: {
+      context: 'meeting-2014-self-assessment',
+      title: '2014 afternoon meeting · chapter 7',
+      url: 'https://buffett.cnbc.com/video/2014/05/03/afternoon-session---2014-berkshire-hathaway-annual-meeting.html',
+      topic: 'Circle of competence',
+      question: 'How do I know where my circle of competence ends?',
+      next: ['retail', 'expansion'],
+    },
+    expansion: {
+      context: 'meeting-2019-expansion',
+      title: '2019 afternoon meeting · chapter 31',
+      url: 'https://buffett.cnbc.com/video/2019/05/06/afternoon-session---2019-berkshire-hathaway-annual-meeting.html',
+      topic: 'Circle of competence',
+      question: 'Should I expand my circle of competence as the world changes?',
+      next: ['learning', 'limits'],
+    },
+    learning: {
+      context: 'meeting-2019-learning',
+      title: '2019 afternoon meeting · chapter 8',
+      url: 'https://buffett.cnbc.com/video/2019/05/06/afternoon-session---2019-berkshire-hathaway-annual-meeting.html',
+      topic: 'Circle of competence',
+      question: 'Is it better to study many businesses or to specialize in one industry?',
+      next: ['expansion', 'retail'],
+    },
+    value: {
+      context: 'chapter:cnbc-meeting-2004-afternoon-ch28',
+      title: '2004 afternoon meeting · chapter 28',
+      url: 'https://buffett.cnbc.com/video/2004/05/01/afternoon-session---2004-berkshire-hathaway-annual-meeting.html',
+      topic: 'Valuing a business',
+      question: 'How would Buffett judge an estimate of Berkshire’s intrinsic value?',
+      next: ['risk', 'currentCash'],
+    },
+    risk: {
+      context: 'cnbc-meeting-1998-afternoon-ch44',
+      title: '1998 afternoon meeting · chapter 44',
+      url: 'https://buffett.cnbc.com/video/1998/05/04/afternoon-session---1998-berkshire-hathaway-annual-meeting.html',
+      topic: 'Valuing a business',
+      question: 'How did Buffett compare businesses with different risks using the same discount rate?',
+      next: ['value', 'limits'],
+    },
+    growth: {
+      context: 'cnbc-meeting-1998-afternoon-ch08',
+      title: '1998 afternoon meeting · chapter 8',
+      url: 'https://buffett.cnbc.com/video/1998/05/04/afternoon-session---1998-berkshire-hathaway-annual-meeting.html',
+      topic: 'Cash flow and reinvestment',
+      question: 'How do I value a business that spends its cash opening new stores?',
+      next: ['ownerCash', 'currentCash'],
+    },
+    currentCash: {
+      context: 'cnbc-meeting-1994-morning-ch13',
+      title: '1994 morning meeting · chapter 13',
+      url: 'https://buffett.cnbc.com/video/1994/04/25/morning-session---1994-berkshire-hathaway-annual-meeting.html',
+      topic: 'Cash flow and reinvestment',
+      question: 'What minimum current cash yield did Buffett look for when buying a business?',
+      next: ['growth', 'risk'],
+    },
+  };
+
+  const all = {
+    ...meetings,
+    retail: {
+      ...meetings.limits,
+      question: 'What did Buffett’s Baltimore department store experience teach him about his limits in retail?',
+      next: ['expansion', 'learning'],
+    },
+    ownerCash: {
+      context: 'letter-1986-0154-0297',
+      url: 'https://www.berkshirehathaway.com/letters/1986.html',
+      question: 'How do owner earnings account for the cash a business needs just to stay competitive?',
+      next: ['growth', 'currentCash'],
+    },
+  };
+
+  // Bridge other indexed meeting and letter passages to these study questions.
+  const relatedToContexts = new Map([
+    ['letter-1992-0074-0085', ['value', 'growth']],
+    ['meeting-2002-boundary', ['limits', 'learning']],
+    ['letter-1996-0098-0118', ['limits', 'expansion']],
+    ['letter-2000-pdf-p12-p3-through-p13-p9', ['value', 'currentCash']],
+    ['letter-2013-investing-p001-p040', ['limits', 'value']],
+    ['letter-1994-0013-0026', ['value', 'growth']],
+  ]);
+  const featured = [meetings.limits, meetings.value, meetings.growth];
+
+  function element(tag, text, className) {
+    const node = document.createElement(tag);
+    if (text) node.textContent = text;
+    if (className) node.className = className;
+    return node;
+  }
+
+  function questionButton(item, ask, withYear = false) {
+    const button = element('button', item.question);
+    button.type = 'button';
+    if (withYear) button.append(element('small', item.title.slice(0, 4) + ' meeting', 'source-label'));
+    button.addEventListener('click', () => ask(item.question, item.context));
+    return button;
+  }
+
+  function renderStarters(container, ask) {
+    const heading = element('h2', 'From the shareholder meetings');
+    heading.id = 'starter-title';
+    const starters = element('div', '', 'starter-list');
+    for (const item of featured) starters.append(questionButton(item, ask, true));
+
+    const explorer = element('details', '', 'question-explorer');
+    explorer.append(element('summary', 'Explore questions'));
+    explorer.append(element('p', 'Selected shareholder questions, paraphrased from the original meetings.'));
+    const groups = new Map();
+    for (const item of Object.values(meetings)) {
+      if (!groups.has(item.topic)) {
+        const section = element('section');
+        const choices = element('div', '', 'question-choices');
+        section.append(element('h3', item.topic), choices);
+        explorer.append(section);
+        groups.set(item.topic, choices);
+      }
+      const row = element('div', '', 'question-choice');
+      const link = element('a', item.title, 'source-label');
+      link.href = item.url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      row.append(questionButton(item, ask), link);
+      groups.get(item.topic).append(row);
+    }
+    container.replaceChildren(heading, starters, explorer);
+  }
+
+  function followups(turn) {
+    const known = Object.values(all);
+    const exact = known.find(item => item.question === turn.question);
+    if (exact) return exact.next.map(key => all[key]);
+
+    // Base a free-form question's suggestions on the passages actually cited in the answer.
+    const sources = new Map((turn.sources || []).map(source => [source.id, source.context_id]));
+    const citations = String(turn.answer || '').matchAll(/\[(\d+)\]/g);
+    for (const match of citations) {
+      const contextId = sources.get(Number(match[1]));
+      const item = known.find(candidate => candidate.context === contextId);
+      const next = item?.next || relatedToContexts.get(contextId);
+      if (next) return next.map(key => all[key]);
+    }
+    return [];
+  }
+
+  function renderFollowups(container, turn, ask) {
+    const items = followups(turn);
+    container.hidden = items.length === 0;
+    container.replaceChildren();
+    if (!items.length) return;
+    const related = element('div', '', 'related-questions');
+    related.append(element('h3', 'Keep exploring'));
+    for (const item of items) related.append(questionButton(item, ask));
+    container.append(related);
+  }
+
+  window.CompounderQuestions = { renderStarters, renderFollowups };
+})();
+</script>
 <script>
 'use strict';
 (() => {
@@ -67,6 +265,207 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
   const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function announce(message) { $('announcement').textContent = message; }
   function safeURL(value) { try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password ? url.href : null; } catch { return null; } }
+  const chatPrefix = 'the-compounder.chat.v1.';
+  const selectedKey = 'the-compounder.selected.v1';
+  const chats = new Map();
+  let currentChat = null;
+  let deleteId = null;
+
+  function storageWarning(message) {
+    $('storage-error').textContent = message;
+    $('storage-error').hidden = false;
+  }
+  function rememberCurrent(id) {
+    try {
+      if (id) window.sessionStorage.setItem(selectedKey, id);
+      else window.sessionStorage.removeItem(selectedKey);
+    } catch { /* Chat history can still be opened from the sidebar. */ }
+  }
+  function readChat(value) {
+    try {
+      const chat = JSON.parse(value);
+      if (!chat || typeof chat.id !== 'string' || !Array.isArray(chat.turns) || !chat.turns.length) return null;
+      const valid = chat.turns.every(turn => turn && typeof turn.id === 'string' &&
+        typeof turn.question === 'string' && typeof turn.answer === 'string' &&
+        ['references_checked','needs_review'].includes(turn.validation?.status) && Array.isArray(turn.sources));
+      return valid ? chat : null;
+    } catch { return null; }
+  }
+  function restoreLibrary() {
+    let selected;
+    try {
+      const storage = window.localStorage;
+      for (let i = 0; i < storage.length; i++) {
+        const key = storage.key(i);
+        if (!key?.startsWith(chatPrefix)) continue;
+        const chat = readChat(storage.getItem(key));
+        if (chat && key === chatPrefix + chat.id) chats.set(chat.id, chat);
+      }
+      selected = window.sessionStorage.getItem(selectedKey);
+    } catch { storageWarning('This browser could not load chat history. You can still ask questions here.'); }
+    if (selected && chats.has(selected)) openChat(chats.get(selected));
+    else renderSidebar();
+  }
+  function saveTurn(turn) {
+    const chat = currentChat || { id: crypto.randomUUID(), turns: [] };
+    try {
+      const newer = readChat(window.localStorage.getItem(chatPrefix + chat.id));
+      if (newer) {
+        const turns = new Map(newer.turns.map(item => [item.id, item]));
+        for (const item of chat.turns) turns.set(item.id, item);
+        chat.turns = [...turns.values()].sort((a, b) => a.created - b.created);
+      }
+      // A copy deleted in another tab must stay deleted. Continue in a new chat.
+      else if (chat.turns.length && !unsavedChats.has(chat.id)) {
+        chat.id = crypto.randomUUID();
+        chat.turns = [];
+      }
+    } catch { /* The in-memory conversation remains available. */ }
+    chat.turns.push(turn);
+    chat.updated = turn.created;
+    chats.set(chat.id, chat);
+    currentChat = chat;
+    try {
+      window.localStorage.setItem(chatPrefix + chat.id, JSON.stringify(chat));
+      unsavedChats.delete(chat.id);
+      if (!unsavedChats.size) $('storage-error').hidden = true;
+    } catch {
+      unsavedChats.add(chat.id);
+      storageWarning('This browser could not save the latest answer. It remains available in this tab until you leave.');
+    }
+    rememberCurrent(chat.id);
+    updateHistory();
+    renderSidebar();
+    renderArchive(chat.turns.slice(0,-1));
+  }
+  const unsavedChats = new Set();
+  function updateHistory() {
+    state.history = (currentChat?.turns || []).slice(-3).flatMap(turn => [
+      {role:'user',content:turn.question},{role:'assistant',content:turn.answer.slice(0,12000)}
+    ]);
+  }
+  function renderSidebar() {
+    const list = $('chat-list');
+    list.replaceChildren();
+    $('empty-chats').hidden = chats.size > 0;
+    for (const chat of [...chats.values()].sort((a,b) => b.updated - a.updated)) {
+      const label = chat.turns[0].question;
+      const li = node('li', currentChat?.id === chat.id ? 'current' : '');
+      const select = node('button', 'chat-title', label);
+      select.type = 'button'; select.title = label; select.disabled = state.busy;
+      if (currentChat?.id === chat.id) select.setAttribute('aria-current', 'true');
+      select.addEventListener('click', () => openChat(chat));
+      const remove = node('button', 'delete-chat', '×');
+      remove.type = 'button'; remove.disabled = state.busy;
+      remove.setAttribute('aria-label', 'Delete chat: ' + label);
+      remove.addEventListener('click', () => {
+        if (state.busy) return;
+        deleteId = chat.id;
+        $('delete-title').textContent = label;
+        $('delete-dialog').returnValue = 'cancel';
+        $('delete-dialog').showModal();
+      });
+      li.append(select,remove); list.append(li);
+    }
+  }
+  function renderArchive(turns) {
+    const archive = $('thread-archive');
+    archive.replaceChildren();
+    for (const turn of turns) {
+      const section = node('section', 'answer-wrap archived-turn');
+      const title = node('h2', 'asked-question', turn.question);
+      const checked = turn.validation.status === 'references_checked';
+      const badge = node('span', checked ? 'badge' : 'badge review', checked ? 'References checked' : 'Needs review');
+      const meta = node('div', 'answer-meta'); meta.append(badge);
+      const content = node('article', 'answer');
+      const sources = new Map(turn.sources.map(source => [source.id, source]));
+      renderAnswer(turn.answer, content, sources);
+      section.append(title, meta, content);
+      if (turn.validation.issues?.length) {
+        const issues = node('ul', 'validation-issues');
+        for (const issue of turn.validation.issues) issues.append(node('li','',typeof issue === 'string' ? issue : issue.message || JSON.stringify(issue)));
+        section.append(issues);
+      }
+      if (sources.size) {
+        const details = node('details', 'sources');
+        const list = node('ol'); fillSourceList(list, sources);
+        details.append(node('summary', '', 'Sources for this answer · ' + sources.size), list);
+        section.append(details);
+      }
+      if (turn.feedback_available && $('feedback').cloneNode) section.append(historicalFeedback(turn));
+      archive.append(section);
+    }
+  }
+  function historicalFeedback(turn) {
+    const form = $('feedback').cloneNode(true);
+    const withId = [form, ...form.querySelectorAll('[id]')];
+    const controls = new Map(withId.map(el => [el.id,el]));
+    withId.forEach(el => el.removeAttribute('id'));
+    const fieldset = controls.get('feedback-fields'), note = controls.get('feedback-note');
+    const yes = controls.get('feedback-yes'), no = controls.get('feedback-no');
+    yes.name = no.name = 'helpful-' + turn.id;
+    const noteLabel = controls.get('feedback-note-label'), status = controls.get('feedback-status');
+    form.hidden = false; form.reset(); fieldset.disabled = false; noteLabel.hidden = true; status.textContent = '';
+    form.addEventListener('input', () => { noteLabel.hidden = !no.checked; status.textContent = ''; });
+    form.addEventListener('submit', async event => {
+      event.preventDefault(); if (fieldset.disabled || (!yes.checked && !no.checked)) return;
+      fieldset.disabled = true; status.textContent = 'Sending feedback…';
+      status.textContent = await postFeedback(turn.id, yes.checked, yes.checked ? '' : note.value.trim());
+      fieldset.disabled = false;
+    });
+    return form;
+  }
+  function openChat(chat) {
+    if (state.busy || !chat) return;
+    currentChat = chat; rememberCurrent(chat.id); updateHistory();
+    const last = chat.turns[chat.turns.length - 1];
+    renderArchive(chat.turns.slice(0, -1));
+    $('asked-question').textContent = last.question;
+    state.sources = new Map(last.sources.map(source => [source.id, source]));
+    refreshSources(); $('sources').open = false;
+    resetFeedback(); state.request = {id:last.id};
+    showFinished(last);
+    $('question').value = ''; $('error').hidden = true; $('progress').hidden = true;
+    renderSidebar(); updateControls(); closeRail();
+    $('asked-question').scrollIntoView?.({block:'start'});
+  }
+  function closeRail() {
+    $('chat-rail').classList.toggle('mobile-open', false);
+    $('mobile-chats').setAttribute('aria-expanded','false');
+  }
+  $('mobile-chats').addEventListener('click', () => {
+    const open = $('mobile-chats').getAttribute('aria-expanded') !== 'true';
+    $('chat-rail').classList.toggle('mobile-open',open);
+    $('mobile-chats').setAttribute('aria-expanded',String(open));
+  });
+  $('delete-dialog').addEventListener('close', () => {
+    const id = deleteId; deleteId = null;
+    if (!id || $('delete-dialog').returnValue !== 'delete' || state.busy) return;
+    try { window.localStorage.removeItem(chatPrefix + id); }
+    catch {
+      if (!unsavedChats.has(id)) {
+        storageWarning('This browser could not delete the saved chat. Please try again.');
+        return;
+      }
+    }
+    chats.delete(id); unsavedChats.delete(id);
+    if (currentChat?.id === id) resetQuestion();
+    else renderSidebar();
+  });
+  window.addEventListener('storage', event => {
+    if (!event.key?.startsWith(chatPrefix) || event.storageArea !== window.localStorage) return;
+    const id = event.key.slice(chatPrefix.length);
+    const chat = readChat(event.newValue);
+    if (chat && chat.id === id) chats.set(id, chat); else chats.delete(id);
+    if (currentChat?.id === id && !state.busy) {
+      if (chat) {
+        const draft = $('question').value;
+        openChat(chat);
+        $('question').value = draft;
+        updateControls();
+      } else resetQuestion();
+    } else renderSidebar();
+  });
   function updateControls() {
     $('ask').disabled = state.busy || $('question').value.trim().length < 3;
     $('question').disabled = state.busy;
@@ -76,8 +475,7 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
     document.querySelectorAll('[data-question]').forEach(button => { button.disabled = state.busy; });
     $('composer-head').hidden = !state.lastQuestion && !state.busy && !state.draft;
     $('composer-title').textContent = state.history.length ? 'Ask a follow-up' : 'Your question';
-    $('context').hidden = !state.history.length;
-    $('context-question').textContent = state.lastQuestion;
+    document.querySelectorAll('.chat-nav button').forEach(button => { button.disabled = state.busy; });
     $('question').placeholder = state.history.length ? 'What would you like to understand more deeply?' : 'Ask a question about investing and understanding businesses…';
     $('shell').classList.toggle('conversation', state.busy || !$('answer-wrap').hidden || Boolean(state.history.length));
   }
@@ -85,17 +483,18 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
     if (state.busy) return;
     resetFeedback(); state.request = null;
     state.history = []; state.lastQuestion = ''; state.draft = ''; state.sources.clear(); state.completed = false;
+    currentChat = null; rememberCurrent(null); $('thread-archive').replaceChildren(); renderSidebar(); closeRail();
     $('question').value = ''; $('answer-wrap').hidden = true; $('error').hidden = true; $('progress').hidden = true;
-    $('about').open = false; updateControls(); $('question').focus(); announce('New question. Follow-up context has been cleared.');
+    $('about').open = false; updateControls(); $('question').focus(); announce('New chat. Your previous chats are in Recent chats.');
   }
-  function citation(number) {
-    const source = state.sources.get(number);
+  function citation(number, sources) {
+    const source = sources.get(number);
     if (!source) return node('span', 'missing-citation', '[' + number + ']');
     const button = node('button', 'citation', String(number)); button.type = 'button'; button.dataset.citation = String(number);
     button.setAttribute('aria-label', 'Source ' + number + ': ' + (source.title || 'Original context'));
-    button.addEventListener('click', () => openSource(source)); return button;
+    button.addEventListener('click', () => openSource(source, button)); return button;
   }
-  function inline(parent, text) {
+  function inline(parent, text, sources) {
     // Only this small syntax is rendered. All remaining text, including HTML and links,
     // is a text node. Model output never reaches innerHTML or an executable URL.
     const pattern = /(`[^`\n]+`|\*\*[^*\n]+\*\*|\*[^*\n]+\*|\[\d{1,3}\])/g;
@@ -103,38 +502,41 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
     while ((match = pattern.exec(text))) {
       if (match.index > at) parent.append(document.createTextNode(text.slice(at, match.index)));
       const value = match[0];
-      if (/^\[\d+\]$/.test(value)) parent.append(citation(Number(value.slice(1, -1))));
+      if (/^\[\d+\]$/.test(value)) parent.append(citation(Number(value.slice(1, -1)), sources));
       else if (value.startsWith('`')) parent.append(node('code', '', value.slice(1, -1)));
-      else if (value.startsWith('**')) { const strong = node('strong'); inline(strong, value.slice(2, -2)); parent.append(strong); }
+      else if (value.startsWith('**')) { const strong = node('strong'); inline(strong, value.slice(2, -2), sources); parent.append(strong); }
       else parent.append(node('em', '', value.slice(1, -1)));
       at = match.index + value.length;
     }
     if (at < text.length) parent.append(document.createTextNode(text.slice(at)));
   }
-  function renderAnswer(text) {
+  function renderAnswer(text, target = $('answer'), sources = state.sources) {
     const fragment = document.createDocumentFragment();
     const lines = text.replace(/\r\n?/g, '\n').split('\n');
     let paragraph = [], list = null;
-    function flush() { if (paragraph.length) { const item = node('p'); inline(item, paragraph.join('\n')); fragment.append(item); paragraph = []; } }
+    function flush() { if (paragraph.length) { const item = node('p'); inline(item, paragraph.join('\n'), sources); fragment.append(item); paragraph = []; } }
     for (const line of lines) {
       const heading = line.match(/^#{1,3}\s+(.+)$/);
       const bullet = line.match(/^\s*(?:[-*]\s+|\d+[.)]\s+)(.+)$/);
       if (!line.trim()) { flush(); list = null; continue; }
-      if (heading) { flush(); list = null; const item = node(line.startsWith('###') ? 'h3' : 'h2'); inline(item, heading[1]); fragment.append(item); }
-      else if (bullet) { flush(); const ordered = /^\s*\d/.test(line); const tag = ordered ? 'OL' : 'UL'; if (!list || list.tagName !== tag) { list = node(ordered ? 'ol' : 'ul'); fragment.append(list); } const item = node('li'); inline(item, bullet[1]); list.append(item); }
+      if (heading) { flush(); list = null; const item = node(line.startsWith('###') ? 'h3' : 'h2'); inline(item, heading[1], sources); fragment.append(item); }
+      else if (bullet) { flush(); const ordered = /^\s*\d/.test(line); const tag = ordered ? 'OL' : 'UL'; if (!list || list.tagName !== tag) { list = node(ordered ? 'ol' : 'ul'); fragment.append(list); } const item = node('li'); inline(item, bullet[1], sources); list.append(item); }
       else { list = null; paragraph.push(line); }
     }
-    flush(); $('answer').replaceChildren(fragment);
+    flush(); target.replaceChildren(fragment);
   }
   function queueRender() { if (state.renderTimer === null) state.renderTimer = window.setTimeout(() => { state.renderTimer = null; renderAnswer(state.draft); }, 60); }
   function flushRender() { if (state.renderTimer !== null) { clearTimeout(state.renderTimer); state.renderTimer = null; } renderAnswer(state.draft); }
-  function refreshSources() {
-    const list = $('source-list'); list.replaceChildren();
-    [...state.sources.values()].sort((a, b) => a.id - b.id).forEach(source => {
+  function fillSourceList(list, sources) {
+    list.replaceChildren();
+    [...sources.values()].sort((a, b) => a.id - b.id).forEach(source => {
       const li = node('li'), button = node('button'); button.type = 'button';
       button.append(node('span', 'source-number', String(source.id)), node('span', '', (source.title || 'Original context') + (source.report_year ? ' · ' + source.report_year + ' letter' : source.event_date ? ' · ' + source.event_date : source.year ? ' · ' + source.year : '')));
-      button.addEventListener('click', () => openSource(source)); li.append(button); list.append(li);
+      button.addEventListener('click', () => openSource(source, button)); li.append(button); list.append(li);
     });
+  }
+  function refreshSources() {
+    fillSourceList($('source-list'), state.sources);
     $('sources').hidden = !state.sources.size;
     $('sources-summary').textContent = 'Sources for this answer · ' + state.sources.size;
   }
@@ -152,9 +554,9 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
     return parts.join(' · ');
   }
   function addMeta(label, value) { if (value !== undefined && value !== null && value !== '') $('source-metadata').append(node('span', '', label + ': ' + String(value))); }
-  async function openSource(source) {
+  async function openSource(source, trigger) {
     state.sourceController?.abort(); const controller = new AbortController(); state.sourceController = controller;
-    state.activeCitation = source.id; $('about').open = false;
+    state.activeCitation = trigger; $('about').open = false;
     $('source-label').textContent = 'Source ' + source.id + ' · Original context'; $('source-title').textContent = source.title || 'Original context';
     $('source-metadata').replaceChildren(); $('source-verification').textContent = ''; $('source-boundary').textContent = ''; $('source-context-note').textContent = ''; $('source-body').replaceChildren();
     $('source-link').hidden = true; $('jump-cited').hidden = true; $('source-error').hidden = true; $('source-loading').hidden = false;
@@ -218,17 +620,22 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
     const note = helpful ? '' : $('feedback-note').value.trim();
     $('feedback-fields').disabled = true;
     $('feedback-status').textContent = 'Sending feedback…';
+    const message = await postFeedback(answerRequest.id, helpful, note);
+    if (state.request === answerRequest) {
+      $('feedback-status').textContent = message;
+      $('feedback-fields').disabled = false;
+    }
+  }
+  async function postFeedback(id, helpful, note) {
     try {
       const response = await fetch('/api/english/feedback', {
         method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ request_id: answerRequest.id, helpful, note })
+        body: JSON.stringify({ request_id: id, helpful, note })
       });
       if (!response.ok) throw new Error();
-      if (state.request === answerRequest) $('feedback-status').textContent = 'Feedback sent. Thank you.';
+      return 'Feedback sent. Thank you.';
     } catch {
-      if (state.request === answerRequest) $('feedback-status').textContent = 'Could not send feedback. Please try again.';
-    } finally {
-      if (state.request === answerRequest) $('feedback-fields').disabled = false;
+      return 'Could not send feedback. Please try again.';
     }
   }
   function recordDeparture(event) {
@@ -247,6 +654,17 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
   function formatMs(value) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? (value / 1000).toFixed(value < 10000 ? 1 : 0) + 's' : null; }
   function finishAnswer(event, question) {
     if (typeof event.answer !== 'string' || !event.answer.trim() || !isObject(event.validation) || !['references_checked', 'needs_review'].includes(event.validation.status)) throw new Error('The service did not return a complete answer with a validation status.');
+    const turn = { id: state.request.id, question, answer: event.answer, sources: [...state.sources.values()].map(source => {
+      const {id, context_id, title, event_date, report_year, year, matched_paragraph_ids} = source;
+      return {id, context_id, title, event_date, report_year, year, matched_paragraph_ids};
+    }), validation: event.validation,
+      timings: event.timings || {}, feedback_available: event.feedback_available === true, created: Date.now() };
+    saveTurn(turn);
+    showFinished(turn);
+    $('question').value = '';
+    announce('Answer complete. You can ask another question below.');
+  }
+  function showFinished(event) {
     state.draft = event.answer; flushRender(); state.completed = true;
     $('answer-wrap').hidden = false; $('answer').setAttribute('aria-busy', 'false');
     const checked = event.validation.status === 'references_checked';
@@ -259,25 +677,27 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
     const timings = isObject(event.timings) ? event.timings : {};
     const measured = [['Sources', timings.retrieval_ms], ['First text', timings.first_token_ms], ['Total', timings.total_ms]].map(([label, value]) => { const time = formatMs(value); return time ? label + ' ' + time : null; }).filter(Boolean);
     $('timings').textContent = measured.join(' · '); $('timings').hidden = !measured.length;
-    state.history = [...state.history, { role: 'user', content: question }, { role: 'assistant', content: event.answer.slice(0, 12000) }].slice(-6);
-    state.lastQuestion = question; $('question').value = ''; $('follow-up').hidden = false;
+    state.lastQuestion = event.question; $('follow-up').hidden = false;
+    $('follow-up').replaceChildren();
+    window.CompounderQuestions?.renderFollowups($('follow-up'), event, askQuestion);
     $('feedback').hidden = event.feedback_available !== true;
-    announce(checked ? 'Answer complete. Citation references were checked; source support still requires judgment.' : 'Answer complete and marked as needing review. Open its citations and listed issues.');
   }
-  async function ask() {
+  async function ask(selectedContextId) {
     const question = $('question').value.trim(); if (state.busy || question.length < 3 || question.length > 2000) return;
+    if (state.completed && currentChat) renderArchive(currentChat.turns);
     const controller = new AbortController(); state.controller = controller; state.busy = true; state.stopped = false; state.completed = false; state.draft = ''; state.sources.clear();
     resetFeedback(); state.request = null;
-    $('about').open = false; $('error').hidden = true; $('answer-wrap').hidden = true; $('answer').replaceChildren(); $('asked-question').textContent = question;
+    $('about').open = false; $('error').hidden = true; $('answer-wrap').hidden = false; $('answer').replaceChildren(); $('asked-question').textContent = question;
     $('answer-status').className = 'badge draft'; $('answer-status').textContent = 'Draft · still streaming'; $('validation-note').textContent = 'This is a partial draft. Its final reference check has not completed.';
     $('validation-issues').hidden = true; $('follow-up').hidden = true; $('timings').hidden = true; $('sources').hidden = true; $('sources').open = false;
     $('answer').setAttribute('aria-busy', 'true'); $('progress').hidden = false; $('progress-message').textContent = 'Submitting your question…'; $('elapsed').textContent = '';
     const started = performance.now(); state.elapsedTimer = window.setInterval(() => { $('elapsed').textContent = Math.floor((performance.now() - started) / 1000) + 's'; }, 1000); updateControls();
+    $('question').value = ''; $('asked-question').scrollIntoView?.({ block: 'start' });
     let reader;
     try {
       state.request = { id: crypto.randomUUID(), started, left: false };
       const response = await fetch('/api/english/ask', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' }, signal: controller.signal,
-        body: JSON.stringify({ question, request_id: state.request.id, history: state.history, entrypoint: 'english_form' }) });
+        body: JSON.stringify({ question, request_id: state.request.id, history: state.history, entrypoint: 'english_form', selected_context_id: selectedContextId }) });
       if (!response.ok) { let message = 'The service could not answer this question (' + response.status + ').'; try { const detail = await response.json(); if (typeof detail.message === 'string') message = detail.message; else if (typeof detail.error === 'string') message = detail.error; else if (typeof detail.detail === 'string') message = detail.detail; } catch {} throw new Error(message); }
       if (!response.body || !response.headers.get('content-type')?.toLowerCase().includes('text/event-stream')) throw new Error('The service did not return an answer stream. Your question has been kept.');
       reader = response.body.getReader(); const decoder = new TextDecoder('utf-8', { fatal: true }); let buffer = '', bytes = 0;
@@ -299,6 +719,7 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
       state.request = null;
       flushRender(); $('question').value = question; $('answer').setAttribute('aria-busy', 'false');
       if (state.draft) { $('answer-wrap').hidden = false; $('answer-status').className = 'badge review'; $('answer-status').textContent = state.stopped ? 'Stopped · incomplete draft' : 'Incomplete draft'; $('validation-note').textContent = 'This partial draft did not receive a completed reference check.'; }
+      else $('answer-wrap').hidden = true;
       $('error-title').textContent = state.stopped ? 'Stopped' : 'The answer could not be completed';
       $('error-message').textContent = state.stopped ? 'The request was stopped. Your question is kept in the box, and any partial text is an unvalidated draft.' : (error instanceof Error && error.name !== 'AbortError' ? error.message : 'The request was interrupted. Your question has been kept.');
       $('error').hidden = false; announce(state.stopped ? 'Request stopped. Your question has been kept.' : 'The answer did not complete. Your question has been kept.');
@@ -309,18 +730,24 @@ main{max-width:760px;width:100%;margin:0 auto;flex:1;padding-top:clamp(65px,13vh
   }
   $('question-form').addEventListener('submit', event => { event.preventDefault(); void ask(); });
   $('question').addEventListener('input', updateControls);
-  $('question').addEventListener('keydown', event => { if (event.key === 'Enter' && (event.metaKey || event.ctrlKey) && !event.isComposing) { event.preventDefault(); void ask(); } });
-  document.querySelectorAll('[data-question]').forEach(button => button.addEventListener('click', () => { $('question').value = button.dataset.question; updateControls(); $('question').focus(); }));
+  $('question').addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey && !event.isComposing && event.keyCode !== 229) { event.preventDefault(); void ask(); } });
+  function askQuestion(question, selectedContextId) {
+    if (state.busy) return;
+    $('question').value = question;
+    void ask(selectedContextId);
+  }
+  window.CompounderQuestions?.renderStarters($('starters'), askQuestion);
   $('feedback').addEventListener('submit', sendFeedback);
   $('feedback').addEventListener('input', feedbackChanged);
   window.addEventListener('pagehide', () => recordDeparture('pagehide'));
   $('stop').addEventListener('click', () => { recordDeparture('stop'); state.stopped = true; state.controller?.abort(); });
   $('new-question').addEventListener('click', resetQuestion); $('home').addEventListener('click', resetQuestion);
-  $('error-edit').addEventListener('click', () => $('question').focus()); $('follow-up-button').addEventListener('click', () => { $('question').focus(); $('question').scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' }); });
+  $('error-edit').addEventListener('click', () => $('question').focus());
   $('source-close').addEventListener('click', () => $('source-dialog').close());
   $('source-dialog').addEventListener('click', event => { if (event.target === event.currentTarget) $('source-dialog').close(); });
-  $('source-dialog').addEventListener('close', () => { state.sourceController?.abort(); const target = document.querySelector('[data-citation="' + state.activeCitation + '"]'); if (target) target.focus(); else $('question').focus(); });
+  $('source-dialog').addEventListener('close', () => { state.sourceController?.abort(); if (state.activeCitation?.isConnected) state.activeCitation.focus(); else $('question').focus(); });
   $('about').addEventListener('keydown', event => { if (event.key === 'Escape') { $('about').open = false; $('about').querySelector('summary').focus(); } });
+  restoreLibrary();
   updateControls();
 })();
 </script>

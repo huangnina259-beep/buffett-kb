@@ -96,14 +96,53 @@ def lexical(query):
     return {"documents": [[r[0] for r in rows]], "metadatas": [[json.loads(r[1]) for r in rows]]}
 
 
-def retrieve(question, history=None):
+FOLLOWUP_REFERENCE = re.compile(
+    r"\b(it|its|he|his|him|she|her|they|their|them|this|these|those)\b"
+    r"|\bthat\s+(?:mean|relate|work|change|compare|apply|case|example|method|approach|business|one)\b"
+    r"|\b(?:do|does|did|is|was|about|by|from)\s+that\b|\bthat[?.!]?$"
+    r"|^(?:and\b|what about\b|why[?.!]*$|can you (?:explain|elaborate|give an example)\b)",
+    re.IGNORECASE,
+)
+
+
+def retrieval_question(question, history):
+    """Carry the topic through linked follow-ups without indexing prior answer text."""
+    if not FOLLOWUP_REFERENCE.search(question.strip()):
+        return question
+    earlier = []
+    for turn in reversed(history or []):
+        if turn["role"] != "user":
+            continue
+        previous = turn["content"].strip()
+        earlier.append(previous[:600])
+        if not FOLLOWUP_REFERENCE.search(previous):
+            break
+    return "\n".join([question, *reversed(earlier)])
+
+
+def select_contexts(groups, contexts, selected_context_id=None):
+    """Keep the clicked original first, then fill the existing budget in search rank order."""
+    ranked = sorted(groups, key=lambda cid: groups[cid]["score"], reverse=True)
+    if selected_context_id is not None:
+        ranked = [selected_context_id, *(cid for cid in ranked if cid != selected_context_id)]
+    chosen, chars = [], 0
+    for cid in ranked:
+        size = sum(len(p.get("reading_text") or p.get("text", "")) for p in contexts[cid]["paragraphs"])
+        if chars + size > 50000:
+            if cid == selected_context_id:
+                raise ValueError("The selected original exceeds the context budget.")
+            continue
+        detail = groups.get(cid, {"hits": [], "score": None})
+        chosen.append({"context_id": cid, "matched_paragraph_ids": list(dict.fromkeys(detail["hits"])), "rank_score": detail["score"]})
+        chars += size
+        if len(chosen) >= 5:
+            break
+    return chosen, chars
+
+
+def retrieve(question, history=None, selected_context_id=None):
     collection, meta = ready_index()
-    # Dependent follow-ups retain the preceding user's topic without another LLM call.
-    previous = [h["content"] for h in (history or []) if h["role"] == "user"]
-    query = question
-    dependent = re.search(r"\b(that|those|this approach|that method|it work|its limitations)\b", question, re.I)
-    if previous and dependent and len(question.split()) < 18:
-        query = previous[-1][:600] + "\nFollow-up: " + question
+    query = retrieval_question(question, history)
     gateway = get_embedding_gateway()
     if gateway.profile.max_retries != 0:
         raise RuntimeError("The pilot embedding route must disable automatic retries.")
@@ -130,13 +169,5 @@ def retrieve(question, history=None):
         group["score"] = max(group["score"], 1 - distance)
         group["hits"].extend(json.loads(metadata["paragraph_ids"]))
     contexts = load_contexts()
-    chosen, chars = [], 0
-    for cid, detail in sorted(groups.items(), key=lambda item: item[1]["score"], reverse=True):
-        size = sum(len(p.get("reading_text") or p.get("text", "")) for p in contexts[cid]["paragraphs"])
-        if chars + size > 50000:
-            continue
-        chosen.append({"context_id": cid, "matched_paragraph_ids": list(dict.fromkeys(detail["hits"])), "rank_score": detail["score"]})
-        chars += size
-        if len(chosen) >= 5:
-            break
+    chosen, chars = select_contexts(groups, contexts, selected_context_id)
     return chosen, {"mode": "semantic + FTS5 + rank fusion + complete context expansion", "context_count": len(contexts), "selected_characters": chars, "best_cosine_distance": semantic["distances"][0][0] if semantic["distances"][0] else None}

@@ -10,7 +10,18 @@ const html = fs.readFileSync(path.join(__dirname, '../frontend/english.html'), '
 const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 const tick = () => new Promise(resolve => setImmediate(resolve));
 
-function page(fetch, sendBeacon) {
+function memoryStorage() {
+  const values = new Map();
+  return {
+    get length() { return values.size; },
+    key: index => [...values.keys()][index] ?? null,
+    getItem: key => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value),
+    removeItem: key => values.delete(key),
+  };
+}
+
+function page(fetch, sendBeacon, storage = {}) {
   function element() {
     const handlers = {};
     return {
@@ -25,7 +36,7 @@ function page(fetch, sendBeacon) {
     if (!byId.has(id)) byId.set(id, element());
     return byId.get(id);
   };
-  const window = { ...element(), setInterval, clearInterval, setTimeout };
+  const window = { ...element(), ...storage, setInterval, clearInterval, setTimeout, scrollTo() {} };
   const document = {
     getElementById: get, querySelectorAll: () => [], createElement: element,
     createTextNode: element, createDocumentFragment: element
@@ -34,8 +45,8 @@ function page(fetch, sendBeacon) {
     window, document, fetch, navigator: { sendBeacon }, performance, crypto: { randomUUID },
     Blob, TextDecoder, AbortController, DOMException, clearTimeout,
   });
-  return { get, window, ask: () => {
-    get('question').value = 'What is intrinsic value?';
+  return { get, window, ask: (question = 'What is intrinsic value?') => {
+    get('question').value = question;
     get('question-form').emit('submit');
   } };
 }
@@ -120,4 +131,69 @@ test('Stop and pagehide send a single request-linked departure during a pending 
     assert.equal(ui.get('question').value, 'What is intrinsic value?');
     assert.equal(ui.get('error-title').textContent, 'Stopped');
   }
+});
+
+test('reload can continue a saved chat, while a new chat sends an empty history', async () => {
+  const calls = [];
+  const storage = { localStorage: memoryStorage(), sessionStorage: memoryStorage() };
+  const fetch = async (url, options) => {
+    assert.equal(url, '/api/english/ask');
+    calls.push(JSON.parse(options.body));
+    const done = { type: 'done', answer: 'Answer ' + calls.length, validation: {status: 'references_checked'} };
+    return new Response('data: ' + JSON.stringify(done) + '\n\n', {
+      headers: { 'Content-Type': 'text/event-stream' }
+    });
+  };
+
+  const first = page(fetch, undefined, storage);
+  first.ask('What is the circle of competence?');
+  await tick();
+  first.ask('Can it grow?');
+  await tick();
+  assert.equal(calls[1].history[0].content, calls[0].question);
+
+  const restored = page(fetch, undefined, storage);
+  assert.equal(restored.get('asked-question').textContent, 'Can it grow?');
+  restored.ask('Did he ever get this wrong?');
+  await tick();
+  assert.deepEqual(calls[2].history.map(message => message.content),
+    [calls[0].question, 'Answer 1', calls[1].question, 'Answer 2']);
+
+  restored.get('new-question').emit('click');
+  restored.ask('How does Buffett evaluate a stock?');
+  await tick();
+  assert.deepEqual(calls[3].history, []);
+  assert.equal(storage.localStorage.length, 2);
+});
+
+test('a storage quota error retains completed answers in the current tab', async () => {
+  const localStorage = memoryStorage();
+  let failWrite = false;
+  const write = localStorage.setItem;
+  localStorage.setItem = (key, value) => {
+    if (failWrite) throw new Error('quota exceeded');
+    write(key, value);
+  };
+  const calls = [];
+  const ui = page(async (url, options) => {
+    calls.push(JSON.parse(options.body));
+    const done = {type:'done', answer:'Answer ' + calls.length, validation:{status:'references_checked'}};
+    return new Response('data: ' + JSON.stringify(done) + '\n\n', {
+      headers: {'Content-Type':'text/event-stream'}
+    });
+  }, undefined, {localStorage, sessionStorage:memoryStorage()});
+
+  ui.ask('First question?');
+  await tick();
+  failWrite = true;
+  ui.ask('Second question?');
+  await tick();
+  assert.equal(ui.get('storage-error').hidden, false);
+  failWrite = false;
+  ui.ask('Third question?');
+  await tick();
+  ui.ask('Fourth question?');
+  await tick();
+  assert.deepEqual(calls[3].history.filter(m => m.role === 'user').map(m => m.content),
+    ['First question?', 'Second question?', 'Third question?']);
 });
